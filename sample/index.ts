@@ -13,6 +13,7 @@ import {
 import {
     StakingWalletTemplate,
 } from '../build/ReStaking/tact_StakingWalletTemplate';
+import { ExampleJettonWallet } from './tact_build/JettonExample/tact_ExampleJettonWallet';
 
 // UI Elements
 const connectWalletBtn = document.getElementById('connectWallet') as HTMLButtonElement;
@@ -36,10 +37,11 @@ const tonConnectUI = new TonConnectUI({
 });
 
 // Contract addresses
-const STAKING_MASTER_ADDRESS = "kQD7ygi6qbmPlkHECguV9DVVNLj893rmJy0tIonGPH0_qbct";
-const JETTON_MASTER_ADDRESS = "";
+const STAKING_MASTER_ADDRESS = "EQDxdNPvSv1WmFuuwA4oBAqh6HZFkJNnQsr_984W_KRXSD23";
+const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
 
 let userAddress: string;
+let userWalletAddress: Address;
 let stakingWalletAddress: Address;
 let client: TonClient;
 
@@ -56,6 +58,7 @@ await initClient().catch(console.error);
 tonConnectUI.onStatusChange(async (wallet) => {
     if (wallet) {
         userAddress = wallet.account.address;
+        userWalletAddress = Address.parseRaw(userAddress);
         walletAddressSpan.textContent = userAddress;
         
         // Calculate staking wallet address
@@ -138,17 +141,21 @@ async function stake() {
             query_id: BigInt(Math.ceil(Math.random() * 1000000)),
             amount: amount,
             destination: Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-            response_destination: Address.parse(stakingWalletAddress.toString()),
+            response_destination: userWalletAddress,
             custom_payload: null,
             forward_ton_amount: toNano('0.3'),
             forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell()
         };
         // Create transaction
+        const userJettonWallet = await ExampleJettonWallet.fromInit(
+            userWalletAddress,
+            Address.parseFriendly(JETTON_MASTER_ADDRESS).address,
+        );
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
             messages: [
                 {
-                    address: STAKING_MASTER_ADDRESS,
+                    address: userJettonWallet.address.toString(),
                     amount: toNano('0.5').toString(),
                     payload: beginCell()
                         .store(storeJettonTransfer(jettonTransfer))
