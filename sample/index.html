@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staking Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .info {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+<script>window.global = window;</script>
+<script type="module">
+    import { Buffer } from "buffer/"; // <-- no typo here ("/")
+   
+    window.Buffer = Buffer;
+</script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Wallet Information</h2>
+            <div id="walletInfo" class="info">
+                <p>Address: <span id="walletAddress">Not connected</span></p>
+                <p>Balance: <span id="walletBalance">0</span> TON</p>
+                <p>Jetton Balance: <span id="jettonBalance">0</span> TBRTJ</p>
+            </div>
+            <button id="connectWallet" class="button">Connect Wallet</button>
+        </div>
+
+        <div class="card">
+            <h2>Staking</h2>
+            <div>
+                <input type="number" id="stakeAmount" placeholder="Amount to stake" min="0" step="0.1">
+                <button id="stakeButton" class="button" disabled>Stake</button>
+            </div>
+            <div id="stakingInfo" class="info">
+                <h3>Staked Amount</h3>
+                <p>Current Stake: <span id="currentStake">0</span> TBRTJ</p>
+                <p>Pending Unstake: <span id="pendingUnstake">0</span> TBRTJ</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Unstaking</h2>
+            <div>
+                <input type="number" id="unstakeAmount" placeholder="Amount to unstake" min="0" step="0.1">
+                <button id="unstakeButton" class="button" disabled>Unstake</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Transaction History</h2>
+            <div id="txHistory" class="info">
+                No transactions yet
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./index.ts"></script>
+</body>
+</html>

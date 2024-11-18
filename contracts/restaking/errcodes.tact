@@ -1,0 +1,8 @@
+const codeMsgValueInvalid: Int = 50006;
+const codeForwardPayloadInvalid: Int = 50007;
+const codeInsufficientStakedTon: Int = 50301;
+const codeInsufficientStakedJetton: Int = 50302;
+const codeStakeAmountMustBePositive: Int = 50303;
+const codeStakeIndexNotFound: Int = 50305;
+const codePendingIndexNotFound: Int = 50306;
+const codePendingJettonNotMaturity: Int = 50307;
