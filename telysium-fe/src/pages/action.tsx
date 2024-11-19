@@ -32,6 +32,7 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
+  console.log({tokenAmount})
   const { USDTPrice, DepositList } = useMemo(() => {
     let USDTPrice: string = '0';
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];

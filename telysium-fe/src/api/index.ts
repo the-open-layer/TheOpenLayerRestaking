@@ -41,3 +41,4 @@ export const getTokenBalance = async function (address: string) {
   const client = await getTonClient();
   return await client.getBalance(Address.parse(address));
 };
+

@@ -3,7 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { STAKEICONS } from '@/constant/urls';
 import { Button } from '@/components/ui/button';
 import { formatNumber } from '@/lib/numbers';
-
+import { useUserRestaking } from '@/hooks/useUserRestaking';
+import { useAccount } from '@/hooks/useAccount';
 const mockTransactions = [
   {
     id: '1',
@@ -24,6 +25,9 @@ const mockTransactions = [
 ];
 
 export default function Token() {
+  const { address } = useAccount();
+  const { data: restakingInfo } = useUserRestaking(address);
+  console.log({ restakingInfo });
   return (
     <main className="container mx-auto p-4 space-y-6 lg:space-y-8">
       <div className="items-center gap-3 hidden md:flex mb-7">
