@@ -19,12 +19,14 @@ import DepositModal from '@/components/ux/modals/deposit';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, ACTION_TYPES_LIST } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
-import { getStakeTx } from '@/constant/stake';
+import { getStakeTx, getUnstakeTx } from '@/constant/stake';
 import { useBalance } from '@/hooks/useBalance';
+import { ACTION_TYPES_TITLE_MAP } from '@/constant';
+
 export default function Action() {
   const { action, token } = useParams();
   const { data: stakeList = [] } = useStakeList();
-  const { connected, tonConnectUI, rawAddress, address } = useAccount();
+  const { connected, tonConnectUI, rawAddress } = useAccount();
   const [amount, setAmount] = useState('');
   const { data: tonPrice } = useTonPrice();
   const [depositState, setDepositState] = useState<DepositStateEnum>(
@@ -32,7 +34,7 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
-  console.log({tokenAmount})
+  console.log({ tokenAmount });
   const { USDTPrice, DepositList } = useMemo(() => {
     let USDTPrice: string = '0';
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];
@@ -82,16 +84,23 @@ export default function Action() {
       DepositList: DepositList,
     };
   }, [tonPrice, amount]);
-
+  const getTx = useMemo(() => {
+    if (action === ACTION_TYPES.DEPOSIT) {
+      return getStakeTx;
+    } else if (action === ACTION_TYPES.WITHDRAW) {
+      return getUnstakeTx;
+    }
+    return getUnstakeTx;
+  }, [action]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
     const result = await tonConnectUI.sendTransaction(
-      await getStakeTx(amount, rawAddress, restakeToken!.address)
+      await getTx(amount, rawAddress, restakeToken!.address)
     );
     console.log({ result });
     // setDepositState(DepositStateEnum.ERROR);
   };
-
+  console.log({ action });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleConfirm = () => {
     // Simulate random success/error
@@ -117,7 +126,9 @@ export default function Action() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">Deposit</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
+      </h1>
       <Card className="mb-8">
         <CardHeader className="flex flex-row justify-between items-center space-y-0 ">
           <div className="flex items-center gap-x-4">

@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { STAKEICONS } from '@/constant/urls';
 import { Button } from '@/components/ui/button';
 import { formatNumber } from '@/lib/numbers';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { useAccount } from '@/hooks/useAccount';
+import { Link, useParams, Navigate } from 'react-router-dom';
+import { useStakeList } from '@/hooks/api/useStakeList';
+
 const mockTransactions = [
   {
     id: '1',
@@ -27,20 +29,26 @@ const mockTransactions = [
 export default function Token() {
   const { address } = useAccount();
   const { data: restakingInfo } = useUserRestaking(address);
+  const { token } = useParams();
+  const { data: stakeList = [] } = useStakeList();
+  const restakeToken = stakeList.find((v) => v.symbol === token);
   console.log({ restakingInfo });
+  if (!stakeList.some((v) => v.symbol === token)) {
+    return <Navigate to="/404" />;
+  }
   return (
     <main className="container mx-auto p-4 space-y-6 lg:space-y-8">
       <div className="items-center gap-3 hidden md:flex mb-7">
         <img
-          src={STAKEICONS.TONSTAKERS.icon}
+          src={restakeToken!.image}
           alt="Tonstakers TON"
           width={48}
           height={48}
           className="rounded-full"
         />
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">Tonstakers TON</h1>
-          <Badge variant="outline">tsTON</Badge>
+          <h1 className="text-2xl font-bold">{restakeToken!.name}</h1>
+          <Badge variant="outline">{restakeToken!.symbol}</Badge>
         </div>
       </div>
 
@@ -53,12 +61,14 @@ export default function Token() {
             ${formatNumber(100000000)}{' '}
             <span className="text-2xl font-normal text-white/60">TVL</span>
           </div>
-          <Button
-            size="lg"
-            className="w-full bg-white text-black hover:bg-gray-100 rounded-3xl md:mb-5"
-          >
-            Restake
-          </Button>
+          <Link to={`/restake/deposit/${token}`}>
+            <Button
+              size="lg"
+              className="w-full bg-white text-black hover:bg-gray-100 rounded-3xl md:mb-5"
+            >
+              Restake
+            </Button>
+          </Link>
         </CardContent>
       </Card>
 
@@ -72,12 +82,14 @@ export default function Token() {
               <div className="text-sm text-muted-foreground">
                 RESTAKED BALANCE
               </div>
-              <Button variant="outline" size="sm">
-                Unstake
-              </Button>
+              <Link to={`/restake/withdraw/${token}`}>
+                <Button variant="outline" size="sm">
+                  Unstake
+                </Button>
+              </Link>
             </div>
             <div className="text-2xl font-semibold">
-              0.001 <span className="text-muted-foreground">tsTON</span>
+              0.001 <span className="text-muted-foreground">{token}</span>
             </div>
           </div>
 
@@ -88,7 +100,7 @@ export default function Token() {
               </div>
             </div>
             <div className="text-2xl font-semibold mb-4">
-              0.01 <span className="text-muted-foreground">tsTON</span>
+              0.01 <span className="text-muted-foreground">{token}</span>
             </div>
             <div className="flex gap-3">
               <Button className="flex-1">Redeposit</Button>
@@ -112,7 +124,7 @@ export default function Token() {
                   <div>
                     <div className="font-medium">{tx.type}</div>
                     <div className="text-sm text-muted-foreground">
-                      {tx.amount} {tx.token}
+                      {tx.amount} {token}
                     </div>
                   </div>
                 </div>

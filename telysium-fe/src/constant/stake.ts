@@ -61,16 +61,16 @@ export const getStakeTx = async (
   return transaction;
 };
 
-export const getUnstakeTx = async (amount: bigint, userAddress: string) => {
+export const getUnstakeTx = async (amount: string, userAddress: string) => {
   const unstakeMsg: UnStake = {
     $$type: 'UnStake',
     queryId: BigInt(Math.ceil(Math.random() * 1000000)),
     stakeIndex: 0n,
-    jettonAmount: amount,
+    jettonAmount: toNano(amount),
     jettonWallet: Address.parse(userAddress),
     forwardPayload: beginCell().endCell(),
   };
-
+  console.log('unstakeMsg', unstakeMsg);
   const stakingWallet = await StakingWalletTemplate.fromInit(
     Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
     Address.parseRaw(userAddress)
@@ -96,19 +96,24 @@ export const getUnstakeTx = async (amount: bigint, userAddress: string) => {
 export const getStakingWalletAddress = async (userAddress: string) => {
   const stakingWallet = await StakingWalletTemplate.fromInit(
     Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-    Address.parseRaw(userAddress)
+    Address.parseFriendly(userAddress).address
   );
   return stakingWallet.address;
 };
 
 export const getStakingInfo = async (userAddress: string) => {
-  const client = await getTonClient();
-  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
-  const stakingWallet = client.open(
-    StakingWalletTemplate.fromAddress(stakingWalletAddress)
-  );
-  const res = await stakingWallet.getStakedInfo();
-  return res;
+  try {
+    const client = await getTonClient();
+    const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+    const stakingWallet = client.open(
+      StakingWalletTemplate.fromAddress(stakingWalletAddress)
+    );
+    const res = await stakingWallet.getStakedInfo();
+    return res;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 };
 
 // export const initTonClient = async (network: Network) => {

@@ -1,6 +1,6 @@
 export enum REWARDTYPE {
-  POINTS="point",
-  TON="ton",
+  POINTS = 'point',
+  TON = 'ton',
 }
 
 export const navItems = [
@@ -16,3 +16,8 @@ export enum ACTION_TYPES {
 }
 
 export const ACTION_TYPES_LIST = Object.values(ACTION_TYPES);
+
+export const ACTION_TYPES_TITLE_MAP = {
+  [ACTION_TYPES.DEPOSIT]: 'Deposit',
+  [ACTION_TYPES.WITHDRAW]: 'Withdraw',
+};
