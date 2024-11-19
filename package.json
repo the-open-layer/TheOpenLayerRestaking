@@ -1,5 +1,5 @@
 {
-    "name": "simple-counter",
+    "name": "restaking",
     "version": "0.0.1",
     "scripts": {
         "start": "blueprint run",
@@ -15,7 +15,7 @@
         "jest": "^29.7.0",
         "prettier": "^3.3.3",
         "@ton/ton": "^15.1.0",
-        "@ton/core": "~0",
+        "@ton/core": "^0.59.0",
         "@ton/crypto": "^3.3.0",
         "ts-jest": "^29.2.5",
         "ts-node": "^10.9.2",

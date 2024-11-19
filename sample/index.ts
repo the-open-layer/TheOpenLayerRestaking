@@ -13,7 +13,7 @@ import {
 import {
     StakingWalletTemplate,
 } from '../build/ReStaking/tact_StakingWalletTemplate';
-import { ExampleJettonWallet } from './tact_build/JettonExample/tact_ExampleJettonWallet';
+import { ExampleJettonWallet } from '../build/JettonExample/tact_ExampleJettonWallet';
 
 // UI Elements
 const connectWalletBtn = document.getElementById('connectWallet') as HTMLButtonElement;
@@ -126,7 +126,7 @@ async function stake() {
     try {
         const amount = toNano(stakeAmountInput.value);
 
-        
+        console.log({ amount ,userAddress, stakingWalletAddress, userWalletAddress });
         // Prepare stake message using the generated type
         const stakeMsg: StakeJetton = {
             $$type: 'StakeJetton',
