@@ -37,8 +37,7 @@ export const getTonUSDTPrice = async function () {
   };
 };
 
-export const getTokenBalance = async function (address: string) {
+export const getTokenBalance = async function (address: Address) {
   const client = await getTonClient();
-  return await client.getBalance(Address.parse(address));
+  return await client.getBalance(address);
 };
-

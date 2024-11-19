@@ -22,6 +22,7 @@ import { useStakeList } from '@/hooks/api/useStakeList';
 import { getStakeTx, getUnstakeTx } from '@/constant/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
+import { fromNano } from '@ton/ton';
 
 export default function Action() {
   const { action, token } = useParams();
@@ -34,7 +35,6 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
-  console.log({ tokenAmount });
   const { USDTPrice, DepositList } = useMemo(() => {
     let USDTPrice: string = '0';
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];
@@ -92,6 +92,12 @@ export default function Action() {
     }
     return getUnstakeTx;
   }, [action]);
+  const maxAmount = useMemo(() => {
+    if (action === ACTION_TYPES.DEPOSIT) {
+      return fromNano(tokenAmount ?? 0n).toString();
+    }
+    return '0';
+  }, [action, tokenAmount]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
     const result = await tonConnectUI.sendTransaction(
@@ -100,7 +106,6 @@ export default function Action() {
     console.log({ result });
     // setDepositState(DepositStateEnum.ERROR);
   };
-  console.log({ action });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleConfirm = () => {
     // Simulate random success/error
@@ -169,6 +174,7 @@ export default function Action() {
                         e.target.value ? Number(e.target.value) + '' : ''
                       )
                     }
+                    step={0.1}
                     placeholder="0.0000"
                     className="text-6xl h-20"
                   />
@@ -181,7 +187,7 @@ export default function Action() {
                   className="px-3 py-1 leading-none rounded-2xl text-sm font-medium h-7"
                   onClick={() => {
                     if (connected) {
-                      setAmount(tokenAmount!.toString() ?? 0);
+                      setAmount(maxAmount);
                     } else {
                       tonConnectUI.openModal();
                     }
@@ -199,7 +205,13 @@ export default function Action() {
                 className="w-full rounded-2xl"
                 size="lg"
                 onClick={handleSubmit}
-                disabled={Number(amount) <= 0}
+                disabled={
+                  Big(amount || 0).lte(0) ||
+                  Big(amount || 0)
+                    .minus(maxAmount ?? 0)
+                    .gt(0) ||
+                  Big(maxAmount || 0).lte(0)
+                }
               >
                 Submit
               </Button>

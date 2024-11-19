@@ -9,26 +9,7 @@ import { useStakeList } from '@/hooks/api/useStakeList';
 import { fromNano } from '@ton/ton';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
-import { Spinner } from '@/components/ui/spiner';
 import { Skeleton } from '@/components/ui/skeleton';
-const mockTransactions = [
-  {
-    id: '1',
-    type: 'Withdraw',
-    token: 'stTON',
-    amount: '0.01',
-    date: '2024-09-25 11:20:26',
-    status: 'pending',
-  },
-  {
-    id: '2',
-    type: 'Withdraw',
-    token: 'stTON',
-    amount: '1.02',
-    date: '2024-09-01 02:35:33',
-    status: 'completed',
-  },
-];
 
 export default function Token() {
   const { address } = useAccount();

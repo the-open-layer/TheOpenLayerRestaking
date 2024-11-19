@@ -1,10 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTokenBalance } from '@/api';
+import { getUserJettonWalletFromMaster } from '@/constant/stake';
+import { useAccount } from './useAccount';
 
-export const useBalance = (tokenAddress: string) => {
+export const useBalance = (tokenMasterAddress: string) => {
+  const { address } = useAccount();
   return useQuery({
-    queryKey: ['balance', tokenAddress],
-    queryFn: () => getTokenBalance(tokenAddress),
-    enabled: !!tokenAddress,
+    queryKey: ['balance', address, tokenMasterAddress],
+    queryFn: async () => {
+      const tokenAddress = await getUserJettonWalletFromMaster(
+        address,
+        tokenMasterAddress
+      );
+      return await getTokenBalance(tokenAddress);
+    },
+    enabled: !!tokenMasterAddress,
   });
 };
