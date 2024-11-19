@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 import useTonPrice from '@/hooks/api/useTonPrice';
@@ -131,7 +131,10 @@ export default function Action() {
       </h1>
       <Card className="mb-8">
         <CardHeader className="flex flex-row justify-between items-center space-y-0 ">
-          <div className="flex items-center gap-x-4">
+          <Link
+            to={`/restake/${token}`}
+            className="flex items-center gap-x-4 hover:-translate-y-0.5"
+          >
             <img
               src={restakeToken?.image}
               alt={restakeToken?.name}
@@ -141,7 +144,7 @@ export default function Action() {
               <CardTitle className="text-xl">{restakeToken?.name}</CardTitle>
               <CardDescription>{restakeToken?.symbol}</CardDescription>
             </div>
-          </div>
+          </Link>
           <a
             href={
               restakeToken?.testnet

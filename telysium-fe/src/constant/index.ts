@@ -21,3 +21,5 @@ export const ACTION_TYPES_TITLE_MAP = {
   [ACTION_TYPES.DEPOSIT]: 'Deposit',
   [ACTION_TYPES.WITHDRAW]: 'Withdraw',
 };
+
+export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';

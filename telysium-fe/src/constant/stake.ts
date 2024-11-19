@@ -102,18 +102,13 @@ export const getStakingWalletAddress = async (userAddress: string) => {
 };
 
 export const getStakingInfo = async (userAddress: string) => {
-  try {
-    const client = await getTonClient();
-    const stakingWalletAddress = await getStakingWalletAddress(userAddress);
-    const stakingWallet = client.open(
-      StakingWalletTemplate.fromAddress(stakingWalletAddress)
-    );
-    const res = await stakingWallet.getStakedInfo();
-    return res;
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
+  const client = await getTonClient();
+  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const stakingWallet = client.open(
+    StakingWalletTemplate.fromAddress(stakingWalletAddress)
+  );
+  const res = await stakingWallet.getStakedInfo();
+  return res;
 };
 
 // export const initTonClient = async (network: Network) => {

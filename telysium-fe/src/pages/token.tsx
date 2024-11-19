@@ -6,7 +6,11 @@ import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { useAccount } from '@/hooks/useAccount';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
-
+import { fromNano } from '@ton/ton';
+import dayjs from 'dayjs';
+import { dateTimeFormat } from '@/constant';
+import { Spinner } from '@/components/ui/spiner';
+import { Skeleton } from '@/components/ui/skeleton';
 const mockTransactions = [
   {
     id: '1',
@@ -28,11 +32,12 @@ const mockTransactions = [
 
 export default function Token() {
   const { address } = useAccount();
-  const { data: restakingInfo } = useUserRestaking(address);
+  const { data: restakingInfo, isLoading } = useUserRestaking(address);
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
   const restakeToken = stakeList.find((v) => v.symbol === token);
   console.log({ restakingInfo });
+
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }
@@ -117,31 +122,54 @@ export default function Token() {
           <CardTitle>Your Withdraw</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {mockTransactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <div className="font-medium">{tx.type}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {tx.amount} {token}
-                    </div>
-                  </div>
+          {isLoading ? (
+            <div className="flex items-center justify-between gap-y-4">
+              <div className="space-y-3">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-5 w-14" />
+              </div>
+              <Skeleton className="h-5 w-14" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {restakingInfo?.pendingJettons?.length === 0 ? (
+                <div className="text-sm text-muted-foreground text-center">
+                  no data
                 </div>
-                <div className="text-right">
-                  <div className="text-sm text-muted-foreground">{tx.date}</div>
-                  <Badge
+              ) : (
+                restakingInfo?.pendingJettons.map((tx) => (
+                  <div
+                    key={tx.stakeIndex}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <div className="font-medium">unstake</div>
+                        <div className="text-sm text-muted-foreground">
+                          {fromNano(tx.jettonAmount)} {token}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground">
+                        {dayjs
+                          .unix(Number(tx.unstakeTime))
+                          .format(dateTimeFormat)}
+                      </div>
+                      {/* <Badge
                     variant={
                       tx.status === 'completed' ? 'default' : 'secondary'
                     }
                     className="mt-1"
                   >
                     {tx.status === 'completed' ? 'Completed' : tx.status}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </Badge> */}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </main>
