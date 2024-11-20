@@ -10,14 +10,23 @@ import { fromNano } from '@ton/ton';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
+import {useTokenPrice} from '@/hooks/useTokenPrice';
+import Big from 'big.js';
 
 export default function Token() {
   const { address } = useAccount();
   const { data: restakingInfo, isLoading } = useUserRestaking(address);
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
+  const { data: tokenPrice } = useTokenPrice(token!);
+  console.log({restakingInfo, tokenPrice})
+  const restakeBalance = restakingInfo?.stakedJettons?.reduce((acc, cur) => {
+    return acc.add(Big(fromNano(cur.jettonAmount)));
+  }, Big(0));
+  const maxWithdrawAmount = restakingInfo?.withdrawalJettons?.reduce((acc, cur) => {
+    return acc.add(Big(fromNano(cur.jettonAmount)));
+  }, Big(0));
   const restakeToken = stakeList.find((v) => v.symbol === token);
-
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }
@@ -74,7 +83,7 @@ export default function Token() {
               </Link>
             </div>
             <div className="text-2xl font-semibold">
-              0.001 <span className="text-muted-foreground">{token}</span>
+              {restakeBalance?.toFixed(2)} <span className="text-muted-foreground">{token}</span>
             </div>
           </div>
 
@@ -85,7 +94,7 @@ export default function Token() {
               </div>
             </div>
             <div className="text-2xl font-semibold mb-4">
-              0.01 <span className="text-muted-foreground">{token}</span>
+              {maxWithdrawAmount?.toFixed(2)} <span className="text-muted-foreground">{token}</span>
             </div>
             <div className="flex gap-3">
               <Button className="flex-1">Redeposit</Button>
@@ -112,12 +121,12 @@ export default function Token() {
             </div>
           ) : (
             <div className="space-y-4">
-              {restakingInfo?.pendingJettons?.length === 0 ? (
+              {restakingInfo?.withdrawalJettons?.length === 0 ? (
                 <div className="text-sm text-muted-foreground text-center">
                   no data
                 </div>
               ) : (
-                restakingInfo?.pendingJettons.map((tx, i) => (
+                restakingInfo?.withdrawalJettons.map((tx, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
@@ -130,7 +139,7 @@ export default function Token() {
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground">
                         {dayjs
-                          .unix(Number(tx.unstakeTime))
+                          .unix(Number(tx.withdrawTime))
                           .format(dateTimeFormat)}
                       </div>
                       {/* <Badge

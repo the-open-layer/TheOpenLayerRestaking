@@ -36,22 +36,25 @@ export const getStakeList = async function () {
       balance: 0,
       restaking: 0,
       tvl: 0,
-      adminAddress:"",
-      jettonContentUri:"",
-      jettonWalletCodeHex:"",
+      adminAddress: '',
+      jettonContentUri: '',
+      jettonWalletCodeHex: '',
     },
   ];
 };
 
-export const getTonUSDTPrice = async function () {
-  // const url = `https://fapi.binance.com/fapi/v1/ticker/price?symbol=TONUSDT`;
-  // return fetch(url).then((res) => res.json());
-  return {
-    price: 1,
-  };
+export const getTokenUSDTPrice = async function (symbol: string) {
+  if (symbol === 'TON') {
+    const url = `https://fapi.binance.com/fapi/v1/ticker/price?symbol=TONUSDT`;
+    return fetch(url).then((res) => res.json());
+  } else {
+    return {
+      price: "1",
+    };
+  }
 };
 
-export const getTokenBalance = async function (
+export const getUserJettonWallet = async function (
   userAddress: string,
   tokenMasterAddress: string
 ) {
@@ -66,7 +69,17 @@ export const getTokenBalance = async function (
   const jettonWalletAddress = await jettonMinter.getJettonWalletAddress(
     new TonWeb.utils.Address(userAddress)
   );
-
+  return jettonWalletAddress;
+};
+export const getTokenBalance = async function (
+  userAddress: string,
+  tokenMasterAddress: string
+) {
+  const tonweb = getTonWeb();
+  const jettonWalletAddress = await getUserJettonWallet(
+    userAddress,
+    tokenMasterAddress
+  );
   // It is important to always check that wallet indeed is attributed to desired Jetton Master:
   const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, {
     address: jettonWalletAddress,

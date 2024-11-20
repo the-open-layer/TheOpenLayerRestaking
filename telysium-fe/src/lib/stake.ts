@@ -10,6 +10,8 @@ import {
 import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
 import { ExampleJettonWallet } from '../../../build/JettonExample/tact_ExampleJettonWallet';
 import { getTonClient } from '@/api';
+import dayjs from 'dayjs';
+import { dateTimeFormat } from '@/constant';
 
 export const STAKING_MASTER_ADDRESS = import.meta.env
   .VITE_STAKING_MASTER_ADDRESS;
@@ -84,7 +86,7 @@ export const getUnstakeTx = async (amount: string, userAddress: string) => {
   const unstakeMsg: UnStake = {
     $$type: 'UnStake',
     queryId: BigInt(Math.ceil(Math.random() * 1000000)),
-    stakeIndex: 0n,
+    // stakeIndex: 0n,
     jettonAmount: toNano(amount),
     jettonWallet: Address.parse(userAddress),
     forwardPayload: beginCell().endCell(),
@@ -144,6 +146,15 @@ export const getStakingInfo = async (userAddress: string) => {
 //   return await stakingWallet.getStakedInfo();
 // };
 
-export const getTokenTVL = async (tokenAddress: string) =>{
-  return 100000000
-}
+export const getTokenTVL = async (tokenAddress: string) => {
+  return 100000000;
+};
+
+export const formatTime = (timestamp: bigint) => {
+  return dayjs.unix(Number(timestamp)).format(dateTimeFormat);
+};
+export const getLocked = (timestamp: bigint, threshold: bigint) => {
+  return dayjs
+    .unix(Number(timestamp) + Number(threshold) * 1000)
+    .isBefore(dayjs());
+};
