@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staking Demo</title>
+    <title>TON Staking DApp</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,32 +16,48 @@
             flex-direction: column;
             gap: 20px;
         }
-        .card {
-            border: 1px solid #ccc;
-            padding: 20px;
+        .info-section {
+            background: #f5f5f5;
+            padding: 15px;
             border-radius: 8px;
         }
-        .button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
+        .action-section {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .button:disabled {
-            background-color: #cccccc;
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #ccc;
             cursor: not-allowed;
         }
-        .info {
-            background-color: #f9f9f9;
-            padding: 10px;
+        input {
+            padding: 8px;
             border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #txHistory {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 <script>window.global = window;</script>
@@ -53,45 +69,51 @@
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h2>Wallet Information</h2>
-            <div id="walletInfo" class="info">
-                <p>Address: <span id="walletAddress">Not connected</span></p>
-                <p>Balance: <span id="walletBalance">0</span> TON</p>
-                <p>Jetton Balance: <span id="jettonBalance">0</span> TBRTJ</p>
-            </div>
-            <button id="connectWallet" class="button">Connect Wallet</button>
+        <h1>TON Staking DApp</h1>
+        
+        <div class="info-section">
+            <h2>Wallet Info</h2>
+            <div id="connectWallet"></div>
+            <p>Address: <span id="walletAddress">Not connected</span></p>
+            <p>TON Balance: <span id="walletBalance">0</span></p>
+            <p>TBRTJ Balance: <span id="jettonBalance">0</span></p>
         </div>
 
-        <div class="card">
-            <h2>Staking</h2>
-            <div>
-                <input type="number" id="stakeAmount" placeholder="Amount to stake" min="0" step="0.1">
-                <button id="stakeButton" class="button" disabled>Stake</button>
+        <div class="info-section">
+            <h2>Staking Info</h2>
+            <p>Current Stakes:</p>
+            <div id="currentStake">0</div>
+            <p>Pending Unstakes:</p>
+            <div id="pendingUnstake">0</div>
+            <p>Completed Withdrawals:</p>
+            <div id="completedWithdrawals">0</div>
+        </div>
+
+        <div class="action-section">
+            <h2>Actions</h2>
+            
+            <div class="input-group">
+                <input type="number" id="stakeAmount" placeholder="Amount to stake" step="0.1" min="0">
+                <button id="stakeButton" disabled>Stake</button>
             </div>
-            <div id="stakingInfo" class="info">
-                <h3>Staked Amount</h3>
-                <p>Current Stake: <span id="currentStake">0</span> TBRTJ</p>
-                <p>Pending Unstake: <span id="pendingUnstake">0</span> TBRTJ</p>
+
+            <div class="input-group">
+                <input type="number" id="unstakeAmount" placeholder="Amount to unstake" step="0.1" min="0">
+                <button id="unstakeButton" disabled>Unstake</button>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="pendingIndex" placeholder="Pending index" step="1" min="0">
+                <button id="redepositButton" disabled>Redeposit</button>
+                <button id="withdrawButton" disabled>Withdraw</button>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Unstaking</h2>
-            <div>
-                <input type="number" id="unstakeAmount" placeholder="Amount to unstake" min="0" step="0.1">
-                <button id="unstakeButton" class="button" disabled>Unstake</button>
-            </div>
-        </div>
-
-        <div class="card">
+        <div class="info-section">
             <h2>Transaction History</h2>
-            <div id="txHistory" class="info">
-                No transactions yet
-            </div>
+            <div id="txHistory"></div>
         </div>
     </div>
-
     <script type="module" src="./index.ts"></script>
 </body>
 </html>
