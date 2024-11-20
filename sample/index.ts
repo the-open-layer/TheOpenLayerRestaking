@@ -47,7 +47,9 @@ const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS"
 
 let userAddress: string;
 let userWalletAddress: Address;
+let userStakingAddress: Address;
 let stakingWalletAddress: Address;
+let stakeMasterJettonAddress: Address;
 let client: TonClient;
 
 // Initialize TON client
@@ -76,6 +78,14 @@ tonConnectUI.onStatusChange(async (wallet) => {
         );
         stakingWalletAddress = stakingWallet.address;
         
+        // Calculate user staking address and master jetton wallet
+        const masterJettonWallet = await ExampleJettonWallet.fromInit(
+            Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
+            Address.parseFriendly(JETTON_MASTER_ADDRESS).address
+        );
+        stakeMasterJettonAddress = masterJettonWallet.address;
+        userStakingAddress = stakingWalletAddress;
+        
         // Enable buttons
         stakeButton.disabled = false;
         unstakeButton.disabled = false;
@@ -86,6 +96,8 @@ tonConnectUI.onStatusChange(async (wallet) => {
     } else {
         userAddress = '';
         stakingWalletAddress = undefined!;
+        userStakingAddress = undefined!;
+        stakeMasterJettonAddress = undefined!;
         walletAddressSpan.textContent = 'Not connected';
         walletBalanceSpan.textContent = '0';
         jettonBalanceSpan.textContent = '0';
@@ -288,7 +300,7 @@ async function withdraw() {
             validUntil: Math.floor(Date.now() / 1000) + 60,
             messages: [
                 {
-                    address: stakingWalletAddress.toString(),
+                    address: userStakingAddress.toString(),
                     amount: toNano('0.1').toString(),
                     payload: beginCell()
                         .store(storeWithdraw({
@@ -297,7 +309,7 @@ async function withdraw() {
                             pendingIndex: pendingIndex,
                             tonAmount: toNano('0.1'),
                             forwardAmount: toNano('0.05'),
-                            jettonWallet: userWalletAddress,
+                            jettonWallet: stakeMasterJettonAddress,
                             responseDestination: userWalletAddress,
                             forwardPayload: beginCell().endCell()
                         }))
