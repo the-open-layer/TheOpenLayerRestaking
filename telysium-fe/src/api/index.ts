@@ -15,7 +15,7 @@ export const getTonWeb = () => {
   if (!tonweb) {
     tonweb = new TonWeb(
       new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
-        // apiKey: '63956d1b10345d7796c5526fffa73f486dd3547728bb6000ca630c6ed0dffb3b',
+        apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
       })
     );
   }
