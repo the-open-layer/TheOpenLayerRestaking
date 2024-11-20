@@ -1,5 +1,5 @@
 import { getHttpEndpoint } from '@orbs-network/ton-access';
-import { TonClient, Address } from '@ton/ton';
+import { TonClient } from '@ton/ton';
 import TonWeb from 'tonweb';
 
 let client: TonClient | null = null;
@@ -11,11 +11,11 @@ export const getTonClient = async (): Promise<TonClient> => {
   }
   return client;
 };
-export const getTonWeb = async () => {
+export const getTonWeb = () => {
   if (!tonweb) {
     tonweb = new TonWeb(
       new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
-        // apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY',
+        // apiKey: '63956d1b10345d7796c5526fffa73f486dd3547728bb6000ca630c6ed0dffb3b',
       })
     );
   }
@@ -36,6 +36,9 @@ export const getStakeList = async function () {
       balance: 0,
       restaking: 0,
       tvl: 0,
+      adminAddress:"",
+      jettonContentUri:"",
+      jettonWalletCodeHex:"",
     },
   ];
 };
@@ -48,7 +51,26 @@ export const getTonUSDTPrice = async function () {
   };
 };
 
-export const getTokenBalance = async function (address: Address) {
-  const client = await getTonClient();
-  return await client.getBalance(address);
+export const getTokenBalance = async function (
+  userAddress: string,
+  tokenMasterAddress: string
+) {
+  const tonweb = getTonWeb();
+  //@ts-ignore
+  const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {
+    address: tokenMasterAddress,
+    // adminAddress: new TonWeb.utils.Address(''),
+    // jettonContentUri: '',
+    // jettonWalletCodeHex: '',
+  });
+  const jettonWalletAddress = await jettonMinter.getJettonWalletAddress(
+    new TonWeb.utils.Address(userAddress)
+  );
+
+  // It is important to always check that wallet indeed is attributed to desired Jetton Master:
+  const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, {
+    address: jettonWalletAddress,
+  });
+  const jettonData = await jettonWallet.getData();
+  return jettonData.balance.toString();
 };

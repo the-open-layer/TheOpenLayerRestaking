@@ -19,7 +19,7 @@ import DepositModal from '@/components/ux/modals/deposit';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, ACTION_TYPES_LIST } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
-import { getStakeTx, getUnstakeTx } from '@/constant/stake';
+import { getStakeTx, getUnstakeTx } from '@/lib/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
@@ -36,7 +36,7 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
-
+  console.log({tokenAmount, restakeToken})
   const { USDTPrice, DepositList } = useMemo(() => {
     let USDTPrice: string = '0';
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];

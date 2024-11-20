@@ -1,4 +1,4 @@
-import { getStakingInfo } from '@/constant/stake';
+import { getStakingInfo } from '@/lib/stake';
 import { useQuery } from '@tanstack/react-query';
 
 export const useUserRestaking = (userAddress: string) => {

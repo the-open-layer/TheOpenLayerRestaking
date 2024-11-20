@@ -63,23 +63,23 @@ export const getStakeTx = async (
   };
   return transaction;
 };
-export const getUserJettonWalletFromMaster = async (
-  userAddress: string,
-  jettonMasterAddress: string
-) => {
-  const pair = SUPPORT_TOKEN_ADDRESS_MAP.find(([address]) => {
-    return Address.parse(address).equals(Address.parse(jettonMasterAddress));
-  });
-  if (!pair) {
-    throw new Error('not support');
-  }
-  const fn = pair[1];
-  const jettonWallet = await fn.fromInit(
-    Address.parse(userAddress),
-    Address.parse(jettonMasterAddress)
-  );
-  return jettonWallet.address;
-};
+// export const getUserJettonWalletFromMaster = async (
+//   userAddress: string,
+//   jettonMasterAddress: string
+// ) => {
+//   const pair = SUPPORT_TOKEN_ADDRESS_MAP.find(([address]) => {
+//     return Address.parse(address).equals(Address.parse(jettonMasterAddress));
+//   });
+//   if (!pair) {
+//     throw new Error('not support');
+//   }
+//   const fn = pair[1];
+//   const jettonWallet = await fn.fromInit(
+//     Address.parse(userAddress),
+//     Address.parse(jettonMasterAddress)
+//   );
+//   return jettonWallet.address;
+// };
 export const getUnstakeTx = async (amount: string, userAddress: string) => {
   const unstakeMsg: UnStake = {
     $$type: 'UnStake',
@@ -143,3 +143,7 @@ export const getStakingInfo = async (userAddress: string) => {
 //   );
 //   return await stakingWallet.getStakedInfo();
 // };
+
+export const getTokenTVL = async (tokenAddress: string) =>{
+  return 100000000
+}
