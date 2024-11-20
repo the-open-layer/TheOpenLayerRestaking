@@ -23,6 +23,7 @@ import { getStakeTx, getUnstakeTx } from '@/constant/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
+import { getTxResult } from '@/lib/address';
 
 export default function Action() {
   const { action, token } = useParams();
@@ -35,6 +36,7 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
+
   const { USDTPrice, DepositList } = useMemo(() => {
     let USDTPrice: string = '0';
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];
@@ -100,19 +102,19 @@ export default function Action() {
   }, [action, tokenAmount]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
-    const result = await tonConnectUI.sendTransaction(
-      await getTx(amount, rawAddress, restakeToken!.address)
-    );
-    console.log({ result });
-    // setDepositState(DepositStateEnum.ERROR);
-  };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleConfirm = () => {
-    // Simulate random success/error
-    const success = Math.random() > 0.5;
-    setDepositState(
-      success ? DepositStateEnum.SUCCESS : DepositStateEnum.ERROR
-    );
+    try {
+      const result = await tonConnectUI.sendTransaction(
+        await getTx(amount, rawAddress, restakeToken!.address),
+        {
+          modals: 'all',
+        }
+      );
+      const res = getTxResult(result.boc);
+      setDepositState(DepositStateEnum.SUCCESS);
+    } catch (error) {
+      console.error('Transaction failed', error);
+      setDepositState(DepositStateEnum.ERROR);
+    }
   };
 
   const handleTryAgain = () => {
@@ -169,11 +171,9 @@ export default function Action() {
                   <Input
                     type="number"
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(
-                        e.target.value ? Number(e.target.value) + '' : ''
-                      )
-                    }
+                    onChange={(e) => {
+                      setAmount(e.target.value);
+                    }}
                     step={0.1}
                     placeholder="0.0000"
                     className="text-6xl h-20"

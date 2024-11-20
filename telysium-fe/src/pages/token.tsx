@@ -17,7 +17,6 @@ export default function Token() {
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
   const restakeToken = stakeList.find((v) => v.symbol === token);
-  console.log({ restakingInfo });
 
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
@@ -118,11 +117,8 @@ export default function Token() {
                   no data
                 </div>
               ) : (
-                restakingInfo?.pendingJettons.map((tx) => (
-                  <div
-                    key={tx.stakeIndex}
-                    className="flex items-center justify-between"
-                  >
+                restakingInfo?.pendingJettons.map((tx, i) => (
+                  <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
                         <div className="font-medium">unstake</div>

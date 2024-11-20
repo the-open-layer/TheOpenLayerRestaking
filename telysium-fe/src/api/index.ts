@@ -1,14 +1,25 @@
 import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { TonClient, Address } from '@ton/ton';
+import TonWeb from 'tonweb';
 
 let client: TonClient | null = null;
-
+let tonweb: TonWeb | null = null;
 export const getTonClient = async (): Promise<TonClient> => {
   if (!client) {
     const endpoint = await getHttpEndpoint({ network: 'testnet' });
     client = new TonClient({ endpoint });
   }
   return client;
+};
+export const getTonWeb = async () => {
+  if (!tonweb) {
+    tonweb = new TonWeb(
+      new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
+        // apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY',
+      })
+    );
+  }
+  return tonweb;
 };
 
 export const getStakeList = async function () {
