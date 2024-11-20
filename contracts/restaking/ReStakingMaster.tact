@@ -17,10 +17,11 @@ contract StakingWalletTemplate with StakingWallet {
     staticTax: Int as coins = ton("0.001");
     lockedValue: Int as coins = 0;
     stakeIndex: Int = 0;
-    unstakeThreshold: Int = 5;
+    pendingIndex: Int = 0;
 
     stakedJettons: map<Int, StakedJettonInfo> = emptyMap();
     pendingJettons: map<Int, PendingJettonInfo> = emptyMap();
+    withdrawalJettons: map<Int, WithdrawalJettonInfo> = emptyMap();
 
     init(master: Address, owner: Address) {
         self.owner = owner;
@@ -32,6 +33,7 @@ contract StakingMasterTemplate with StakingMaster {
     owner: Address;
     staticTax: Int as coins = ton("0.001");
     lockedValue: Int as coins = 0;
+    unstakeThreshold: Int as uint32 = 5;
 
     init(owner: Address) {
         self.owner = owner;
@@ -49,10 +51,7 @@ trait StakingMaster with Common, OwnableTransferable {
     owner: Address;
     staticTax: Int;
     lockedValue: Int;
-
-    get fun userWallet(owner: Address): Address {
-        return contractAddress(self.getUserWallet(owner));
-    }
+    unstakeThreshold: Int;
 
     receive(msg: WithdrawInternal) {
         self.receiveWithdrawInternal(msg);
@@ -60,6 +59,13 @@ trait StakingMaster with Common, OwnableTransferable {
 
     receive(msg: JettonTransferNotification) {
         self.receiveTransferNotification(msg);
+    }
+
+    receive(msg: SetUnstakeThreshold) {
+        let ctx = context();
+        // Only owner can modify the threshold
+        nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
+        self.unstakeThreshold = msg.threshold;
     }
 
     // user transfer jetton to staking master address,
@@ -89,6 +95,7 @@ trait StakingMaster with Common, OwnableTransferable {
                 responseDestination: stakeMsg.responseDestination,
                 forwardAmount: stakeMsg.forwardAmount,
                 forwardPayload: stakeMsg.forwardPayload,
+                unstakeThreshold: self.unstakeThreshold
             }.toCell(),
             data: userWallet.data,
             code: userWallet.code,
@@ -102,7 +109,6 @@ trait StakingMaster with Common, OwnableTransferable {
             ctx.sender == contractAddress(self.getUserWallet(msg.destination)));
         let totalCost: Int = 0;
 
-        dump(msg.jettonWallet);
         send(SendParameters{
             to: msg.jettonWallet,
             bounce: false,
@@ -157,4 +163,13 @@ trait StakingMaster with Common, OwnableTransferable {
     get fun userWalletAddress(owner: Address): Address {
         return contractAddress(self.getUserWallet(owner));
     }
+
+    get fun userWallet(owner: Address): Address {
+        return contractAddress(self.getUserWallet(owner));
+    }
+
+    get fun unstakeThreshold(): Int {
+        return self.unstakeThreshold;
+    }
+
 }

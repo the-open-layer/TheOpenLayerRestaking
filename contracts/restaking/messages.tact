@@ -9,11 +9,12 @@ message(0x9e1b5d2f) StakeInternal {
     forwardAmount: Int as coins;
     // payload to forward
     forwardPayload: Cell?;
+    // unstake threshold in seconds
+    unstakeThreshold: Int as uint32;
 }
 
 message(0x4d8a3c70) UnStake {
     queryId: Int as uint64;
-    stakeIndex: Int as uint32;
     jettonAmount: Int as coins;
     jettonWallet: Address;
     forwardPayload: Cell?;
@@ -21,7 +22,7 @@ message(0x4d8a3c70) UnStake {
 
 message(0x6b2f1e9d) Withdraw {
     queryId: Int as uint64;
-    stakeIndex: Int as uint32;
+    pendingIndex: Int as uint32;
     tonAmount: Int as coins;
     forwardAmount: Int as coins;
     jettonWallet: Address;
@@ -43,7 +44,7 @@ message(0xc5b9a2d1) WithdrawInternal {
 
 message(0xc5a9b412) Redeposit {
     queryId: Int as uint64;
-    stakeIndex: Int as uint32;
+    pendingIndex: Int as uint32;
     forwardAmount: Int as coins;
     forwardPayload: Cell?;
 }
@@ -145,30 +146,38 @@ struct JettonWithdrawInfo {
 
 struct StakedJettonInfo {
     jettonAmount: Int as coins;
-    stakeTime: Int as uint32;
     stakeIndex: Int as uint32;
+    stakeTime: Int as uint32;
+    unstakeThreshold: Int as uint32;
 }
 
 struct PendingJettonInfo {
     jettonAmount: Int as coins;
     stakeTime: Int as uint32;
-    stakeIndex: Int as uint32;
+    pendingIndex: Int as uint32;
     unstakeTime: Int as uint32;
+    unstakeThreshold: Int as uint32;
 }
 
 struct StakedToPending {
     jettonAmount: Int as coins;
-    stakeIndex: Int as uint32;
+    pendingIndex: Int as uint32;
 }
 
 struct PendingToStaked {
     jettonAmount: Int as coins;
-    stakeIndex: Int as uint32;
+    pendingIndex: Int as uint32;
 }
 
 struct StakedInfo {
     stakedJettons: map<Int, StakedJettonInfo>;
     pendingJettons: map<Int, PendingJettonInfo>;
+    withdrawalJettons: map<Int, WithdrawalJettonInfo>;
+}
+
+struct WithdrawalJettonInfo {
+    jettonAmount: Int as coins;
+    withdrawTime: Int as uint32;
 }
 
 struct StakingData {
