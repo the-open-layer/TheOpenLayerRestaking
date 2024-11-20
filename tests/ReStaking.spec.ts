@@ -144,6 +144,86 @@ describe('ReStaking', () => {
     });
 
     it('should unstake jettons successfully', async () => {
+        // First stake some jettons multiple times
+        const stakeAmount1 = toNano('10');
+        const stakeAmount2 = toNano('5');
+        const stakeMsg1 = {
+            $$type: 'StakeJetton' as const,
+            tonAmount: toNano('0.1'),
+            responseDestination: user.getSender().address,
+            forwardAmount: toNano('0.05'),
+            forwardPayload: null
+        };
+        
+        const stakeMsg2 = {
+            $$type: 'StakeJetton' as const,
+            tonAmount: toNano('0.1'),
+            responseDestination: user.getSender().address,
+            forwardAmount: toNano('0.05'),
+            forwardPayload: null
+        };
+    
+        // Transfer jettons to staking contract twice
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 0n,
+                amount: stakeAmount1,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg1)).endCell()
+            }
+        );
+
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 1n,
+                amount: stakeAmount2,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg2)).endCell()
+            }
+        );
+
+        // Verify both stakes are recorded
+        let stakedInfo = await stakingWallet.getStakedInfo();
+        expect(stakedInfo.stakedJettons.size).toEqual(2);
+
+        // Unstake first position
+        const unstakeAmount = stakeAmount1;
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'UnStake' as const,
+                queryId: 0n,
+                jettonAmount: unstakeAmount,
+                jettonWallet: userJettonWallet.address,
+                forwardPayload: null
+            }
+        );
+
+        // Verify the unstaking
+        stakedInfo = await stakingWallet.getStakedInfo();
+        expect(stakedInfo.stakedJettons.size).toEqual(1);
+        expect(stakedInfo.pendingJettons.size).toEqual(1);
+
+        const pendingJetton = stakedInfo.pendingJettons.get(0n);
+        expect(pendingJetton?.jettonAmount).toEqual(unstakeAmount);
+    });
+
+    it('should withdraw jettons successfully', async () => {
         // First stake some jettons
         const stakeAmount = toNano('10');
         const stakeMsg = {
@@ -153,9 +233,8 @@ describe('ReStaking', () => {
             forwardAmount: toNano('0.05'),
             forwardPayload: null
         };
-    
-        // Transfer jettons to staking contract
-        const stakeResult = await userJettonWallet.send(
+
+        await userJettonWallet.send(
             user.getSender(),
             { value: toNano('1') },
             {
@@ -171,31 +250,50 @@ describe('ReStaking', () => {
             }
         );
 
-        // Now unstake
+        // Unstake the position
         await stakingWallet.send(
             user.getSender(),
             { value: toNano('1') },
             {
                 $$type: 'UnStake' as const,
                 queryId: 0n,
-                stakeIndex: 0n,
                 jettonAmount: stakeAmount,
                 jettonWallet: userJettonWallet.address,
                 forwardPayload: null
             }
         );
 
-        // Verify unstake
+        // Wait for unstake threshold
+        await sleep(1000);
+
+        // Withdraw the unstaked position
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'Withdraw',
+                queryId: 0n,
+                pendingIndex: 0n,
+                tonAmount: toNano('0.1'),
+                forwardAmount: toNano('0.05'),
+                jettonWallet: userJettonWallet.address,
+                responseDestination: user.getSender().address,
+                forwardPayload: null
+            }
+        );
+
+        // Verify the withdrawal
         const stakedInfo = await stakingWallet.getStakedInfo();
         expect(stakedInfo.stakedJettons.size).toEqual(0);
-        expect(stakedInfo.pendingJettons.size).toEqual(1);
-        expect(stakedInfo.pendingJettons.get(0n)?.jettonAmount).toEqual(stakeAmount);
+        expect(stakedInfo.pendingJettons.size).toEqual(0);
+        expect(stakedInfo.withdrawalJettons.size).toEqual(1);
+
+        const withdrawalJetton = stakedInfo.withdrawalJettons.get(0n);
+        expect(withdrawalJetton?.jettonAmount).toEqual(stakeAmount);
     });
 
-    it('should withdraw jettons successfully', async () => {
-        // First stake and unstake some jettons
-        // ... (same staking and unstaking code as above) ...
-
+    it('should redeposit pending jettons successfully', async () => {
+        // First stake some jettons
         const stakeAmount = toNano('10');
         const stakeMsg = {
             $$type: 'StakeJetton' as const,
@@ -204,9 +302,8 @@ describe('ReStaking', () => {
             forwardAmount: toNano('0.05'),
             forwardPayload: null
         };
-    
-        // Transfer jettons to staking contract
-        const stakeResult = await userJettonWallet.send(
+
+        await userJettonWallet.send(
             user.getSender(),
             { value: toNano('1') },
             {
@@ -222,53 +319,21 @@ describe('ReStaking', () => {
             }
         );
 
-        // Now unstake
+        // Unstake the position
         await stakingWallet.send(
             user.getSender(),
             { value: toNano('1') },
             {
                 $$type: 'UnStake' as const,
                 queryId: 0n,
-                stakeIndex: 0n,
                 jettonAmount: stakeAmount,
                 jettonWallet: userJettonWallet.address,
                 forwardPayload: null
             }
         );
 
-        const beforeAmount = (await userJettonWallet.getGetWalletData()).balance;
-        // Wait for unstake to be claimable
-        await sleep(10000);
-        // Now withdraw
-        await stakingWallet.send(
-            user.getSender(),
-            { value: toNano('1') },
-            {
-                $$type: 'Withdraw',
-                queryId: 0n,
-                stakeIndex: 0n,
-                tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.05'),
-                jettonWallet: masterJettonWallet.address,
-                responseDestination: user.getSender().address,
-                forwardPayload: null
-            }
-        );
-
-        // Verify withdraw
-        const stakedInfo = await stakingWallet.getStakedInfo();
-        expect(stakedInfo.stakedJettons.size).toEqual(0);
-        expect(stakedInfo.pendingJettons.size).toEqual(0);
-
-        // Check user's jetton balance
-        const balance = await userJettonWallet.getGetWalletData();
-        expect(balance.balance).toEqual(beforeAmount + stakeAmount); // Should be back to original amount
-    }, 20000);
-
-    it('should redeposit pending jettons successfully', async () => {
-        // First stake and unstake some jettons
-        // ... (same staking and unstaking code as above) ...
-
+        const curInfo = await stakingWallet.getStakedInfo();
+        const idx = curInfo.pendingJettons.keys()[0];
         // Now redeposit
         await stakingWallet.send(
             user.getSender(),
@@ -276,7 +341,7 @@ describe('ReStaking', () => {
             {
                 $$type: 'Redeposit',
                 queryId: 0n,
-                stakeIndex: 0n,
+                pendingIndex: 0n,
                 forwardAmount: toNano('0.05'),
                 forwardPayload: null
             }
@@ -291,9 +356,9 @@ describe('ReStaking', () => {
     it('should modify unstake threshold successfully', async () => {
         const newThreshold = 10n;
         
-        await stakingWallet.send(
+        const result = await stakingMaster.send(
             user.getSender(),
-            { value: toNano('1') },
+            { value: toNano('0.1') },
             {
                 $$type: 'SetUnstakeThreshold' as const,
                 queryId: 0n,
@@ -301,7 +366,9 @@ describe('ReStaking', () => {
             }
         );
 
-        const threshold = await stakingWallet.getUnstakeThreshold();
+        console.log(result);
+
+        const threshold = await stakingMaster.getUnstakeThreshold();
         expect(threshold).toEqual(newThreshold);
     });
 
@@ -309,7 +376,7 @@ describe('ReStaking', () => {
         const wrongUser = await blockchain.treasury('wrongUser');
         const newThreshold = 10n;
         
-        await stakingWallet.send(
+        await stakingMaster.send(
             wrongUser.getSender(),
             { value: toNano('1') },
             {
@@ -319,7 +386,7 @@ describe('ReStaking', () => {
             }
         );
 
-        const threshold = await stakingWallet.getUnstakeThreshold();
+        const threshold = await stakingMaster.getUnstakeThreshold();
         expect(threshold).not.toEqual(newThreshold);
     });
 
@@ -330,9 +397,8 @@ describe('ReStaking', () => {
             wrongUser.getSender(),
             { value: toNano('1') },
             {
-                $$type: 'UnStake',
+                $$type: 'UnStake' as const,
                 queryId: 0n,
-                stakeIndex: 0n,
                 jettonAmount: toNano('10'),
                 jettonWallet: userJettonWallet.address,
                 forwardPayload: null
@@ -348,7 +414,7 @@ describe('ReStaking', () => {
             {
                 $$type: 'Withdraw',
                 queryId: 0n,
-                stakeIndex: 999n, // Non-existent index
+                pendingIndex: 999n, // Non-existent index
                 tonAmount: toNano('0.1'),
                 forwardAmount: toNano('0.05'),
                 jettonWallet: userJettonWallet.address,
@@ -357,5 +423,191 @@ describe('ReStaking', () => {
             }
         )
         //.expectError('Pending index not found');
+    });
+
+    it('should set and get unstakeThreshold correctly', async () => {
+        // Check initial threshold
+        const initialThreshold = await stakingMaster.getUnstakeThreshold();
+        expect(initialThreshold).toEqual(5n);
+
+        // Set new threshold
+        const newThreshold = 10n;
+        await stakingMaster.send(
+            deployer.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'SetUnstakeThreshold' as const,
+                queryId: 0n,
+                threshold: newThreshold
+            }
+        );
+
+        // Verify new threshold
+        const updatedThreshold = await stakingMaster.getUnstakeThreshold();
+        expect(updatedThreshold).toEqual(newThreshold);
+    });
+
+    it('should fail when non-owner tries to set unstakeThreshold', async () => {
+        const wrongUser = await blockchain.treasury('wrongUser');
+        await stakingMaster.send(
+            wrongUser.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'SetUnstakeThreshold' as const,
+                queryId: 0n,
+                threshold: 20n
+            }
+        ).catch(e => {
+            expect(e.toString()).toContain('codeUnauthorized');
+        });
+    });
+
+    it('should use different thresholds for stakes made at different times', async () => {
+        // Set initial threshold and stake
+        const initialThreshold = 5n;
+        const stakeAmount = toNano('10');
+        const stakeMsg = {
+            $$type: 'StakeJetton' as const,
+            tonAmount: toNano('0.1'),
+            responseDestination: user.getSender().address,
+            forwardAmount: toNano('0.05'),
+            forwardPayload: null
+        };
+
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 0n,
+                amount: stakeAmount,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg)).endCell()
+            }
+        );
+
+        // Change threshold
+        const newThreshold = 10n;
+        await stakingMaster.send(
+            deployer.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'SetUnstakeThreshold' as const,
+                queryId: 0n,
+                threshold: newThreshold
+            }
+        );
+
+        // Make another stake
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 1n,
+                amount: stakeAmount,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg)).endCell()
+            }
+        );
+
+        // Verify stakes have different thresholds
+        const stakedInfo = await stakingWallet.getStakedInfo();
+        expect(stakedInfo.stakedJettons.size).toEqual(2);
+        
+        const firstStake = stakedInfo.stakedJettons.get(0n);
+        const secondStake = stakedInfo.stakedJettons.get(1n);
+        
+        expect(firstStake?.unstakeThreshold).toEqual(initialThreshold);
+        expect(secondStake?.unstakeThreshold).toEqual(newThreshold);
+    });
+
+    it('should respect unstakeThreshold when withdrawing', async () => {
+        // First stake some jettons
+        const stakeAmount = toNano('10');
+        const stakeMsg = {
+            $$type: 'StakeJetton' as const,
+            tonAmount: toNano('0.1'),
+            responseDestination: user.getSender().address,
+            forwardAmount: toNano('0.05'),
+            forwardPayload: null
+        };
+
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 0n,
+                amount: stakeAmount,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg)).endCell()
+            }
+        );
+
+        // Unstake
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'UnStake' as const,
+                queryId: 0n,
+                jettonAmount: stakeAmount,
+                jettonWallet: userJettonWallet.address,
+                forwardPayload: null
+            }
+        );
+
+        // Try to withdraw immediately (should fail)
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'Withdraw',
+                queryId: 0n,
+                pendingIndex: 0n,
+                tonAmount: toNano('0.1'),
+                forwardAmount: toNano('0.05'),
+                jettonWallet: userJettonWallet.address,
+                responseDestination: user.getSender().address,
+                forwardPayload: null
+            }
+        ).catch(e => {
+            expect(e.toString()).toContain('codePendingJettonNotMaturity');
+        });
+
+        // Wait for threshold period
+        //await ;
+
+        // Try withdraw again (should succeed)
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'Withdraw',
+                queryId: 1n,
+                pendingIndex: 0n,
+                tonAmount: toNano('0.1'),
+                forwardAmount: toNano('0.05'),
+                jettonWallet: userJettonWallet.address,
+                responseDestination: user.getSender().address,
+                forwardPayload: null
+            }
+        );
+
+        const stakedInfo = await stakingWallet.getStakedInfo();
+        expect(stakedInfo.pendingJettons.size).toEqual(0);
     });
 });

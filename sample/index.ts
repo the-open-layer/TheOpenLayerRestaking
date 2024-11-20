@@ -103,19 +103,23 @@ async function updateBalances() {
             
             let totalStaked = 0n;
             let totalPending = 0n;
-
+            const stakeItems = [];
             for (const key of stakedInfo.stakedJettons.keys()) {
                 const stakedJetton = stakedInfo.stakedJettons.get(key)!!;
                 totalStaked += stakedJetton.jettonAmount;
+                stakeItems.push(`index: ${key}, amount: ${fromNano(stakedJetton.jettonAmount)}`);
             }
-
+            const stakedText = `${fromNano(totalStaked)}<br><br>${stakeItems.join('<br>')}`;
+            const pendingItems = [];
             for (const key of stakedInfo.pendingJettons.keys()) {
                 const pendingJetton = stakedInfo.pendingJettons.get(key)!!;
                 totalPending += pendingJetton.jettonAmount;
+                pendingItems.push(`index: ${key}, amount: ${fromNano(pendingJetton.jettonAmount)}`);
             }
+            const pendingText = `${fromNano(totalPending)}<br><br>${pendingItems.join('<br>')}`;
 
-            currentStakeSpan.textContent = fromNano(totalStaked);
-            pendingUnstakeSpan.textContent = fromNano(totalPending);
+            currentStakeSpan.innerHTML = stakedText;
+            pendingUnstakeSpan.innerHTML = pendingText;
         }
     } catch (error) {
         console.error('Error updating balances:', error);

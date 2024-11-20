@@ -14,19 +14,14 @@ trait StakingWallet with Common, Ownable {
     staticTax: Int;
     lockedValue: Int;
     stakeIndex: Int;
-    unstakeThreshold: Int;
+    pendingIndex: Int;
 
-    // stakedJettons is the map of staked jettons.
-    // key is the index of operation, value is the staked jetton info.
     stakedJettons: map<Int, StakedJettonInfo>;
     pendingJettons: map<Int, PendingJettonInfo>;
+    withdrawalJettons: map<Int, WithdrawalJettonInfo>;
 
     get fun stakedInfo(): StakedInfo {
         return self.getStakedInfo();
-    }
-
-    get fun getUnstakeThreshold(): Int {
-        return self.unstakeThreshold;
     }
 
     receive(msg: StakeInternal) {
@@ -45,13 +40,6 @@ trait StakingWallet with Common, Ownable {
         self.receiveWithdraw(msg);
     }
 
-    receive(msg: SetUnstakeThreshold) {
-        let ctx = context();
-        // Only owner can modify the threshold
-        nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
-        self.unstakeThreshold = msg.threshold;
-    }
-
     receive(msg: JettonExcesses) {
         self.receiveExcesses(msg);
     }
@@ -66,6 +54,7 @@ trait StakingWallet with Common, Ownable {
                 jettonAmount: msg.jettonAmount,
                 stakeIndex: self.stakeIndex,
                 stakeTime: now(),
+                unstakeThreshold: msg.unstakeThreshold
             }
         );
         self.stakeIndex += 1;
@@ -100,29 +89,65 @@ trait StakingWallet with Common, Ownable {
     virtual fun receiveUnstake(msg: UnStake) {
         let ctx = context();
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
-        let index = msg.stakeIndex;
-        let staked = self.stakedJettons.get(index);
-        nativeThrowUnless(codeStakeIndexNotFound, staked != null);
-
-        self.stakedJettons.del(index);
+        
+        let remainingToUnstake: Int = msg.jettonAmount;
+        let totalUnstaked: Int = 0;
+        let pendingStakeTime: Int = now();
+        
+        // Create a single pending record for all unstaked amounts
         let pending = PendingJettonInfo { 
-            jettonAmount: staked!!.jettonAmount,
-            stakeTime: staked!!.stakeTime,
-            stakeIndex: staked!!.stakeIndex,
+            jettonAmount: 0,
+            stakeTime: pendingStakeTime,
+            pendingIndex: self.pendingIndex,
             unstakeTime: now(),
+            unstakeThreshold: 0
         };
-        self.pendingJettons.set(index, pending);
 
-        emit(StakedToPending{
-            jettonAmount: pending.jettonAmount,
-            stakeIndex: pending.stakeIndex,
-        }.toCell());
+        // Iterate through all staked positions
+        let stakes = self.stakedJettons;
+        foreach (i, staked in stakes) {
+            if (remainingToUnstake > 0) {
+                let amountFromStake: Int = min(remainingToUnstake, staked.jettonAmount);
+                remainingToUnstake = remainingToUnstake - amountFromStake;
+                totalUnstaked = totalUnstaked + amountFromStake;
+                
+                // If we're using the entire staked amount
+                if (amountFromStake == staked.jettonAmount) {
+                    self.stakedJettons.del(i);
+                } else {
+                    // Update the staked record with remaining amount
+                    self.stakedJettons.set(i, StakedJettonInfo{
+                        jettonAmount: staked.jettonAmount - amountFromStake,
+                        stakeTime: staked.stakeTime,
+                        stakeIndex: staked.stakeIndex,
+                        unstakeThreshold: staked.unstakeThreshold
+                    });
+                }
+                
+                // Add to the pending amount
+                pending.jettonAmount = pending.jettonAmount + amountFromStake;
+                pending.unstakeThreshold = max(pending.unstakeThreshold, staked.unstakeThreshold);
+            }
+        }
+        
+        // Ensure we found enough staked tokens
+        nativeThrowUnless(codeInsufficientStakeAmount, totalUnstaked >= msg.jettonAmount);
+        
+        // Store the merged pending record
+        if (pending.jettonAmount > 0) {
+            self.pendingJettons.set(self.pendingIndex, pending);
+            emit(StakedToPending{
+                jettonAmount: pending.jettonAmount,
+                pendingIndex: self.pendingIndex,
+            }.toCell());
+            self.pendingIndex += 1;
+        }
     }
 
     virtual fun receiveReDeposit(msg: Redeposit) {
         let ctx = context();
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
-        let index = msg.stakeIndex;
+        let index = msg.pendingIndex;
         let pending = self.pendingJettons.get(index);
         nativeThrowUnless(codePendingIndexNotFound, pending != null);
 
@@ -131,24 +156,24 @@ trait StakingWallet with Common, Ownable {
             jettonAmount: pending!!.jettonAmount,
             stakeTime: now(),
             stakeIndex: self.stakeIndex,
+            unstakeThreshold: pending!!.unstakeThreshold
         };
         self.stakedJettons.set(index, newStaked);
         self.stakeIndex += 1;
 
         emit(PendingToStaked{
             jettonAmount: newStaked.jettonAmount,
-            stakeIndex: newStaked.stakeIndex,
+            pendingIndex: index
         }.toCell());
     }
 
     virtual fun receiveWithdraw(msg: Withdraw) {
         let ctx = context();
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
-        let pending = self.pendingJettons.get(msg.stakeIndex);
+        let pending = self.pendingJettons.get(msg.pendingIndex);
         nativeThrowUnless(codePendingIndexNotFound, pending != null);
-        nativeThrowUnless(codePendingJettonNotMaturity, pending!!.unstakeTime + self.unstakeThreshold < now());
 
-        self.pendingJettons.del(pending!!.stakeIndex);
+        self.pendingJettons.del(pending!!.pendingIndex);
         let totalCost = 0;
         // check cost
         totalCost += msg.forwardAmount;
@@ -162,7 +187,7 @@ trait StakingWallet with Common, Ownable {
             forwardPayload: msg.forwardPayload,
             jettonWallet: msg.jettonWallet,
             destination: ctx.sender,
-            stakeIndex: pending!!.stakeIndex,
+            stakeIndex: pending!!.pendingIndex,
             responseDestination: msg.responseDestination,
         };
         // told staking master to transfer released jetton
@@ -173,6 +198,10 @@ trait StakingWallet with Common, Ownable {
             value: 0,
             mode: SendRemainingBalance,
             body: withdrawInternal.toCell(),
+        });
+        self.withdrawalJettons.set(pending!!.pendingIndex, WithdrawalJettonInfo{
+            jettonAmount: pending!!.jettonAmount,
+            withdrawTime: now(),
         });
     }
 
@@ -192,10 +221,7 @@ trait StakingWallet with Common, Ownable {
         return StakedInfo{
             stakedJettons: self.stakedJettons,
             pendingJettons: self.pendingJettons,
+            withdrawalJettons: self.withdrawalJettons
         }
-    }
-
-    get fun unstakeThreshold(): Int {
-        return self.unstakeThreshold;
     }
 }

@@ -6,3 +6,4 @@ const codeStakeAmountMustBePositive: Int = 50303;
 const codeStakeIndexNotFound: Int = 50305;
 const codePendingIndexNotFound: Int = 50306;
 const codePendingJettonNotMaturity: Int = 50307;
+const codeInsufficientStakeAmount: Int = 50308;
