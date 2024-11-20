@@ -7,6 +7,7 @@ import { ExampleJettonWallet } from '../wrappers/JettonExample_ExampleJettonWall
 import '@ton/test-utils';
 import { buildJettonContent } from '../utils/ton-tep64';
 import { sleep } from '@ton/blueprint';
+import { time } from 'console';
 
 const jettonContent = buildJettonContent({
     name: 'TB Test Jetton',
@@ -532,6 +533,7 @@ describe('ReStaking', () => {
 
     it('should respect unstakeThreshold when withdrawing', async () => {
         // First stake some jettons
+        const initialBalance = (await userJettonWallet.getGetWalletData()).balance;
         const stakeAmount = toNano('10');
         const stakeMsg = {
             $$type: 'StakeJetton' as const,
@@ -557,6 +559,7 @@ describe('ReStaking', () => {
             }
         );
 
+        const beforeAmount = (await userJettonWallet.getGetWalletData()).balance;
         // Unstake
         await stakingWallet.send(
             user.getSender(),
@@ -580,7 +583,7 @@ describe('ReStaking', () => {
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
                 forwardAmount: toNano('0.05'),
-                jettonWallet: userJettonWallet.address,
+                jettonWallet: masterJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
@@ -589,10 +592,10 @@ describe('ReStaking', () => {
         });
 
         // Wait for threshold period
-        //await ;
+        await sleep(2000);
 
         // Try withdraw again (should succeed)
-        await stakingWallet.send(
+        const withdrawResult = await stakingWallet.send(
             user.getSender(),
             { value: toNano('1') },
             {
@@ -601,15 +604,20 @@ describe('ReStaking', () => {
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
                 forwardAmount: toNano('0.05'),
-                jettonWallet: userJettonWallet.address,
+                jettonWallet: masterJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
         );
 
+        console.log(withdrawResult);
+
+        const afterAmount = (await userJettonWallet.getGetWalletData()).balance;
         const stakedInfo = await stakingWallet.getStakedInfo();
         expect(stakedInfo.pendingJettons.size).toEqual(0);
-    });
+        console.log({initialBalance, beforeAmount, afterAmount, stakeAmount});
+        expect(afterAmount).toEqual(beforeAmount + stakeAmount);
+    }, 5000);
 
     it('should unstake partial amount from multiple stakes', async () => {
         // First stake 10 jettons twice
