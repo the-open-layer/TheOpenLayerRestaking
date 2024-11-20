@@ -140,14 +140,16 @@ export async function run(provider: NetworkProvider): Promise<void> {
     console.log("show staking info")
     console.log("-------------------------------------")
     const stakedInfo = await stakingWalletContract.getStakedInfo();
-    console.log(`staked TON coins`, stakedInfo.stakedJettons);
-
+    console.log("Staked Positions:");
     for (const key of stakedInfo.stakedJettons.keys()) {
         const stakedJetton = stakedInfo.stakedJettons.get(key)!!;
-
-        console.log(`user staked jetton: ${fromNano(stakedJetton.jettonAmount)}`);
+        console.log(`Position ${key}: ${fromNano(stakedJetton.jettonAmount)} jettons`);
     }
 
+    // Unstake some tokens
+    console.log("-------------------------------------")
+    console.log("unstaking jettons...")
+    console.log("-------------------------------------")
     await stakingWalletContract.send(
         provider.sender(),
         {
@@ -155,9 +157,8 @@ export async function run(provider: NetworkProvider): Promise<void> {
             bounce: false,
         },
         {
-            $$type: "UnStake",
+            $$type: "UnStake" as const,
             queryId: BigInt(randomInt()),
-            stakeIndex: 0n,
             jettonAmount: toNano("1"),
             jettonWallet: jettonWalletContract.address,
             forwardPayload: beginCell().endCell()
@@ -165,13 +166,49 @@ export async function run(provider: NetworkProvider): Promise<void> {
     );
 
     console.log("-------------------------------------")
-    console.log("show staking info")
+    console.log("updated staking info:")
     console.log("-------------------------------------")
-    {
-        const stakedInfo = await stakingWalletContract.getStakedInfo();
-        console.log(`staked TON coin:`, stakedInfo);
 
-        const pendingJetton = stakedInfo.pendingJettons;
-        console.log(`pending jetton:`, pendingJetton);
+    const updatedInfo = await stakingWalletContract.getStakedInfo();
+    
+    console.log("Staked Positions:");
+    for (const key of updatedInfo.stakedJettons.keys()) {
+        const stakedJetton = updatedInfo.stakedJettons.get(key)!!;
+        console.log(`Position ${key}: ${fromNano(stakedJetton.jettonAmount)} jettons`);
     }
+
+    console.log("\nPending Withdrawals:");
+    for (const key of updatedInfo.pendingJettons.keys()) {
+        const pendingJetton = updatedInfo.pendingJettons.get(key)!!;
+        console.log(`Withdrawal ${key}: ${fromNano(pendingJetton.jettonAmount)} jettons, Unstake Time: ${pendingJetton.unstakeTime}`);
+    }
+
+    console.log("\nCompleted Withdrawals:");
+    for (const key of updatedInfo.withdrawalJettons.keys()) {
+        const withdrawalJetton = updatedInfo.withdrawalJettons.get(key)!!;
+        console.log(`Withdrawal ${key}: ${fromNano(withdrawalJetton.jettonAmount)} jettons, Withdraw Time: ${withdrawalJetton.withdrawTime}`);
+    }
+
+    /*
+    console.log("-------------------------------------")
+    console.log("withdrawing pending jettons...")
+    console.log("-------------------------------------")
+    await stakingWalletContract.send(
+        provider.sender(),
+        {
+            value: toNano("0.1"),
+            bounce: false,
+        },
+        {
+            $$type: "Withdraw",
+            queryId: BigInt(randomInt()),
+            pendingIndex: 0n,
+            tonAmount: toNano("0.1"),
+            forwardAmount: toNano("0.05"),
+            jettonWallet: jettonWalletContract.address,
+            responseDestination: provider.sender().address!!,
+            forwardPayload: beginCell().endCell()
+        }
+    );
+    */
 }

@@ -357,8 +357,8 @@ describe('ReStaking', () => {
         const newThreshold = 10n;
         
         const result = await stakingMaster.send(
-            user.getSender(),
-            { value: toNano('0.1') },
+            deployer.getSender(),
+            { value: toNano('0.2') },
             {
                 $$type: 'SetUnstakeThreshold' as const,
                 queryId: 0n,
@@ -609,5 +609,84 @@ describe('ReStaking', () => {
 
         const stakedInfo = await stakingWallet.getStakedInfo();
         expect(stakedInfo.pendingJettons.size).toEqual(0);
+    });
+
+    it('should unstake partial amount from multiple stakes', async () => {
+        // First stake 10 jettons twice
+        const stakeAmount = toNano('10');
+        const stakeMsg1 = {
+            $$type: 'StakeJetton' as const,
+            tonAmount: toNano('0.1'),
+            responseDestination: user.getSender().address,
+            forwardAmount: toNano('0.05'),
+            forwardPayload: null
+        };
+        
+        // First stake
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 0n,
+                amount: stakeAmount,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg1)).endCell()
+            }
+        );
+
+        // Second stake
+        await userJettonWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'JettonTransfer',
+                query_id: 1n,
+                amount: stakeAmount,
+                destination: stakingMaster.address,
+                response_destination: stakingMaster.address,
+                custom_payload: null,
+                forward_ton_amount: toNano('0.3'),
+                forward_payload: beginCell().store(
+                    storeStakeJetton(stakeMsg1)).endCell()
+            }
+        );
+
+        // Verify initial stakes
+        let stakedInfo = await stakingWallet.getStakedInfo();
+        expect(stakedInfo.stakedJettons.size).toEqual(2);
+        expect(stakedInfo.stakedJettons.get(0n)?.jettonAmount).toEqual(stakeAmount);
+        expect(stakedInfo.stakedJettons.get(1n)?.jettonAmount).toEqual(stakeAmount);
+
+        // Unstake 15 jettons (should take from both stakes)
+        const unstakeAmount = toNano('15');
+        await stakingWallet.send(
+            user.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'UnStake' as const,
+                queryId: 0n,
+                jettonAmount: unstakeAmount,
+                jettonWallet: userJettonWallet.address,
+                forwardPayload: null
+            }
+        );
+
+        // Verify the unstaking result
+        stakedInfo = await stakingWallet.getStakedInfo();
+        
+        // Should have one stake remaining with 5 jettons
+        expect(stakedInfo.stakedJettons.size).toEqual(1);
+        const remainingStake = stakedInfo.stakedJettons.get(1n);
+        expect(remainingStake?.jettonAmount).toEqual(toNano('5'));
+
+        // Should have one pending withdrawal of 15 jettons
+        expect(stakedInfo.pendingJettons.size).toEqual(1);
+        const pendingJetton = stakedInfo.pendingJettons.get(0n);
+        expect(pendingJetton?.jettonAmount).toEqual(unstakeAmount);
     });
 });
