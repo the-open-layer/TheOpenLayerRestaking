@@ -6,10 +6,14 @@ import { useAccount } from '@/hooks/useAccount';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { fromNano } from '@ton/ton';
-import {  WITHDRAWSTATUS } from '@/constant';
+import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTokenPrice } from '@/hooks/useTokenPrice';
 import Big from 'big.js';
+import {
+  useWithdrawMutation,
+  useRedepositMutation,
+} from '@/hooks/useStakeMutation';
 
 export default function Token() {
   const { address } = useAccount();
@@ -27,6 +31,8 @@ export default function Token() {
     },
     Big(0)
   );
+  const { mutate: withdraw } = useWithdrawMutation();
+  const { mutate: redeposit } = useRedepositMutation();
 
   const restakeToken = stakeList.find((v) => v.symbol === token);
   if (!stakeList.some((v) => v.symbol === token)) {
@@ -112,20 +118,34 @@ export default function Token() {
                       unstake {tx.amount} {token}
                     </div>
                     <div>
-
-                    <Badge variant={'secondary'} className="mt-1">
-                      {tx.isLocked
-                        ? WITHDRAWSTATUS.PENDING
-                        : WITHDRAWSTATUS.COMPLETED}
-                    </Badge>
-                    <div className="text-sm text-muted-foreground">
-                      {tx?.unstakeTimeFmt}
-                    </div>
+                      <Badge variant={'secondary'} className="mt-1">
+                        {tx.isLocked
+                          ? WITHDRAWSTATUS.PENDING
+                          : WITHDRAWSTATUS.COMPLETED}
+                      </Badge>
+                      <div className="text-sm text-muted-foreground">
+                        {tx?.unstakeTimeFmt}
+                      </div>
                     </div>
                   </div>
                   <div className="flex gap-3 flex-col md:flex-row">
-                    <Button className="flex-1" disabled={tx.isLocked}>Redeposit</Button>
-                    <Button variant="outline" className="flex-1" disabled={tx.isLocked}>
+                    <Button
+                      className="flex-1"
+                      disabled={tx.isLocked}
+                      onClick={() => {
+                        redeposit(tx.pendingIndex);
+                      }}
+                    >
+                      Redeposit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      disabled={tx.isLocked}
+                      onClick={() => {
+                        withdraw(tx.pendingIndex);
+                      }}
+                    >
                       Withdraw
                     </Button>
                   </div>

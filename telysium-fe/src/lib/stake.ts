@@ -5,6 +5,8 @@ import {
   storeUnStake,
   StakeJetton,
   UnStake,
+  storeRedeposit,
+  storeWithdraw,
   storeJettonTransfer,
 } from '../../../build/ReStaking/tact_StakingMasterTemplate';
 import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
@@ -20,6 +22,13 @@ export const JETTON_MASTER_ADDRESS = import.meta.env.VITE_JETTON_MASTER_ADDRESS;
 export const SUPPORT_TOKEN_ADDRESS_MAP = [
   [JETTON_MASTER_ADDRESS, ExampleJettonWallet],
 ];
+export const getStakingWallet = async (userAddress: string) => {
+  const stakingWallet = await StakingWalletTemplate.fromInit(
+    Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
+    Address.parseRaw(userAddress)
+  );
+  return stakingWallet;
+};
 export const getStakeTx = async (
   amount: string,
   userAddress: string,
@@ -114,6 +123,67 @@ export const getUnstakeTx = async (amount: string, userAddress: string) => {
   return transaction;
 };
 
+export const getRedepositTx = async (
+  pendingIndex: bigint,
+  userAddress: string
+) => {
+  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const transaction = {
+    validUntil: Math.floor(Date.now() / 1000) + 60,
+    messages: [
+      {
+        address: stakingWalletAddress.toString(),
+        amount: toNano('0.1').toString(),
+        payload: beginCell()
+          .store(
+            storeRedeposit({
+              $$type: 'Redeposit' as const,
+              queryId: BigInt(Math.ceil(Math.random() * 1000000)),
+              pendingIndex: pendingIndex,
+              forwardAmount: toNano('0.05'),
+              forwardPayload: beginCell().endCell(),
+            })
+          )
+          .endCell()
+          .toBoc()
+          .toString('base64'),
+      },
+    ],
+  };
+  return transaction;
+};
+export const getWithdrawTx = async (
+  pendingIndex: bigint,
+  userAddress: string
+) => {
+  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const transaction = {
+    validUntil: Math.floor(Date.now() / 1000) + 60,
+    messages: [
+      {
+        address: stakingWalletAddress.toString(),
+        amount: toNano('0.1').toString(),
+        payload: beginCell()
+          .store(
+            storeWithdraw({
+              $$type: 'Withdraw' as const,
+              queryId: BigInt(Math.ceil(Math.random() * 1000000)),
+              pendingIndex: pendingIndex,
+              tonAmount: toNano('0.1'),
+              forwardAmount: toNano('0.05'),
+              jettonWallet: Address.parse(userAddress),
+              responseDestination: Address.parse(userAddress),
+              forwardPayload: beginCell().endCell(),
+            })
+          )
+          .endCell()
+          .toBoc()
+          .toString('base64'),
+      },
+    ],
+  };
+  return transaction;
+};
 export const getStakingWalletAddress = async (userAddress: string) => {
   const stakingWallet = await StakingWalletTemplate.fromInit(
     Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
