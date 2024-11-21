@@ -64,7 +64,8 @@ export default function Action() {
           modals: 'all',
         }
       );
-      const res = getTxResult(result.boc);
+      const res = await getTxResult(result.boc);
+      console.log('res', res);
       setDepositState(DepositStateEnum.SUCCESS);
     } catch (error) {
       console.error('Transaction failed', error);

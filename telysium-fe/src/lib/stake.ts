@@ -11,7 +11,7 @@ import {
 } from '../../../build/ReStaking/tact_StakingMasterTemplate';
 import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
 import { ExampleJettonWallet } from '../../../build/JettonExample/tact_ExampleJettonWallet';
-import { getTonClient } from '@/api';
+import { getTonClient, getTonWeb } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 
@@ -232,4 +232,12 @@ export const getLocked = (timestamp: bigint, threshold: bigint) => {
   //   dayjs.unix(Number(timestamp + threshold)).isAfter(dayjs())
   // );
   return dayjs.unix(Number(timestamp) + Number(threshold)).isAfter(dayjs());
+};
+
+
+export const checkTxStatus = async (txHash: string, userAddress: string) => {
+  const tonweb =  getTonWeb();
+  const lastTx = (await tonweb.getTransactions(userAddress, 1))[0]
+  const lastTxHash = lastTx.transaction_id.hash
+
 };
