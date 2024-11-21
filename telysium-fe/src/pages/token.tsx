@@ -50,15 +50,14 @@ export default function Token() {
       </div>
 
       <Card className="bg-black text-white rounded-2xl text-center ">
-        <CardHeader className="pb-0 md:hidden text-xl font-medium">
-          <CardTitle className="text-xl font-medium">Tonstakers TON</CardTitle>
-        </CardHeader>
         <CardContent className="p-6 md:max-w-md mx-auto space-y-7 md:space-y-14">
-          <div className="text-4xl md:text-5xl mb-4 md:pt-5">
-            ${formatNumber(100000000)}{' '}
-            <span className="text-2xl font-normal text-white/60">TVL</span>
+          <div className="mb-4 md:pt-5 space-y-2">
+            <div className="text-xl md:text-3xl mb-4 md:pt-5">
+              Earn <span className="text-[#8BAFFF]">20 OPEN XP</span> every day
+            </div>
+            <p className="text-sm md:text-2xl">with every 1 {restakeToken!.symbol} restaked</p>
           </div>
-          <Link to={`/restake/deposit/${token}`}>
+          <Link to={`/restake/deposit/${token}`} className='block'>
             <Button
               size="lg"
               className="w-full bg-white text-black hover:bg-gray-100 rounded-3xl md:mb-5"

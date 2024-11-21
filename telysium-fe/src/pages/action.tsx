@@ -50,7 +50,7 @@ export default function Action() {
     } else if (action === ACTION_TYPES.REDEPOSIT) {
       // return fromNano(restakeToken?.maxDepositAmount ?? 0n).toString();
     }
-    return '0';
+    return "100";
   }, [action, tokenAmount]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
