@@ -27,3 +27,8 @@ export const ACTION_TYPES_TITLE_MAP = {
 };
 
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+
+export enum WITHDRAWSTATUS {
+  PENDING = 'pending',
+  COMPLETED = 'compeleted',
+}

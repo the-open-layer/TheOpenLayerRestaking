@@ -1,14 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { formatNumber } from '@/lib/numbers';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { useAccount } from '@/hooks/useAccount';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { fromNano } from '@ton/ton';
 import dayjs from 'dayjs';
-import { dateTimeFormat } from '@/constant';
+import { dateTimeFormat, WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTokenPrice } from '@/hooks/useTokenPrice';
 import Big from 'big.js';
@@ -23,12 +22,13 @@ export default function Token() {
   const restakeBalance = restakingInfo?.stakedJettons?.reduce((acc, cur) => {
     return acc.add(Big(fromNano(cur.jettonAmount)));
   }, Big(0));
-  const maxWithdrawAmount = restakingInfo?.withdrawalJettons?.reduce(
+  const maxWithdrawAmount = restakingInfo?.pendingJettons?.reduce(
     (acc, cur) => {
       return acc.add(Big(fromNano(cur.jettonAmount)));
     },
     Big(0)
   );
+
   const restakeToken = stakeList.find((v) => v.symbol === token);
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
@@ -55,9 +55,11 @@ export default function Token() {
             <div className="text-xl md:text-3xl mb-4 md:pt-5">
               Earn <span className="text-[#8BAFFF]">20 OPEN XP</span> every day
             </div>
-            <p className="text-sm md:text-2xl">with every 1 {restakeToken!.symbol} restaked</p>
+            <p className="text-sm md:text-2xl">
+              with every 1 {restakeToken!.symbol} restaked
+            </p>
           </div>
-          <Link to={`/restake/deposit/${token}`} className='block'>
+          <Link to={`/restake/deposit/${token}`} className="block">
             <Button
               size="lg"
               className="w-full bg-white text-black hover:bg-gray-100 rounded-3xl md:mb-5"
@@ -130,35 +132,37 @@ export default function Token() {
             </div>
           ) : (
             <div className="space-y-4">
-              {restakingInfo?.withdrawalJettons?.length === 0 ? (
+              {restakingInfo?.withdrawList?.length === 0 ? (
                 <div className="text-sm text-muted-foreground text-center">
                   no data
                 </div>
               ) : (
-                restakingInfo?.withdrawalJettons.map((tx, i) => (
+                restakingInfo?.withdrawList.map((tx, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
-                        <div className="font-medium">unstake</div>
+                        <div className="font-medium">Withdraw {token}</div>
                         <div className="text-sm text-muted-foreground">
-                          {fromNano(tx.jettonAmount)} {token}
+                          {tx.amount} {token}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground">
-                        {dayjs
-                          .unix(Number(tx.withdrawTime))
-                          .format(dateTimeFormat)}
+                        {tx?.txTime}
                       </div>
-                      {/* <Badge
-                    variant={
-                      tx.status === 'completed' ? 'default' : 'secondary'
-                    }
-                    className="mt-1"
-                  >
-                    {tx.status === 'completed' ? 'Completed' : tx.status}
-                  </Badge> */}
+                      <Badge
+                        variant={
+                          tx.status === WITHDRAWSTATUS.PENDING
+                            ? 'default'
+                            : 'secondary'
+                        }
+                        className="mt-1"
+                      >
+                        {tx.status === WITHDRAWSTATUS.PENDING
+                          ? 'Completed'
+                          : tx.status}
+                      </Badge>
                     </div>
                   </div>
                 ))
