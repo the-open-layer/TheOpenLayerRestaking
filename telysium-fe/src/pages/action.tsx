@@ -36,60 +36,10 @@ export default function Action() {
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
-  
-  const { USDTPrice, DepositList } = useMemo(() => {
-    let USDTPrice: string = '0';
-    let DepositList: Array<{ text: string; value: JSX.Element }> = [];
-    if (Number(amount) > 0 && tonPrice) {
-      USDTPrice = new Big(amount).times(tonPrice?.price).toFixed(4);
-      DepositList = [
-        {
-          text: 'You get',
-          value: (
-            <div className="flex items-center gap-x-1">
-              69.53 tsTON{' '}
-              <HelpCircle className="w-4 h-4 text-muted-foreground" />
-            </div>
-          ),
-        },
-        {
-          text: 'Available to stake',
-          value: (
-            <div className="flex items-center gap-x-1">
-              69.53 tsTON{' '}
-              <HelpCircle className="w-4 h-4 text-muted-foreground" />
-            </div>
-          ),
-        },
-        {
-          text: 'Your balance',
-          value: (
-            <div className="flex items-center gap-x-1">
-              69.53 tsTON{' '}
-              <HelpCircle className="w-4 h-4 text-muted-foreground" />
-            </div>
-          ),
-        },
-        {
-          text: 'tsTON Exchange Rate',
-          value: (
-            <div className="flex items-center gap-x-1">
-              1 tsTON = 1.0403 TON
-            </div>
-          ),
-        },
-      ];
-    }
-
-    return {
-      USDTPrice,
-      DepositList: DepositList,
-    };
-  }, [tonPrice, amount]);
   const getTx = useMemo(() => {
     if (action === ACTION_TYPES.DEPOSIT) {
       return getStakeTx;
-    } else if (action === ACTION_TYPES.WITHDRAW) {
+    } else if (action === ACTION_TYPES.UNSTAKE) {
       return getUnstakeTx;
     }
     return getUnstakeTx;
@@ -97,6 +47,8 @@ export default function Action() {
   const maxAmount = useMemo(() => {
     if (action === ACTION_TYPES.DEPOSIT) {
       return fromNano(tokenAmount ?? 0n).toString();
+    } else if (action === ACTION_TYPES.REDEPOSIT) {
+      // return fromNano(restakeToken?.maxDepositAmount ?? 0n).toString();
     }
     return '0';
   }, [action, tokenAmount]);
@@ -130,6 +82,24 @@ export default function Action() {
   ) {
     return <Navigate to="/404" />;
   }
+  const { DepositList } = useMemo(() => {
+    let DepositList: Array<{ text: string; value: JSX.Element }> = [];
+    DepositList = [
+      {
+        text: 'Available to stake',
+        value: (
+          <div className="flex items-center gap-x-1">
+            {maxAmount} {restakeToken?.symbol}
+            <HelpCircle className="w-4 h-4 text-muted-foreground" />
+          </div>
+        ),
+      },
+    ];
+
+    return {
+      DepositList: DepositList,
+    };
+  }, [tonPrice, amount, maxAmount]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -198,7 +168,7 @@ export default function Action() {
                 </Button>
               </div>
             </div>
-            <span className="text-sm text-muted-foreground">${USDTPrice}</span>
+            {/* <span className="text-sm text-muted-foreground">${USDTPrice}</span> */}
 
             {connected ? (
               <Button

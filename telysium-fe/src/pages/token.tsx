@@ -10,7 +10,7 @@ import { fromNano } from '@ton/ton';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
-import {useTokenPrice} from '@/hooks/useTokenPrice';
+import { useTokenPrice } from '@/hooks/useTokenPrice';
 import Big from 'big.js';
 
 export default function Token() {
@@ -19,13 +19,16 @@ export default function Token() {
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
   const { data: tokenPrice } = useTokenPrice(token!);
-  console.log({restakingInfo, tokenPrice})
+  console.log({ restakingInfo, tokenPrice });
   const restakeBalance = restakingInfo?.stakedJettons?.reduce((acc, cur) => {
     return acc.add(Big(fromNano(cur.jettonAmount)));
   }, Big(0));
-  const maxWithdrawAmount = restakingInfo?.withdrawalJettons?.reduce((acc, cur) => {
-    return acc.add(Big(fromNano(cur.jettonAmount)));
-  }, Big(0));
+  const maxWithdrawAmount = restakingInfo?.withdrawalJettons?.reduce(
+    (acc, cur) => {
+      return acc.add(Big(fromNano(cur.jettonAmount)));
+    },
+    Big(0)
+  );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
@@ -76,14 +79,15 @@ export default function Token() {
               <div className="text-sm text-muted-foreground">
                 RESTAKED BALANCE
               </div>
-              <Link to={`/restake/withdraw/${token}`}>
+              <Link to={`/restake/unstake/${token}`}>
                 <Button variant="outline" size="sm">
                   Unstake
                 </Button>
               </Link>
             </div>
             <div className="text-2xl font-semibold">
-              {restakeBalance?.toFixed(2)} <span className="text-muted-foreground">{token}</span>
+              {restakeBalance?.toFixed(2)}
+              <span className="text-muted-foreground">{token}</span>
             </div>
           </div>
 
@@ -94,13 +98,19 @@ export default function Token() {
               </div>
             </div>
             <div className="text-2xl font-semibold mb-4">
-              {maxWithdrawAmount?.toFixed(2)} <span className="text-muted-foreground">{token}</span>
+              {maxWithdrawAmount?.toFixed(2)}{' '}
+              <span className="text-muted-foreground">{token}</span>
             </div>
             <div className="flex gap-3">
-              <Button className="flex-1">Redeposit</Button>
-              <Button variant="outline" className="flex-1">
-                Withdraw
-              </Button>
+              <Link to={`/restake/redeposit/${token}`} className="flex-1">
+                <Button className="w-full">Redeposit</Button>
+              </Link>
+
+              <Link to={`/restake/withdraw/${token}`} className="flex-1">
+                <Button variant="outline" className="w-full">
+                  Withdraw
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
