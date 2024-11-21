@@ -43,7 +43,7 @@ export default function Restake() {
                 >
                   <div className="flex items-center gap-x-4">
                     <img
-                      src={asset.image}
+                      src={asset.logo}
                       alt={asset.symbol}
                       className="size-10"
                     />
@@ -67,9 +67,6 @@ export default function Restake() {
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead>ASSETS</TableHead>
-            <TableHead>WALLET BALANCE</TableHead>
-            <TableHead>RESTAKING BALANCE</TableHead>
-            <TableHead>TVL</TableHead>
             <TableHead>REWARD</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -83,15 +80,6 @@ export default function Restake() {
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-4 w-[60px]" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-[100px]" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-[100px]" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-[100px]" />
                 </TableCell>
                 <TableCell className="text-right">
                   <Skeleton className="h-4 w-[80px] ml-auto" />
@@ -108,7 +96,7 @@ export default function Restake() {
                       className="flex items-center gap-x-4 hover:-translate-y-0.5"
                     >
                       <img
-                        src={asset.image}
+                        src={asset.logo}
                         alt={asset.symbol}
                         className="size-10"
                       />
@@ -120,9 +108,6 @@ export default function Restake() {
                       </div>
                     </Link>
                   </TableCell>
-                  <TableCell>{asset.balance ?? 0}</TableCell>
-                  <TableCell>{asset.restaking ?? 0}</TableCell>
-                  <TableCell>{asset.tvl ?? 0}</TableCell>
                   <TableCell className="text-[#828898]">
                     {REWARDTYPE.POINTS}
                   </TableCell>

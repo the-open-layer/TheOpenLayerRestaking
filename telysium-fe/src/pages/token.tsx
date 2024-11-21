@@ -31,7 +31,7 @@ export default function Token() {
     <main className="container mx-auto p-4 space-y-6 lg:space-y-8">
       <div className="items-center gap-3 hidden md:flex mb-7">
         <img
-          src={restakeToken!.image}
+          src={restakeToken!.logo}
           alt="Tonstakers TON"
           width={48}
           height={48}

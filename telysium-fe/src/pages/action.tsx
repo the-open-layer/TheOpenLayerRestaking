@@ -119,7 +119,7 @@ export default function Action() {
             className="flex items-center gap-x-4 hover:-translate-y-0.5"
           >
             <img
-              src={restakeToken?.image}
+              src={restakeToken?.logo}
               alt={restakeToken?.name}
               className="size-10"
             />
@@ -129,11 +129,7 @@ export default function Action() {
             </div>
           </Link>
           <a
-            href={
-              restakeToken?.testnet
-                ? `https://testnet.tonscan.org/${restakeToken?.address}`
-                : `https://tonscan.org/address/${restakeToken?.address}`
-            }
+            href={`https://testnet.tonscan.org/${restakeToken?.address}`}
             target="_blank"
           >
             <TonscanIcon className="text-8 cursor-pointer" />

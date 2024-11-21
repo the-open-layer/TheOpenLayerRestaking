@@ -22,25 +22,40 @@ export const getTonWeb = () => {
   return tonweb;
 };
 
+interface RemoteData {
+  restakingMaster: string;
+  tokens: Array<{
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: string;
+    logo: string;
+    description: string;
+  }>;
+}
 export const getStakeList = async function () {
-  return [
-    {
-      address: 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS',
-      name: 'TB Test Jetton',
-      symbol: 'TBRTJ',
-      decimals: '9',
-      image:
-        'https://cache.tonapi.io/imgproxy/KXdk-PAA7sEjwA9KEoAF0Kzz787T248Y3a2-PTr_niw/rs:fill:200:200:1/g:no/aHR0cHM6Ly9pLnRib29rLmNvbS9sb2dvLnN2Zw.webp',
-      description: 'TB Test Jetton',
-      testnet: true,
-      balance: 0,
-      restaking: 0,
-      tvl: 0,
-      adminAddress: '',
-      jettonContentUri: '',
-      jettonWalletCodeHex: '',
-    },
-  ];
+  const data: RemoteData = await fetch(
+    'https://static.tbook.vip/restaking/testnet/config.json'
+  ).then((res) => res.json());
+  return data?.tokens ?? [];
+  // return [
+  //   {
+  //     address: 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS',
+  //     name: 'TB Test Jetton',
+  //     symbol: 'TBRTJ',
+  //     decimals: '9',
+  //     image:
+  //       'https://cache.tonapi.io/imgproxy/KXdk-PAA7sEjwA9KEoAF0Kzz787T248Y3a2-PTr_niw/rs:fill:200:200:1/g:no/aHR0cHM6Ly9pLnRib29rLmNvbS9sb2dvLnN2Zw.webp',
+  //     description: 'TB Test Jetton',
+  //     testnet: true,
+  //     balance: 0,
+  //     restaking: 0,
+  //     tvl: 0,
+  //     adminAddress: '',
+  //     jettonContentUri: '',
+  //     jettonWalletCodeHex: '',
+  //   },
+  // ];
 };
 
 export const getTokenUSDTPrice = async function (symbol: string) {
@@ -49,7 +64,7 @@ export const getTokenUSDTPrice = async function (symbol: string) {
     return fetch(url).then((res) => res.json());
   } else {
     return {
-      price: "1",
+      price: '1',
     };
   }
 };
@@ -91,4 +106,4 @@ export const getLastTxHash = async (userAddress: string) => {
   const tonweb = getTonWeb();
   const info = await tonweb.provider.getWalletInfo(userAddress);
   return info?.last_transaction_id?.hash;
-}
+};

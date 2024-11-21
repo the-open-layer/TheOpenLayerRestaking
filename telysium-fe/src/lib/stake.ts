@@ -18,11 +18,7 @@ import { delay } from '@/lib/utils';
 
 export const STAKING_MASTER_ADDRESS = import.meta.env
   .VITE_STAKING_MASTER_ADDRESS;
-export const JETTON_MASTER_ADDRESS = import.meta.env.VITE_JETTON_MASTER_ADDRESS;
 
-export const SUPPORT_TOKEN_ADDRESS_MAP = [
-  [JETTON_MASTER_ADDRESS, ExampleJettonWallet],
-];
 export const getStakingWallet = async (userAddress: string) => {
   const stakingWallet = await StakingWalletTemplate.fromInit(
     Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
@@ -75,23 +71,7 @@ export const getStakeTx = async (
   };
   return transaction;
 };
-// export const getUserJettonWalletFromMaster = async (
-//   userAddress: string,
-//   jettonMasterAddress: string
-// ) => {
-//   const pair = SUPPORT_TOKEN_ADDRESS_MAP.find(([address]) => {
-//     return Address.parse(address).equals(Address.parse(jettonMasterAddress));
-//   });
-//   if (!pair) {
-//     throw new Error('not support');
-//   }
-//   const fn = pair[1];
-//   const jettonWallet = await fn.fromInit(
-//     Address.parse(userAddress),
-//     Address.parse(jettonMasterAddress)
-//   );
-//   return jettonWallet.address;
-// };
+
 export const getUnstakeTx = async (amount: string, userAddress: string) => {
   const unstakeMsg: UnStake = {
     $$type: 'UnStake',
