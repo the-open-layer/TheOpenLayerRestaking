@@ -154,8 +154,8 @@ trait StakingWallet with Common, Ownable {
         self.pendingJettons.del(index);
         let newStaked = StakedJettonInfo { 
             jettonAmount: pending!!.jettonAmount,
-            stakeTime: now(),
             stakeIndex: self.stakeIndex,
+            stakeTime: now(),
             unstakeThreshold: pending!!.unstakeThreshold
         };
         self.stakedJettons.set(index, newStaked);
@@ -194,7 +194,7 @@ trait StakingWallet with Common, Ownable {
         self.reserveValue(0);
         send(SendParameters{
             to: self.master,
-            bounce: false,
+            bounce: true,
             value: 0,
             mode: SendRemainingBalance,
             body: withdrawInternal.toCell(),

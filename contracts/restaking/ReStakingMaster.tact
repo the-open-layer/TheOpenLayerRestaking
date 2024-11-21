@@ -145,7 +145,7 @@ trait StakingMaster with Common, OwnableTransferable {
         }
 
         // refund
-        self.reserveValue(-msg.tonAmount);
+        self.reserveValue(0);
         send(SendParameters{
             to: msg.responseDestination,
             bounce: false,
