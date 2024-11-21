@@ -13,18 +13,17 @@ import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
-import { HelpCircle } from 'lucide-react';
 import { DepositStateEnum } from '@/types/action';
 import DepositModal from '@/components/ux/modals/deposit';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, ACTION_TYPES_LIST } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
-import { getStakeTx, getUnstakeTx } from '@/lib/stake';
+import { getStakeTx, getUnstakeTx, checkTxStatus } from '@/lib/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
-import { getTxResult } from '@/lib/address';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
+import { getLastTxHash } from '@/api';
 
 export default function Action() {
   const { action, token } = useParams();
@@ -57,16 +56,17 @@ export default function Action() {
   }, [action, tokenAmount]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
+    const lastTxHash = await getLastTxHash(rawAddress);
     try {
-      const result = await tonConnectUI.sendTransaction(
-        await getTx(amount, rawAddress, restakeToken!.address),
-        {
-          modals: 'all',
-        }
+      await tonConnectUI.sendTransaction(
+        await getTx(amount, rawAddress, restakeToken!.address)
       );
-      const res = await getTxResult(result.boc);
-      console.log('res', res);
-      setDepositState(DepositStateEnum.SUCCESS);
+      const res = await checkTxStatus(lastTxHash, rawAddress);
+      if (res) {
+        setDepositState(DepositStateEnum.SUCCESS);
+      } else {
+        setDepositState(DepositStateEnum.ERROR);
+      }
     } catch (error) {
       console.error('Transaction failed', error);
       setDepositState(DepositStateEnum.ERROR);

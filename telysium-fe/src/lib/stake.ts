@@ -11,9 +11,10 @@ import {
 } from '../../../build/ReStaking/tact_StakingMasterTemplate';
 import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
 import { ExampleJettonWallet } from '../../../build/JettonExample/tact_ExampleJettonWallet';
-import { getTonClient, getTonWeb } from '@/api';
+import { getTonClient, getLastTxHash } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
+import { delay } from '@/lib/utils';
 
 export const STAKING_MASTER_ADDRESS = import.meta.env
   .VITE_STAKING_MASTER_ADDRESS;
@@ -234,10 +235,24 @@ export const getLocked = (timestamp: bigint, threshold: bigint) => {
   return dayjs.unix(Number(timestamp) + Number(threshold)).isAfter(dayjs());
 };
 
-
-export const checkTxStatus = async (txHash: string, userAddress: string) => {
-  const tonweb =  getTonWeb();
-  const lastTx = (await tonweb.getTransactions(userAddress, 1))[0]
-  const lastTxHash = lastTx.transaction_id.hash
-
+// https://toncenter.com/api/v2/#/accounts/get_address_information_getAddressInformation_get
+export const checkTxStatus = async (
+  lastTxHash: string,
+  userAddress: string,
+  retryTimes = 60
+) => {
+  // https://testnet.toncenter.com/api/v2/getTransactions?address=0QCXxZtVYOOsa5JFtmxYbQSm0ODpLzpL0V3MQK_mVD07QZxq
+  let time = 0;
+  while (true) {
+    const newLastTxHash = await getLastTxHash(userAddress);
+    console.log({newLastTxHash, lastTxHash, time});
+    if (newLastTxHash !== lastTxHash) {
+      return true;
+    }
+    await delay(1000);
+    time++;
+    if (time > retryTimes) {
+      return false;
+    }
+  }
 };

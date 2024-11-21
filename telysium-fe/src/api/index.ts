@@ -87,3 +87,8 @@ export const getTokenBalance = async function (
   const jettonData = await jettonWallet.getData();
   return jettonData.balance.toString();
 };
+export const getLastTxHash = async (userAddress: string) => {
+  const tonweb = getTonWeb();
+  const info = await tonweb.provider.getWalletInfo(userAddress);
+  return info?.last_transaction_id?.hash;
+}
