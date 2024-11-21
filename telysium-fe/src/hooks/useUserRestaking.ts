@@ -1,12 +1,13 @@
 import { getStakingInfo } from '@/lib/stake';
 import { useQuery } from '@tanstack/react-query';
 import { formatTime, getLocked } from '@/lib/stake';
-import { WITHDRAWSTATUS } from '@/constant';
 import { fromNano } from '@ton/ton';
 import { formatNumber } from '@/lib/numbers';
 import Big from 'big.js';
+import { useAccount } from './useAccount';
 
-export const useUserRestaking = (userAddress: string) => {
+export const useUserRestaking = () => {
+  const { address: userAddress } = useAccount();
   return useQuery({
     queryKey: ['user-restaking', userAddress],
     queryFn: async () => {
@@ -41,6 +42,12 @@ export const useUserRestaking = (userAddress: string) => {
         pendingJettons,
         stakedJettons,
         withdrawalJettons,
+        restakeAmount: stakedJettons?.reduce((acc, cur) => {
+          return acc.add(Big(fromNano(cur.jettonAmount)));
+        }, Big(0)) ?? Big(0),
+        maxPendingAmount: pendingJettons?.reduce((acc, cur) => {
+          return acc.add(Big(fromNano(cur.jettonAmount)));
+        }, Big(0)) ?? Big(0),
       };
     },
     enabled: !!userAddress,

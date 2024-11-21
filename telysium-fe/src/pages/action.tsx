@@ -24,6 +24,7 @@ import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
 import { getTxResult } from '@/lib/address';
+import { useUserRestaking } from '@/hooks/useUserRestaking';
 
 export default function Action() {
   const { action, token } = useParams();
@@ -34,6 +35,8 @@ export default function Action() {
   const [depositState, setDepositState] = useState<DepositStateEnum>(
     DepositStateEnum.IDLE
   );
+  const { data: restakingInfo, isLoading: useStakingLoading } =
+    useUserRestaking();
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: tokenAmount } = useBalance(restakeToken!.address);
   const getTx = useMemo(() => {
@@ -46,11 +49,11 @@ export default function Action() {
   }, [action]);
   const maxAmount = useMemo(() => {
     if (action === ACTION_TYPES.DEPOSIT) {
-      return fromNano(tokenAmount ?? 0n).toString();
-    } else if (action === ACTION_TYPES.REDEPOSIT) {
-      // return fromNano(restakeToken?.maxDepositAmount ?? 0n).toString();
+      return Big(fromNano(tokenAmount ?? 0).toString()).toFixed(2);
+    } else {
+      // action === ACTION_TYPES.UNSTAKE
+      return restakingInfo?.restakeAmount.toFixed(2);
     }
-    return "100";
   }, [action, tokenAmount]);
   const handleSubmit = async () => {
     setDepositState(DepositStateEnum.CONFIRMING);
@@ -86,11 +89,13 @@ export default function Action() {
     let DepositList: Array<{ text: string; value: JSX.Element }> = [];
     DepositList = [
       {
-        text: 'Available to stake',
+        text:
+          action === ACTION_TYPES.DEPOSIT
+            ? 'Available to stake'
+            : 'Available to unstake',
         value: (
-          <div className="flex items-center gap-x-1">
-            {maxAmount} {restakeToken?.symbol}
-            <HelpCircle className="w-4 h-4 text-muted-foreground" />
+          <div>
+            {maxAmount} {token}
           </div>
         ),
       },
@@ -99,7 +104,7 @@ export default function Action() {
     return {
       DepositList: DepositList,
     };
-  }, [tonPrice, amount, maxAmount]);
+  }, [tonPrice, amount, maxAmount, action]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -157,12 +162,12 @@ export default function Action() {
                   className="px-3 py-1 leading-none rounded-2xl text-sm font-medium h-7"
                   onClick={() => {
                     if (connected) {
-                      setAmount(maxAmount);
+                      setAmount(maxAmount!);
                     } else {
                       tonConnectUI.openModal();
                     }
                   }}
-                  disabled={tokenAmount === undefined}
+                  disabled={Number(maxAmount) === 0}
                 >
                   MAX
                 </Button>

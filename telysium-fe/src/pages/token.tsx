@@ -5,32 +5,22 @@ import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { useAccount } from '@/hooks/useAccount';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
-import { fromNano } from '@ton/ton';
 import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTokenPrice } from '@/hooks/useTokenPrice';
-import Big from 'big.js';
 import {
   useWithdrawMutation,
   useRedepositMutation,
 } from '@/hooks/useStakeMutation';
 
 export default function Token() {
-  const { address } = useAccount();
-  const { data: restakingInfo, isLoading } = useUserRestaking(address);
+  const { data: restakingInfo, isLoading } = useUserRestaking();
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
   const { data: tokenPrice } = useTokenPrice(token!);
   console.log({ restakingInfo, tokenPrice });
-  const restakeBalance = restakingInfo?.stakedJettons?.reduce((acc, cur) => {
-    return acc.add(Big(fromNano(cur.jettonAmount)));
-  }, Big(0));
-  const maxWithdrawAmount = restakingInfo?.pendingJettons?.reduce(
-    (acc, cur) => {
-      return acc.add(Big(fromNano(cur.jettonAmount)));
-    },
-    Big(0)
-  );
+  const restakeAmount = restakingInfo?.restakeAmount;
+  const maxPendingAmount = restakingInfo?.maxPendingAmount;
   const { mutate: withdraw } = useWithdrawMutation();
   const { mutate: redeposit } = useRedepositMutation();
 
@@ -92,7 +82,7 @@ export default function Token() {
               </Link>
             </div>
             <div className="text-2xl font-semibold">
-              {restakeBalance?.toFixed(2)}
+              {restakeAmount?.toFixed(2)}
               <span className="text-muted-foreground">{token}</span>
             </div>
           </div>
@@ -104,7 +94,7 @@ export default function Token() {
               </div>
             </div>
             <div className="text-2xl font-semibold mb-4">
-              {maxWithdrawAmount?.toFixed(2)}{' '}
+              {maxPendingAmount?.toFixed(2)}{' '}
               <span className="text-muted-foreground">{token}</span>
             </div>
             <div className="space-y-3 lg:space-y-6">

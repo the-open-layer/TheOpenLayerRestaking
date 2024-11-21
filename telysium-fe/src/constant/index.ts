@@ -13,17 +13,17 @@ export const navItems = [
 export enum ACTION_TYPES {
   DEPOSIT = 'deposit',
   UNSTAKE = 'unstake',
-  REDEPOSIT = 'redeposit',
-  WITHDRAW = 'withdraw',
+  // REDEPOSIT = 'redeposit',
+  // WITHDRAW = 'withdraw',
 }
 
 export const ACTION_TYPES_LIST = Object.values(ACTION_TYPES);
 
 export const ACTION_TYPES_TITLE_MAP = {
   [ACTION_TYPES.DEPOSIT]: 'Deposit',
-  [ACTION_TYPES.WITHDRAW]: 'Withdraw',
   [ACTION_TYPES.UNSTAKE]: 'Unstake',
-  [ACTION_TYPES.REDEPOSIT]: 'Redeposit',
+  // [ACTION_TYPES.REDEPOSIT]: 'Redeposit',
+  // [ACTION_TYPES.WITHDRAW]: 'Withdraw',
 };
 
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
