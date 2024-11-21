@@ -15,42 +15,32 @@ export const useUserRestaking = (userAddress: string) => {
         info.pendingJettons?.values()?.map((v) => {
           return {
             ...v,
-            unstakeTime: formatTime(v.unstakeTime),
+            stakeTimeFmt: formatTime(v.stakeTime),
+            unstakeTimeFmt: formatTime(v.unstakeTime),
             isLocked: getLocked(v.unstakeTime, v.unstakeThreshold),
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
           };
         }),
         info.stakedJettons?.values().map((v) => {
           return {
             ...v,
-            unstakeTime: formatTime(v.stakeTime),
+            createdTime: formatTime(v.stakeTime),
             isLocked: getLocked(v.stakeTime, v.unstakeThreshold),
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
           };
         }),
         info.withdrawalJettons?.values().map((v) => {
           return {
             ...v,
+            createdTime: formatTime(v.withdrawTime),
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
           };
         }),
-      ];
-      const withdrawList = [
-        ...pendingJettons.map((v) => ({
-          // ...v,
-          status: WITHDRAWSTATUS.PENDING,
-          amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
-          txTime: v.unstakeTime
-        })),
-        ...withdrawalJettons.map((v) => ({
-          // ...v,
-          status: WITHDRAWSTATUS.COMPLETED,
-          amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
-          txTime: null
-        })),
       ];
       return {
         pendingJettons,
         stakedJettons,
         withdrawalJettons,
-        withdrawList
       };
     },
     enabled: !!userAddress,

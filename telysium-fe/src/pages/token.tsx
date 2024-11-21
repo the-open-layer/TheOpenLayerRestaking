@@ -6,8 +6,7 @@ import { useAccount } from '@/hooks/useAccount';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { fromNano } from '@ton/ton';
-import dayjs from 'dayjs';
-import { dateTimeFormat, WITHDRAWSTATUS } from '@/constant';
+import {  WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTokenPrice } from '@/hooks/useTokenPrice';
 import Big from 'big.js';
@@ -102,16 +101,36 @@ export default function Token() {
               {maxWithdrawAmount?.toFixed(2)}{' '}
               <span className="text-muted-foreground">{token}</span>
             </div>
-            <div className="flex gap-3">
-              <Link to={`/restake/redeposit/${token}`} className="flex-1">
-                <Button className="w-full">Redeposit</Button>
-              </Link>
+            <div className="space-y-3 lg:space-y-6">
+              {restakingInfo?.pendingJettons.map((tx, i) => (
+                <div
+                  className="space-y-4 lg:space-y-8 bg-slate-300 rounded-lg py-4 px-2"
+                  key={i}
+                >
+                  <div className="flex flex-col gap-2 lg:flex-row items-center">
+                    <div className="text-lg font-medium">
+                      unstake {tx.amount} {token}
+                    </div>
+                    <div>
 
-              <Link to={`/restake/withdraw/${token}`} className="flex-1">
-                <Button variant="outline" className="w-full">
-                  Withdraw
-                </Button>
-              </Link>
+                    <Badge variant={'secondary'} className="mt-1">
+                      {tx.isLocked
+                        ? WITHDRAWSTATUS.PENDING
+                        : WITHDRAWSTATUS.COMPLETED}
+                    </Badge>
+                    <div className="text-sm text-muted-foreground">
+                      {tx?.unstakeTimeFmt}
+                    </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 flex-col md:flex-row">
+                    <Button className="flex-1" disabled={tx.isLocked}>Redeposit</Button>
+                    <Button variant="outline" className="flex-1" disabled={tx.isLocked}>
+                      Withdraw
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </CardContent>
@@ -132,12 +151,12 @@ export default function Token() {
             </div>
           ) : (
             <div className="space-y-4">
-              {restakingInfo?.withdrawList?.length === 0 ? (
+              {restakingInfo?.withdrawalJettons?.length === 0 ? (
                 <div className="text-sm text-muted-foreground text-center">
                   no data
                 </div>
               ) : (
-                restakingInfo?.withdrawList.map((tx, i) => (
+                restakingInfo?.withdrawalJettons.map((tx, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
@@ -149,19 +168,10 @@ export default function Token() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground">
-                        {tx?.txTime}
+                        {tx?.createdTime}
                       </div>
-                      <Badge
-                        variant={
-                          tx.status === WITHDRAWSTATUS.PENDING
-                            ? 'default'
-                            : 'secondary'
-                        }
-                        className="mt-1"
-                      >
-                        {tx.status === WITHDRAWSTATUS.PENDING
-                          ? 'Completed'
-                          : tx.status}
+                      <Badge variant={'secondary'} className="mt-1">
+                        {WITHDRAWSTATUS.COMPLETED}
                       </Badge>
                     </div>
                   </div>

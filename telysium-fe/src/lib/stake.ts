@@ -154,7 +154,12 @@ export const formatTime = (timestamp: bigint) => {
   return dayjs.unix(Number(timestamp)).format(dateTimeFormat);
 };
 export const getLocked = (timestamp: bigint, threshold: bigint) => {
-  return dayjs
-    .unix(Number(timestamp) + Number(threshold) * 1000)
-    .isBefore(dayjs());
+  // lockTime  + threshold < now ? true : false
+  // console.log(
+  //   formatTime(timestamp),
+  //   formatTime(timestamp + threshold),
+  //   dayjs().format(dateTimeFormat),
+  //   dayjs.unix(Number(timestamp + threshold)).isAfter(dayjs())
+  // );
+  return dayjs.unix(Number(timestamp) + Number(threshold)).isAfter(dayjs());
 };
