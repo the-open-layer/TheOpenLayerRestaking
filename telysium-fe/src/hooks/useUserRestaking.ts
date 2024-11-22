@@ -51,5 +51,6 @@ export const useUserRestaking = () => {
       };
     },
     enabled: !!userAddress,
+    refetchOnMount: false,
   });
 };

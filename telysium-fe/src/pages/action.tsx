@@ -18,34 +18,35 @@ import DepositModal from '@/components/ux/modals/deposit';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, ACTION_TYPES_LIST } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
-import { getStakeTx, getUnstakeTx, checkTxStatus } from '@/lib/stake';
+// import { getStakeTx, getUnstakeTx, checkTxStatus } from '@/lib/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
-import { getLastTxHash } from '@/api';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useStakeMutation, useUnstakeMutation } from '@/hooks/useStakeMutation';
 
 export default function Action() {
   const { action, token } = useParams();
   const { data: stakeList = [] } = useStakeList();
-  const { connected, tonConnectUI, rawAddress } = useAccount();
+  const { connected, tonConnectUI } = useAccount();
   const [amount, setAmount] = useState('');
   const { data: tonPrice } = useTonPrice();
   const [depositState, setDepositState] = useState<DepositStateEnum>(
     DepositStateEnum.IDLE
   );
-  const { data: restakingInfo, isLoading: useStakingLoading } =
+
+  const { data: restakingInfo, isLoading: restakingInfoLoading } =
     useUserRestaking();
   const restakeToken = stakeList.find((v) => v.symbol === token);
-  const { data: tokenAmount } = useBalance(restakeToken!.address);
-  const getTx = useMemo(() => {
-    if (action === ACTION_TYPES.DEPOSIT) {
-      return getStakeTx;
-    } else if (action === ACTION_TYPES.UNSTAKE) {
-      return getUnstakeTx;
-    }
-    return getUnstakeTx;
-  }, [action]);
+  const { data: tokenAmount, isLoading: isAmountLoading } = useBalance(
+    restakeToken!.jettonMaster
+  );
+  const { mutateAsync: stakeMutation } = useStakeMutation(
+    restakeToken!.jettonMaster
+  );
+  const { mutateAsync: unstakeMutation } = useUnstakeMutation();
+
   const maxAmount = useMemo(() => {
     if (action === ACTION_TYPES.DEPOSIT) {
       return Big(fromNano(tokenAmount ?? 0).toString()).toFixed(2);
@@ -53,23 +54,34 @@ export default function Action() {
       // action === ACTION_TYPES.UNSTAKE
       return restakingInfo?.restakeAmount.toFixed(2);
     }
-  }, [action, tokenAmount]);
+  }, [action, tokenAmount, restakingInfo]);
+
   const handleSubmit = async () => {
-    setDepositState(DepositStateEnum.CONFIRMING);
-    const lastTxHash = await getLastTxHash(rawAddress);
-    try {
-      await tonConnectUI.sendTransaction(
-        await getTx(amount, rawAddress, restakeToken!.address)
-      );
-      const res = await checkTxStatus(lastTxHash, rawAddress);
-      if (res) {
-        setDepositState(DepositStateEnum.SUCCESS);
-      } else {
+    if (action === ACTION_TYPES.DEPOSIT) {
+      setDepositState(DepositStateEnum.CONFIRMING);
+      try {
+        const res = await stakeMutation(amount);
+        if (res) {
+          setDepositState(DepositStateEnum.SUCCESS);
+        } else {
+          setDepositState(DepositStateEnum.ERROR);
+        }
+      } catch (error) {
         setDepositState(DepositStateEnum.ERROR);
       }
-    } catch (error) {
-      console.error('Transaction failed', error);
-      setDepositState(DepositStateEnum.ERROR);
+    } else {
+      setDepositState(DepositStateEnum.CONFIRMING);
+      try {
+        const res = await unstakeMutation(amount);
+        if (res) {
+          setDepositState(DepositStateEnum.SUCCESS);
+        } else {
+          setDepositState(DepositStateEnum.ERROR);
+        }
+      } catch (error) {
+        console.error('Transaction failed', error);
+        setDepositState(DepositStateEnum.ERROR);
+      }
     }
   };
 
@@ -94,18 +106,29 @@ export default function Action() {
           action === ACTION_TYPES.DEPOSIT
             ? 'Available to stake'
             : 'Available to unstake',
-        value: (
-          <div>
-            {maxAmount} {token}
-          </div>
-        ),
+        value:
+          action === ACTION_TYPES.DEPOSIT ? (
+            isAmountLoading ? (
+              <Skeleton className="w-24 h-8 bg-slate-300" />
+            ) : (
+              <div>
+                {maxAmount} {token}
+              </div>
+            )
+          ) : restakingInfoLoading ? (
+            <Skeleton className="w-24 h-8 bg-slate-300" />
+          ) : (
+            <div>
+              {maxAmount} {token}
+            </div>
+          ),
       },
     ];
 
     return {
       DepositList: DepositList,
     };
-  }, [tonPrice, amount, maxAmount, action]);
+  }, [tonPrice, amount, maxAmount, isAmountLoading, action]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">

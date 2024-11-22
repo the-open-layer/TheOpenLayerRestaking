@@ -6,18 +6,19 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTokenPrice } from '@/hooks/useTokenPrice';
+// import { useTokenPrice } from '@/hooks/useTokenPrice';
 import {
   useWithdrawMutation,
   useRedepositMutation,
 } from '@/hooks/useStakeMutation';
 
 export default function Token() {
-  const { data: restakingInfo, isLoading } = useUserRestaking();
+  const { data: restakingInfo, isLoading: restakingInfoLoading } =
+    useUserRestaking();
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
-  const { data: tokenPrice } = useTokenPrice(token!);
-  console.log({ restakingInfo, tokenPrice });
+  // const { data: tokenPrice } = useTokenPrice(token!);
+  // console.log({ restakingInfo, tokenPrice });
   const restakeAmount = restakingInfo?.restakeAmount;
   const maxPendingAmount = restakingInfo?.maxPendingAmount;
   const { mutate: withdraw } = useWithdrawMutation();
@@ -80,8 +81,12 @@ export default function Token() {
                 </Button>
               </Link>
             </div>
-            <div className="text-2xl font-semibold">
-              {restakeAmount?.toFixed(2)}
+            <div className="text-2xl font-semibold flex gap-2">
+              {restakingInfoLoading ? (
+                <Skeleton className="w-24 h-8 bg-slate-300" />
+              ) : (
+                restakeAmount?.toFixed(2)
+              )}
               <span className="text-muted-foreground">{token}</span>
             </div>
           </div>
@@ -92,8 +97,12 @@ export default function Token() {
                 AVAILABLE TO WITHDRAW
               </div>
             </div>
-            <div className="text-2xl font-semibold mb-4">
-              {maxPendingAmount?.toFixed(2)}{' '}
+            <div className="text-2xl font-semibold mb-4 flex gap-2">
+              {restakingInfoLoading ? (
+                <Skeleton className="w-24 h-8 bg-slate-300" />
+              ) : (
+                maxPendingAmount?.toFixed(2)
+              )}{' '}
               <span className="text-muted-foreground">{token}</span>
             </div>
             <div className="space-y-3 lg:space-y-6">
@@ -106,15 +115,15 @@ export default function Token() {
                     <div className="text-lg font-medium">
                       unstake {tx.amount} {token}
                     </div>
-                    <div>
+                    <div className="flex gap-2 items-center">
+                      <div className="text-sm text-muted-foreground">
+                        {tx?.unstakeTimeFmt}
+                      </div>
                       <Badge variant={'secondary'} className="mt-1">
                         {tx.isLocked
                           ? WITHDRAWSTATUS.PENDING
                           : WITHDRAWSTATUS.COMPLETED}
                       </Badge>
-                      <div className="text-sm text-muted-foreground">
-                        {tx?.unstakeTimeFmt}
-                      </div>
                     </div>
                   </div>
                   <div className="flex gap-3 flex-col md:flex-row">
@@ -150,7 +159,7 @@ export default function Token() {
           <CardTitle>Your Withdraw</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {restakingInfoLoading ? (
             <div className="flex items-center justify-between gap-y-4">
               <div className="space-y-3">
                 <Skeleton className="h-6 w-24" />
