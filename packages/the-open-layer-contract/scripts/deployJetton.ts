@@ -1,6 +1,6 @@
 import { sha256_sync } from '@ton/crypto';
 import { Cell, Dictionary, beginCell, toNano } from '@ton/core';
-import { ExampleJettonMaster } from '../wrappers/JettonExample_ExampleJettonMaster';
+import { ExampleJettonMaster } from '../../../wrappers/JettonExample_ExampleJettonMaster';
 import { NetworkProvider } from '@ton/blueprint';
 import { buildJettonContent } from '../utils/ton-tep64';
 

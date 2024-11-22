@@ -1,11 +1,15 @@
 {
-    "name": "restaking",
-    "version": "0.0.0",
-    "private": true,
+    "name": "@the-open-layer/contract",
+    "version": "0.0.1",
     "scripts": {
-        "build-fe": "yarn workspace @the-open-layer/fe run build"
+        "start": "blueprint run",
+        "build": "blueprint build",
+        "test": "jest --verbose"
     },
     "devDependencies": {
+        "@ton/blueprint": "^0.25.0",
+        "@ton/sandbox": "^0.22.0",
+        "@ton/test-utils": "^0.4.2",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.8.7",
         "jest": "^29.7.0",

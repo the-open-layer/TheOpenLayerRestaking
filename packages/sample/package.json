@@ -1,5 +1,5 @@
 {
-    "name": "downloads",
+    "name": "@the-open-layer/sample",
     "version": "1.0.0",
     "main": "index.js",
     "type": "module",

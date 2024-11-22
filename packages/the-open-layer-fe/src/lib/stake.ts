@@ -8,8 +8,8 @@ import {
   storeRedeposit,
   storeWithdraw,
   storeJettonTransfer,
-} from '../../../build/ReStaking/tact_StakingMasterTemplate';
-import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
+} from '@the-open-layer/contract/build/ReStaking/tact_StakingMasterTemplate';
+import { StakingWalletTemplate } from '@the-open-layer/contract/build/ReStaking/tact_StakingWalletTemplate';
 import { getTonClient, getLastTxHash, getUserJettonWallet } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';

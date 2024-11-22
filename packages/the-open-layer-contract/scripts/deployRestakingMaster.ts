@@ -1,5 +1,5 @@
 import { toNano } from '@ton/core';
-import {  } from '../wrappers/ReStaking';
+import {  } from '../../../wrappers/ReStaking';
 import { NetworkProvider } from '@ton/blueprint';
 import { JettonMaster } from '@ton/ton'
 

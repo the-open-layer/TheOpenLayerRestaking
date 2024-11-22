@@ -11,10 +11,10 @@ import {
     storeUnStake,
     storeRedeposit,
     storeWithdraw
-} from '../build/ReStaking/tact_StakingMasterTemplate';
+} from '../the-open-layer-contract/build/ReStaking/tact_StakingMasterTemplate';
 import {
     StakingWalletTemplate,
-} from '../build/ReStaking/tact_StakingWalletTemplate';
+} from '../the-open-layer-contract/build/ReStaking/tact_StakingWalletTemplate';
 
 // UI Elements
 const connectWalletBtn = document.getElementById('connectWallet') as HTMLButtonElement;

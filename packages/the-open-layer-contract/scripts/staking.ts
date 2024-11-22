@@ -1,8 +1,8 @@
 import { NetworkProvider } from '@ton/blueprint';
 import { beginCell, comment, Dictionary, fromNano, toNano } from '@ton/core';
 
-import { ExampleJettonMaster } from '../wrappers/JettonExample_ExampleJettonMaster';
-import { ExampleJettonWallet } from '../wrappers/JettonExample_ExampleJettonWallet';
+import { ExampleJettonMaster } from '../../../wrappers/JettonExample_ExampleJettonMaster';
+import { ExampleJettonWallet } from '../../../wrappers/JettonExample_ExampleJettonWallet';
 
 import {
     StakingMasterTemplate, storeStakeJetton
