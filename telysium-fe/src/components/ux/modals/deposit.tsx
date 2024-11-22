@@ -7,17 +7,22 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DepositStateEnum } from '@/types/action';
+import { Spinner } from '@/components/ui/spiner';
 
 export default function Deposit({
   amount,
+  symol,
   status,
   handleClose,
   handleTryAgain,
+  handleBacktodashboard
 }: {
   amount: string;
+  symol: string;
   status: DepositStateEnum;
   handleClose: () => void;
   handleTryAgain: () => void;
+  handleBacktodashboard: () => void;
 }) {
   // console.log('status', status);
   const renderDialogContent = () => {
@@ -30,14 +35,11 @@ export default function Deposit({
               Please confirm and sign the transaction in your wallet.
             </DialogDescription>
             <div className="space-y-4 mt-4">
+            
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-blue-500" />
-                <div className="text-muted-foreground">Approve tsTON</div>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-slate-200" />
+                <Spinner className='size-4 rounded-full' />
                 <div className="text-muted-foreground">
-                  Deposit {amount || '0.000'} tsTON
+                  Depositing {amount || '0.000'} {symol}
                 </div>
               </div>
             </div>
@@ -53,7 +55,7 @@ export default function Deposit({
               Deposit Successful
             </DialogDescription>
             <div className="text-center">
-              <Button className="mt-4" onClick={handleClose}>
+              <Button className="mt-4" onClick={handleBacktodashboard}>
                 Go back to dashboard
               </Button>
             </div>

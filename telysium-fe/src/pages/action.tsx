@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 import useTonPrice from '@/hooks/api/useTonPrice';
@@ -32,8 +32,9 @@ export default function Action() {
   const { connected, tonConnectUI } = useAccount();
   const [amount, setAmount] = useState('');
   const { data: tonPrice } = useTonPrice();
+  const navigate = useNavigate();
   const [depositState, setDepositState] = useState<DepositStateEnum>(
-    DepositStateEnum.IDLE
+    DepositStateEnum.ERROR
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: restakingInfo, isLoading: restakingInfoLoading } =
@@ -87,12 +88,12 @@ export default function Action() {
     }
   };
 
-  const handleTryAgain = () => {
-    setDepositState(DepositStateEnum.CONFIRMING);
-  };
-
   const handleClose = () => {
     setDepositState(DepositStateEnum.IDLE);
+  };
+  const handleBacktodashboard = () => {
+    handleClose();
+    navigate(`/restake/${token}`);
   };
   if (
     !ACTION_TYPES_LIST.includes(action as ACTION_TYPES) ||
@@ -245,9 +246,11 @@ export default function Action() {
 
       <DepositModal
         amount={amount}
+        symol={token!}
         status={depositState}
         handleClose={handleClose}
-        handleTryAgain={handleTryAgain}
+        handleTryAgain={handleSubmit}
+        handleBacktodashboard={handleBacktodashboard}
       />
     </div>
   );
