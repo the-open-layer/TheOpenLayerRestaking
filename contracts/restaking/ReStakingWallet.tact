@@ -79,7 +79,7 @@ trait StakingWallet with Common, Ownable {
             to: msg.responseDestination,
             bounce: false,
             value: 0,
-            mode: SendRemainingBalance,
+            mode: SendRemainingValue,
             body: JettonExcesses{
                 query_id: msg.queryId,
             }.toCell(),
@@ -92,12 +92,10 @@ trait StakingWallet with Common, Ownable {
         
         let remainingToUnstake: Int = msg.jettonAmount;
         let totalUnstaked: Int = 0;
-        let pendingStakeTime: Int = now();
         
         // Create a single pending record for all unstaked amounts
         let pending = PendingJettonInfo { 
             jettonAmount: 0,
-            stakeTime: pendingStakeTime,
             pendingIndex: self.pendingIndex,
             unstakeTime: now(),
             unstakeThreshold: 0
@@ -158,12 +156,13 @@ trait StakingWallet with Common, Ownable {
             stakeTime: now(),
             unstakeThreshold: pending!!.unstakeThreshold
         };
-        self.stakedJettons.set(index, newStaked);
+        self.stakedJettons.set(self.stakeIndex, newStaked);
         self.stakeIndex += 1;
 
         emit(PendingToStaked{
             jettonAmount: newStaked.jettonAmount,
-            pendingIndex: index
+            pendingIndex: index,
+            stakedIndex: newStaked.stakeIndex
         }.toCell());
     }
 
@@ -173,7 +172,7 @@ trait StakingWallet with Common, Ownable {
         let pending = self.pendingJettons.get(msg.pendingIndex);
         nativeThrowUnless(codePendingIndexNotFound, pending != null);
         nativeThrowUnless(codePendingJettonNotMaturity, 
-            pending!!.unstakeTime + pending!!.unstakeThreshold >= now());
+            pending!!.unstakeTime + pending!!.unstakeThreshold <= now());
 
         self.pendingJettons.del(pending!!.pendingIndex);
         let totalCost = 0;
@@ -198,7 +197,7 @@ trait StakingWallet with Common, Ownable {
             to: self.master,
             bounce: true,
             value: 0,
-            mode: SendRemainingBalance,
+            mode: SendRemainingValue,
             body: withdrawInternal.toCell(),
         });
         self.withdrawalJettons.set(pending!!.pendingIndex, WithdrawalJettonInfo{
@@ -213,7 +212,7 @@ trait StakingWallet with Common, Ownable {
                  to: self.owner,
                  bounce: false,
                  value: 0,
-                 mode: SendRemainingBalance,
+                 mode: SendRemainingValue,
                  body: msg.toCell(),
              }
          );

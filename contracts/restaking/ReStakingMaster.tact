@@ -90,7 +90,7 @@ trait StakingMaster with Common, OwnableTransferable {
             to: contractAddress(userWallet),
             bounce: false,
             value: 0,
-            mode: SendRemainingBalance,
+            mode: SendRemainingValue,
             body: StakeInternal{
                 queryId: msg.query_id,
                 jettonWallet: sender(),
@@ -115,7 +115,7 @@ trait StakingMaster with Common, OwnableTransferable {
         send(SendParameters{
             to: msg.jettonWallet,
             bounce: false,
-            value: msg.tonAmount,
+            value: 0,
             body: JettonTransfer{
                 query_id: msg.queryId,
                 amount: msg.jettonAmount,
@@ -136,7 +136,7 @@ trait StakingMaster with Common, OwnableTransferable {
             send(SendParameters{
                 to: msg.destination,
                 bounce: false,
-                value: msg.forwardAmount,
+                value: 0,
                 body: StakeReleaseNotification{
                     queryId: msg.queryId,
                     amount: msg.jettonAmount,
@@ -153,7 +153,7 @@ trait StakingMaster with Common, OwnableTransferable {
             to: msg.responseDestination,
             bounce: false,
             value: 0,
-            mode: SendRemainingBalance,
+            mode: SendRemainingValue,
             body: JettonExcesses{
                 query_id: msg.queryId,
             }.toCell(),
@@ -162,10 +162,6 @@ trait StakingMaster with Common, OwnableTransferable {
 
     // getWalletContract creates a new wallet contract for the specified owner
     abstract inline fun getUserWallet(owner: Address): StateInit;
-
-    get fun userWalletAddress(owner: Address): Address {
-        return contractAddress(self.getUserWallet(owner));
-    }
 
     get fun userWallet(owner: Address): Address {
         return contractAddress(self.getUserWallet(owner));
