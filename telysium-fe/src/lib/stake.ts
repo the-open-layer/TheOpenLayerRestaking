@@ -196,6 +196,7 @@ export const getStakingInfo = async (
     StakingWalletTemplate.fromAddress(stakingWalletAddress)
   );
   const res = await stakingWallet.getStakedInfo();
+  console.log('getStakingInfo-->', res);
   return res;
 };
 

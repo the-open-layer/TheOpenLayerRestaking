@@ -9,12 +9,15 @@ import { useAccount } from './useAccount';
 import { checkTxStatus } from '@/lib/stake';
 import { getLastTxHash } from '@/api';
 import { useUserRestaking } from './useUserRestaking';
+import { useBalance } from './useBalance';
 
 export const useWithdrawMutation = (
   jettonMaster: string,
   restakingMaster: string
 ) => {
   const { refetch } = useUserRestaking(restakingMaster);
+  const { refetch: refetchBalance } =useBalance(jettonMaster);
+
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (pendingIndex: bigint) => {
@@ -30,6 +33,7 @@ export const useWithdrawMutation = (
       console.log('Withdraw transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);
       await refetch();
+      await refetchBalance();
       return res;
     },
   });
@@ -55,6 +59,7 @@ export const useStakeMutation = (
   restakingMaster: string
 ) => {
   const { refetch } = useUserRestaking(restakingMaster);
+  const { refetch: refetchBalance } =useBalance(jettonMasterAddress);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (amount: string) => {
@@ -69,6 +74,7 @@ export const useStakeMutation = (
       console.log('Stake transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);
       await refetch();
+      await refetchBalance();
       return res;
     },
   });

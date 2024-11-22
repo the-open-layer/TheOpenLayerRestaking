@@ -32,9 +32,7 @@ export default function Action() {
   const [amount, setAmount] = useState('');
   const { data: tonPrice } = useTonPrice();
   const navigate = useNavigate();
-  const [txState, settxState] = useState<txStateEnum>(
-    txStateEnum.IDLE
-  );
+  const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: restakingInfo, isLoading: restakingInfoLoading } =
     useUserRestaking(restakeToken!.restakingMaster);

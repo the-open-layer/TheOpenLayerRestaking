@@ -51,6 +51,5 @@ export const useUserRestaking = (restakingMaster:string) => {
       };
     },
     enabled: !!userAddress && !!restakingMaster,
-    refetchOnMount: false,
   });
 };
