@@ -42,7 +42,7 @@ const tonConnectUI = new TonConnectUI({
 });
 
 // Contract addresses from environment variables
-const STAKING_MASTER_ADDRESS = "EQCY2Z3jYGX_8aV4HsOxGAQkiWgKsYJOZywhB8KI2xTAgzul";
+const STAKING_MASTER_ADDRESS = "EQCgM10Ib9nuDcAa7bj4EbLTTDu6eDEZzwr49PxCRbeMqN9H";
 //const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
 const JETTON_MASTER_ADDRESS = "kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN";
 
