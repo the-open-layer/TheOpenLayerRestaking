@@ -1,4 +1,4 @@
-# simple-counter
+# restaking
 
 ## Project structure
 
@@ -6,6 +6,8 @@
 -   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
 -   `tests` - tests for the contracts.
 -   `scripts` - scripts used by the project, mainly the deployment scripts.
+-   `the-open-layer-fe` - frontend
+-   `sample` - sample
 
 ## How to use
 
