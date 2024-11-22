@@ -7,12 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { REWARDTYPE } from '@/constant';
 import { Link } from 'react-router-dom';
-import { formatNumber } from '@/lib/numbers';
 import { Fragment } from 'react';
 
 const tableColumns = 6;
@@ -20,17 +18,22 @@ export default function Restake() {
   const { data: stakeList = [], isLoading } = useStakeList();
   return (
     <main className="container mx-auto p-4">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2 hidden md:block">Restake</h1>
-        <div className="text-sm text-muted-foreground">TOTAL TVL</div>
-        <div className="text-4xl font-bold md:text-5xl">
-          ${formatNumber(10000000)}
-        </div>
+      <div className="space-y-2 mb-6">
+        <h2 className="text-xl md:text-4xl font-medium text-gray-400 tracking-wide">
+          CLAIM MORE SBT TO GAIN UP TO
+        </h2>
+        <div className="text-4xl md:text-7xl font-bold">130% OPEN XP</div>
+        <p className="text-sm md:text-xl text-gray-500">
+          Earn <span className="text-gray-900 font-medium">OPEN XP</span> based
+          on your CoinAge, and unlock more investment opportunity.
+        </p>
       </div>
 
-      <Card className="mb-4 md:hidden">
-        <CardContent className="p-4">
-          <div className="text-sm text-gray-500 mb-2">ASSETS</div>
+      <div className="mb-4 md:hidden bg-transparent shadow-none">
+        <div className="p-4 px-0 text-sm text-gray-500 mb-">
+          Restake and earn
+        </div>
+        <div className='p-0'>
           {isLoading ? (
             <div>x</div>
           ) : stakeList.length > 0 ? (
@@ -45,7 +48,7 @@ export default function Restake() {
                     <img
                       src={asset.logo}
                       alt={asset.symbol}
-                      className="size-10"
+                      className="size-10 rounded-full"
                     />
                     <div>
                       <div>{asset.name}</div>
@@ -60,8 +63,8 @@ export default function Restake() {
           ) : (
             <div> No Data.</div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <Table className="hidden md:table rounded-2xl">
         <TableHeader>
@@ -98,7 +101,7 @@ export default function Restake() {
                       <img
                         src={asset.logo}
                         alt={asset.symbol}
-                        className="size-10"
+                        className="size-10 rounded-full"
                       />
                       <div>
                         <div>{asset.name}</div>
