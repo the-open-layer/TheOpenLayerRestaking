@@ -25,7 +25,7 @@ export default function Token() {
   const maxPendingAmount = restakingInfo?.maxPendingAmount;
   const { mutate: withdraw } = useWithdrawMutation(restakeToken!.restakingMaster);
   const { mutate: redeposit } = useRedepositMutation(restakeToken!.restakingMaster);
-
+  console.log({restakingInfo})
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }

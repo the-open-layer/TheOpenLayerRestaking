@@ -38,7 +38,7 @@ export const getStakeTx = async (
   const stakeMsg: StakeJetton = {
     $$type: 'StakeJetton',
     tonAmount: toNano('0.1'),
-    responseDestination: Address.parseRaw(userAddress),
+    responseDestination: Address.parse(userAddress),
     forwardAmount: toNano('0.05'),
     forwardPayload: beginCell().endCell(),
   };
@@ -48,14 +48,14 @@ export const getStakeTx = async (
     query_id: BigInt(Math.ceil(Math.random() * 1000000)),
     amount: toNano(amount),
     destination: Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-    response_destination: Address.parseRaw(userAddress),
+    response_destination: Address.parse(userAddress),
     custom_payload: null,
     forward_ton_amount: toNano('0.3'),
     forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell(),
   };
   // Create transaction
   const userJettonWallet = await ExampleJettonWallet.fromInit(
-    Address.parseRaw(userAddress),
+    Address.parse(userAddress),
     Address.parseFriendly(JETTON_MASTER_ADDRESS).address
   );
   const transaction = {
