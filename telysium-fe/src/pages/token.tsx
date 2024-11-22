@@ -15,9 +15,11 @@ import {
 } from '@/hooks/useStakeMutation';
 import { txStateEnum } from '@/types/action';
 import { useState } from 'react';
+import { useAccount } from '@/hooks/useAccount';
 
 export default function Token() {
   const { token } = useParams();
+  const { connected } = useAccount();
   const { data: stakeList = [] } = useStakeList();
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.DEPOSIT);
@@ -228,7 +230,7 @@ export default function Token() {
             </div>
           ) : (
             <div className="space-y-4">
-              {restakingInfo?.withdrawalJettons?.length === 0 ? (
+              {!connected || restakingInfo?.withdrawalJettons?.length === 0 ? (
                 <div className="text-sm text-muted-foreground text-center">
                   no data
                 </div>
