@@ -153,7 +153,6 @@ struct StakedJettonInfo {
 
 struct PendingJettonInfo {
     jettonAmount: Int as coins;
-    stakeTime: Int as uint32;
     pendingIndex: Int as uint32;
     unstakeTime: Int as uint32;
     unstakeThreshold: Int as uint32;
@@ -167,6 +166,7 @@ struct StakedToPending {
 struct PendingToStaked {
     jettonAmount: Int as coins;
     pendingIndex: Int as uint32;
+    stakedIndex: Int as uint32;
 }
 
 struct StakedInfo {
