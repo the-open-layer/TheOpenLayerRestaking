@@ -10,13 +10,22 @@ import { checkTxStatus } from '@/lib/stake';
 import { getLastTxHash } from '@/api';
 import { useUserRestaking } from './useUserRestaking';
 
-export const useWithdrawMutation = (restakingMaster: string) => {
+export const useWithdrawMutation = (
+  jettonMaster: string,
+  restakingMaster: string
+) => {
   const { refetch } = useUserRestaking(restakingMaster);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (pendingIndex: bigint) => {
+      console.log({ pendingIndex });
       const lastTxHash = await getLastTxHash(address);
-      const tx = await getWithdrawTx(pendingIndex, address, restakingMaster);
+      const tx = await getWithdrawTx(
+        pendingIndex,
+        address,
+        jettonMaster,
+        restakingMaster
+      );
       const result = await tonConnectUI.sendTransaction(tx);
       console.log('Withdraw transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);

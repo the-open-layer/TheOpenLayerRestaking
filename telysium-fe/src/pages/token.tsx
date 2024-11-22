@@ -30,6 +30,7 @@ export default function Token() {
   const restakeAmount = restakingInfo?.restakeAmount;
   const maxPendingAmount = restakingInfo?.maxPendingAmount;
   const { mutateAsync: withdraw } = useWithdrawMutation(
+    restakeToken!.jettonMaster,
     restakeToken!.restakingMaster
   );
   const { mutateAsync: redeposit } = useRedepositMutation(

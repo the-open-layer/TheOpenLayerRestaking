@@ -18,7 +18,6 @@ import TXModal from '@/components/ux/modals/tx';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, SUPPORTED_ACTION_TYPES } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
-// import { getStakeTx, getUnstakeTx, checkTxStatus } from '@/lib/stake';
 import { useBalance } from '@/hooks/useBalance';
 import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';

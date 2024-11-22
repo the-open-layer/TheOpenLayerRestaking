@@ -16,16 +16,17 @@ import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { delay } from '@/lib/utils';
 
-export const getStakingWallet = async (
+export const getStakingWalletAddress = async (
   userAddress: string,
   STAKING_MASTER_ADDRESS: string
 ) => {
   const stakingWallet = await StakingWalletTemplate.fromInit(
-    Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-    Address.parseRaw(userAddress)
+    Address.parse(STAKING_MASTER_ADDRESS),
+    Address.parse(userAddress)
   );
-  return stakingWallet;
+  return stakingWallet.address;
 };
+
 export const getStakeTx = async (
   amount: string,
   userAddress: string,
@@ -87,16 +88,15 @@ export const getUnstakeTx = async (
     forwardPayload: beginCell().endCell(),
   };
   console.log('unstakeMsg', unstakeMsg);
-  const stakingWallet = await StakingWalletTemplate.fromInit(
-    Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-    Address.parseRaw(userAddress)
+  const stakingWalletAddress = await getStakingWalletAddress(
+    userAddress,
+    STAKING_MASTER_ADDRESS
   );
-
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
     messages: [
       {
-        address: stakingWallet.address.toString(),
+        address: stakingWalletAddress.toString(),
         amount: toNano('0.2').toString(),
         payload: beginCell()
           .store(storeUnStake(unstakeMsg))
@@ -112,11 +112,11 @@ export const getUnstakeTx = async (
 export const getRedepositTx = async (
   pendingIndex: bigint,
   userAddress: string,
-  JETTON_MASTER_ADDRESS: string
+  STAKING_MASTER_ADDRESS: string
 ) => {
   const stakingWalletAddress = await getStakingWalletAddress(
     userAddress,
-    JETTON_MASTER_ADDRESS
+    STAKING_MASTER_ADDRESS
   );
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60,
@@ -145,8 +145,16 @@ export const getRedepositTx = async (
 export const getWithdrawTx = async (
   pendingIndex: bigint,
   userAddress: string,
+  // jettonMaster
+  JETTON_MASTER_ADDRESS: string,
   STAKING_MASTER_ADDRESS: string
 ) => {
+  console.log({
+    pendingIndex,
+    userAddress,
+    JETTON_MASTER_ADDRESS,
+    STAKING_MASTER_ADDRESS,
+  });
   const stakingWalletAddress = await getStakingWalletAddress(
     userAddress,
     STAKING_MASTER_ADDRESS
@@ -165,7 +173,7 @@ export const getWithdrawTx = async (
               pendingIndex: pendingIndex,
               tonAmount: toNano('0.1'),
               forwardAmount: toNano('0.05'),
-              jettonWallet: Address.parse(userAddress),
+              jettonWallet: Address.parse(JETTON_MASTER_ADDRESS),
               responseDestination: Address.parse(userAddress),
               forwardPayload: beginCell().endCell(),
             })
@@ -177,16 +185,6 @@ export const getWithdrawTx = async (
     ],
   };
   return transaction;
-};
-export const getStakingWalletAddress = async (
-  userAddress: string,
-  jettonMasterAddress: string
-) => {
-  const stakingWallet = await StakingWalletTemplate.fromInit(
-    Address.parse(jettonMasterAddress),
-    Address.parse(userAddress)
-  );
-  return stakingWallet.address;
 };
 
 export const getStakingInfo = async (
@@ -204,20 +202,6 @@ export const getStakingInfo = async (
   const res = await stakingWallet.getStakedInfo();
   return res;
 };
-
-// export const initTonClient = async (network: Network) => {
-//   const endpoint = await getHttpEndpoint({ network: network });
-//   return new TonClient({ endpoint });
-// };
-// export const getStakingInfo = async (
-//   client: TonClient,
-//   stakingWalletAddress: Address
-// ) => {
-//   const stakingWallet = client.open(
-//     StakingWalletTemplate.fromAddress(stakingWalletAddress)
-//   );
-//   return await stakingWallet.getStakedInfo();
-// };
 
 export const getTokenTVL = async (tokenAddress: string) => {
   return 100000000;
