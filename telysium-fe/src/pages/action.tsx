@@ -106,7 +106,7 @@ export default function Action() {
           action === ACTION_TYPES.DEPOSIT
             ? 'Available to stake'
             : 'Available to unstake',
-        value:
+        value: connected ? (
           action === ACTION_TYPES.DEPOSIT ? (
             isAmountLoading ? (
               <Skeleton className="w-24 h-8 bg-slate-300" />
@@ -121,7 +121,10 @@ export default function Action() {
             <div>
               {maxAmount} {token}
             </div>
-          ),
+          )
+        ) : (
+          <div>0 {token}</div>
+        ),
       },
     ];
 

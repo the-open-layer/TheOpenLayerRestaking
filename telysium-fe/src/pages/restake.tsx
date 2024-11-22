@@ -35,7 +35,7 @@ export default function Restake() {
         </div>
         <div className='p-0'>
           {isLoading ? (
-            <div>x</div>
+            <Skeleton className='h-4 w-20 bg-slate-200'/>
           ) : stakeList.length > 0 ? (
             <div className="space-y-1">
               {stakeList.map((asset, index) => (
