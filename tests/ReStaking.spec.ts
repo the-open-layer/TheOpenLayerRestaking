@@ -45,7 +45,9 @@ describe('ReStaking', () => {
 
         // Deploy StakingMaster
         stakingMaster = blockchain.openContract(
-            await StakingMasterTemplate.fromInit(deployer.getSender().address)
+            await StakingMasterTemplate.fromInit(
+                deployer.getSender().address,
+                jettonMaster.address)
         );
         await stakingMaster.send(
             deployer.getSender(),

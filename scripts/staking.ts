@@ -18,9 +18,21 @@ const randomInt = (): number => {
 }
 
 export async function run(provider: NetworkProvider): Promise<void> {
+    const jettonContent = buildJettonContent({
+        name: 'TB Test Jetton',
+        description: 'TB Test Jetton',
+        symbol: 'TBRTJ',
+        decimals: '9',
+        image: 'https://i.tbook.com/logo.svg',
+    });
+
+    const jettonMasterContract = provider.open(
+        await ExampleJettonMaster.fromInit(provider.sender().address!!, jettonContent));
+
     const stakingMasterContract = provider.open(
         await StakingMasterTemplate.fromInit(
-            provider.sender().address!!
+            provider.sender().address!!,
+            jettonMasterContract.address
         )
     );
 
@@ -45,17 +57,6 @@ export async function run(provider: NetworkProvider): Promise<void> {
             provider.sender().address!!
         )
     );
-
-    const jettonContent = buildJettonContent({
-        name: 'TB Test Jetton',
-        description: 'TB Test Jetton',
-        symbol: 'TBRTJ',
-        decimals: '9',
-        image: 'https://i.tbook.com/logo.svg',
-    });
-
-    const jettonMasterContract = provider.open(
-        await ExampleJettonMaster.fromInit(provider.sender().address!!, jettonContent));
 
     const jettonWalletContract = provider.open(
         await ExampleJettonWallet.fromInit(

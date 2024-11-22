@@ -118,8 +118,8 @@ trait StakingWallet with Common, Ownable {
                     // Update the staked record with remaining amount
                     self.stakedJettons.set(i, StakedJettonInfo{
                         jettonAmount: staked.jettonAmount - amountFromStake,
-                        stakeTime: staked.stakeTime,
                         stakeIndex: staked.stakeIndex,
+                        stakeTime: staked.stakeTime,
                         unstakeThreshold: staked.unstakeThreshold
                     });
                 }
@@ -172,6 +172,8 @@ trait StakingWallet with Common, Ownable {
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
         let pending = self.pendingJettons.get(msg.pendingIndex);
         nativeThrowUnless(codePendingIndexNotFound, pending != null);
+        nativeThrowUnless(codePendingJettonNotMaturity, 
+            pending!!.unstakeTime + pending!!.unstakeThreshold >= now());
 
         self.pendingJettons.del(pending!!.pendingIndex);
         let totalCost = 0;
