@@ -2,30 +2,80 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
+import TXModal from '@/components/ux/modals/tx';
+import { ACTION_TYPES } from '@/constant';
 // import { useTokenPrice } from '@/hooks/useTokenPrice';
 import {
   useWithdrawMutation,
   useRedepositMutation,
 } from '@/hooks/useStakeMutation';
+import { txStateEnum } from '@/types/action';
+import { useState } from 'react';
 
 export default function Token() {
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
   const restakeToken = stakeList.find((v) => v.symbol === token);
-
+  const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.DEPOSIT);
+  const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
+  const [pendingIndex, setPendingIndex] = useState<bigint>(BigInt(0));
   // const { data: tokenPrice } = useTokenPrice(token!);
   // console.log({ restakingInfo, tokenPrice });
   const { data: restakingInfo, isLoading: restakingInfoLoading } =
     useUserRestaking(restakeToken!.restakingMaster);
   const restakeAmount = restakingInfo?.restakeAmount;
   const maxPendingAmount = restakingInfo?.maxPendingAmount;
-  const { mutate: withdraw } = useWithdrawMutation(restakeToken!.restakingMaster);
-  const { mutate: redeposit } = useRedepositMutation(restakeToken!.restakingMaster);
-  console.log({restakingInfo})
+  const { mutateAsync: withdraw } = useWithdrawMutation(
+    restakeToken!.restakingMaster
+  );
+  const { mutateAsync: redeposit } = useRedepositMutation(
+    restakeToken!.restakingMaster
+  );
+  const navigate = useNavigate();
+  const handleClose = () => {
+    settxState(txStateEnum.IDLE);
+  };
+  const handleBacktodashboard = () => {
+    handleClose();
+    navigate(`/restake/${token}`);
+  };
+
+  const handleSubmit = async (
+    txAction = action,
+    txPendingIndex = pendingIndex
+  ) => {
+    if (txAction === ACTION_TYPES.WITHDRAW) {
+      settxState(txStateEnum.CONFIRMING);
+      try {
+        const res = await withdraw(txPendingIndex);
+        if (res) {
+          settxState(txStateEnum.SUCCESS);
+        } else {
+          settxState(txStateEnum.ERROR);
+        }
+      } catch (error) {
+        settxState(txStateEnum.ERROR);
+      }
+    } else {
+      settxState(txStateEnum.CONFIRMING);
+      try {
+        const res = await redeposit(txPendingIndex);
+        if (res) {
+          settxState(txStateEnum.SUCCESS);
+        } else {
+          settxState(txStateEnum.ERROR);
+        }
+      } catch (error) {
+        console.error('Transaction failed', error);
+        settxState(txStateEnum.ERROR);
+      }
+    }
+  };
+  console.log({ restakingInfo });
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }
@@ -86,7 +136,7 @@ export default function Token() {
               {restakingInfoLoading ? (
                 <Skeleton className="w-24 h-8 bg-slate-300" />
               ) : (
-                restakeAmount?.toFixed(2) ?? 0
+                (restakeAmount?.toFixed(2) ?? 0)
               )}
               <span className="text-muted-foreground">{token}</span>
             </div>
@@ -102,7 +152,7 @@ export default function Token() {
               {restakingInfoLoading ? (
                 <Skeleton className="w-24 h-8 bg-slate-300" />
               ) : (
-                maxPendingAmount?.toFixed(2) ?? 0
+                (maxPendingAmount?.toFixed(2) ?? 0)
               )}{' '}
               <span className="text-muted-foreground">{token}</span>
             </div>
@@ -132,7 +182,10 @@ export default function Token() {
                       className="flex-1"
                       disabled={tx.isLocked}
                       onClick={() => {
-                        redeposit(tx.pendingIndex);
+                        setAction(ACTION_TYPES.REDEPOSIT);
+                        settxState(txStateEnum.CONFIRMING);
+                        setPendingIndex(tx.pendingIndex);
+                        handleSubmit(ACTION_TYPES.REDEPOSIT, tx.pendingIndex);
                       }}
                     >
                       Redeposit
@@ -142,7 +195,11 @@ export default function Token() {
                       className="flex-1"
                       disabled={tx.isLocked}
                       onClick={() => {
-                        withdraw(tx.pendingIndex);
+                        // withdraw(tx.pendingIndex);
+                        setAction(ACTION_TYPES.WITHDRAW);
+                        settxState(txStateEnum.CONFIRMING);
+                        setPendingIndex(tx.pendingIndex);
+                        handleSubmit(ACTION_TYPES.WITHDRAW, tx.pendingIndex);
                       }}
                     >
                       Withdraw
@@ -200,6 +257,15 @@ export default function Token() {
           )}
         </CardContent>
       </Card>
+      <TXModal
+        title={action as ACTION_TYPES}
+        amount={null}
+        symol={token!}
+        status={txState}
+        handleClose={handleClose}
+        handleTryAgain={() => handleSubmit(action, pendingIndex)}
+        handleBacktodashboard={handleBacktodashboard}
+      />
     </main>
   );
 }

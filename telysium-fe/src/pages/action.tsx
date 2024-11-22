@@ -14,7 +14,7 @@ import { useAccount } from '@/hooks/useAccount';
 import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
 import { txStateEnum } from '@/types/action';
-import DepositModal from '@/components/ux/modals/tx';
+import TXModal from '@/components/ux/modals/tx';
 import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, SUPPORTED_ACTION_TYPES } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
@@ -244,7 +244,7 @@ export default function Action() {
         </Card>
       )}
 
-      <DepositModal
+      <TXModal
         title={action as ACTION_TYPES}
         amount={amount}
         symol={token!}

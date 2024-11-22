@@ -24,7 +24,7 @@ export default function TXModal({
   handleBacktodashboard,
 }: {
   title: ACTION_TYPES;
-  amount: string;
+  amount: string | null;
   symol: string;
   status: txStateEnum;
   handleClose: () => void;
@@ -37,9 +37,7 @@ export default function TXModal({
       case txStateEnum.CONFIRMING:
         return (
           <>
-            <DialogTitle>
-              {ACTION_TYPES_TITLE_MAP[title]}
-            </DialogTitle>
+            <DialogTitle>{ACTION_TYPES_TITLE_MAP[title]}</DialogTitle>
             <DialogDescription>
               Please confirm and sign the transaction in your wallet.
             </DialogDescription>
@@ -47,7 +45,11 @@ export default function TXModal({
               <div className="flex items-center gap-2 text-sm">
                 <Spinner className="size-4 rounded-full" />
                 <div className="text-muted-foreground">
-                  {ACTION_TYPES_NOW_MAP[title]} {amount || '0.000'} {symol}
+                  {ACTION_TYPES_NOW_MAP[title]}{' '}
+                  {[ACTION_TYPES.DEPOSIT, ACTION_TYPES.UNSTAKE].includes(title)
+                    ? amount || '0.000'
+                    : null}{' '}
+                  {symol}
                 </div>
               </div>
             </div>
