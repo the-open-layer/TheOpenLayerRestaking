@@ -51,7 +51,7 @@ describe('ReStaking', () => {
         );
         await stakingMaster.send(
             deployer.getSender(),
-            { value: toNano('1') },
+            { value: toNano('100') },
             { $$type: 'Deploy', queryId: 0n }
         );
 
@@ -86,6 +86,22 @@ describe('ReStaking', () => {
             )
         );
 
+        await stakingMaster.send(
+            deployer.getSender(),
+            { value: toNano('1') },
+            {
+                $$type: 'SetContractJettonWallet',
+                queryId: 0n,
+                thisContractJettonWallet: masterJettonWallet.address,
+            }
+        );
+
+        console.log('Deployer Jetton Wallet', deployerJettonWallet.address);
+        console.log('Staking Master Jetton Wallet', masterJettonWallet.address);
+
+        const thisJettonWallet = await stakingMaster.getThisJettonWallet();
+        expect(thisJettonWallet).toEqualAddress(masterJettonWallet.address);
+
         // Mint some tokens to user
         await jettonMaster.send(
             deployer.getSender(),
@@ -118,7 +134,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
     
@@ -133,11 +149,13 @@ describe('ReStaking', () => {
                 destination: stakingMaster.address,
                 response_destination: stakingMaster.address,
                 custom_payload: null,
-                forward_ton_amount: toNano('0.3'),
+                forward_ton_amount: toNano('0.5'),
                 forward_payload: beginCell().store(
                     storeStakeJetton(stakeMsg)).endCell()
             }
         );
+
+        //console.log(stakeResult);
 
         // Verify stake
         const stakedInfo = await stakingWallet.getStakedInfo();
@@ -154,7 +172,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
         
@@ -162,7 +180,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
     
@@ -233,7 +251,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
 
@@ -267,19 +285,19 @@ describe('ReStaking', () => {
         );
 
         // Wait for unstake threshold
-        await sleep(1000);
+        await sleep(5000);
 
         // Withdraw the unstaked position
         await stakingWallet.send(
             user.getSender(),
-            { value: toNano('1') },
+            { value: toNano('2') },
             {
                 $$type: 'Withdraw',
                 queryId: 0n,
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.05'),
-                jettonWallet: userJettonWallet.address,
+                forwardAmount: toNano('0.1'),
+                //jettonWallet: userJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
@@ -287,13 +305,14 @@ describe('ReStaking', () => {
 
         // Verify the withdrawal
         const stakedInfo = await stakingWallet.getStakedInfo();
+        console.log(stakedInfo);
         expect(stakedInfo.stakedJettons.size).toEqual(0);
         expect(stakedInfo.pendingJettons.size).toEqual(0);
         expect(stakedInfo.withdrawalJettons.size).toEqual(1);
 
         const withdrawalJetton = stakedInfo.withdrawalJettons.get(0n);
         expect(withdrawalJetton?.jettonAmount).toEqual(stakeAmount);
-    });
+    }, 50000);
 
     it('should redeposit pending jettons successfully', async () => {
         // First stake some jettons
@@ -302,7 +321,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
 
@@ -369,8 +388,6 @@ describe('ReStaking', () => {
             }
         );
 
-        console.log(result);
-
         const threshold = await stakingMaster.getUnstakeThreshold();
         expect(threshold).toEqual(newThreshold);
     });
@@ -420,7 +437,7 @@ describe('ReStaking', () => {
                 pendingIndex: 999n, // Non-existent index
                 tonAmount: toNano('0.1'),
                 forwardAmount: toNano('0.05'),
-                jettonWallet: userJettonWallet.address,
+                //jettonWallet: userJettonWallet.address,
                 responseDestination: user.address,
                 forwardPayload: null
             }
@@ -473,7 +490,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
 
@@ -541,7 +558,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
 
@@ -584,8 +601,8 @@ describe('ReStaking', () => {
                 queryId: 0n,
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.05'),
-                jettonWallet: masterJettonWallet.address,
+                forwardAmount: toNano('0.1'),
+                //jettonWallet: masterJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
@@ -594,9 +611,10 @@ describe('ReStaking', () => {
         });
 
         // Wait for threshold period
-        await sleep(2000);
-
-        // Try withdraw again (should succeed)
+        await sleep(10000);
+ 
+        let stakedInfo = await stakingWallet.getStakedInfo();
+       // Try withdraw again (should succeed)
         const withdrawResult = await stakingWallet.send(
             user.getSender(),
             { value: toNano('1') },
@@ -605,8 +623,8 @@ describe('ReStaking', () => {
                 queryId: 1n,
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.05'),
-                jettonWallet: masterJettonWallet.address,
+                forwardAmount: toNano('0.1'),
+                //jettonWallet: masterJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
@@ -615,11 +633,11 @@ describe('ReStaking', () => {
         console.log(withdrawResult);
 
         const afterAmount = (await userJettonWallet.getGetWalletData()).balance;
-        const stakedInfo = await stakingWallet.getStakedInfo();
+        stakedInfo = await stakingWallet.getStakedInfo();
         expect(stakedInfo.pendingJettons.size).toEqual(0);
         console.log({initialBalance, beforeAmount, afterAmount, stakeAmount});
         expect(afterAmount).toEqual(beforeAmount + stakeAmount);
-    }, 5000);
+    }, 20000);
 
     it('should unstake partial amount from multiple stakes', async () => {
         // First stake 10 jettons twice
@@ -628,7 +646,7 @@ describe('ReStaking', () => {
             $$type: 'StakeJetton' as const,
             tonAmount: toNano('0.1'),
             responseDestination: user.getSender().address,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: null
         };
         

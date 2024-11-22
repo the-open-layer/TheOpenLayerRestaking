@@ -74,7 +74,6 @@ trait StakingWallet with Common, Ownable {
         }
 
         // refund
-        self.reserveValue(0);
         send(SendParameters{
             to: msg.responseDestination,
             bounce: false,
@@ -174,7 +173,6 @@ trait StakingWallet with Common, Ownable {
         nativeThrowUnless(codePendingJettonNotMaturity, 
             pending!!.unstakeTime + pending!!.unstakeThreshold <= now());
 
-        self.pendingJettons.del(pending!!.pendingIndex);
         let totalCost = 0;
         // check cost
         totalCost += msg.forwardAmount;
@@ -186,13 +184,11 @@ trait StakingWallet with Common, Ownable {
             forwardAmount: msg.forwardAmount,
             tonAmount: msg.tonAmount,
             forwardPayload: msg.forwardPayload,
-            jettonWallet: msg.jettonWallet,
             destination: ctx.sender,
             stakeIndex: pending!!.pendingIndex,
             responseDestination: msg.responseDestination,
         };
         // told staking master to transfer released jetton
-        self.reserveValue(0);
         send(SendParameters{
             to: self.master,
             bounce: true,
@@ -200,6 +196,7 @@ trait StakingWallet with Common, Ownable {
             mode: SendRemainingValue,
             body: withdrawInternal.toCell(),
         });
+        self.pendingJettons.del(pending!!.pendingIndex);
         self.withdrawalJettons.set(pending!!.pendingIndex, WithdrawalJettonInfo{
             jettonAmount: pending!!.jettonAmount,
             withdrawTime: now(),
@@ -207,7 +204,6 @@ trait StakingWallet with Common, Ownable {
     }
 
     virtual fun receiveExcesses(msg: JettonExcesses) {
-        self.reserveValue(0);
          send(SendParameters{
                  to: self.owner,
                  bounce: false,

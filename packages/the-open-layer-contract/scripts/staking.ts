@@ -46,6 +46,24 @@ export async function run(provider: NetworkProvider): Promise<void> {
             queryId: 0n,
         }
     );
+
+    const stakeMasterJettonAddress = await ExampleJettonWallet.fromInit(
+        stakingMasterContract.address,
+        jettonMasterContract.address
+    );
+
+    await stakingMasterContract.send(
+        provider.sender(),
+        {
+            value: toNano('0.1'),
+        },
+        {
+            $$type: 'SetContractJettonWallet',
+            queryId: 0n,
+            thisContractJettonWallet: stakeMasterJettonAddress.address, // contractJettonWallet: 
+        }
+    );
+
     console.log("-------------------------------------")
     console.log('>> wait staking master deploy to: ' + stakingMasterContract.address.toString());
     console.log("-------------------------------------")

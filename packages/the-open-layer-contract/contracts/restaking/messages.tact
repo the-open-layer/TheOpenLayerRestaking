@@ -25,7 +25,6 @@ message(0x6b2f1e9d) Withdraw {
     pendingIndex: Int as uint32;
     tonAmount: Int as coins;
     forwardAmount: Int as coins;
-    jettonWallet: Address;
     responseDestination: Address;
     forwardPayload: Cell?;
 }
@@ -36,7 +35,6 @@ message(0xc5b9a2d1) WithdrawInternal {
     forwardAmount: Int as coins;
     tonAmount: Int as coins;
     stakeIndex: Int as uint32;
-    jettonWallet: Address;
     destination: Address;
     responseDestination: Address;
     forwardPayload: Cell?;
@@ -87,6 +85,11 @@ message(0x51fa3a81) StakeRelease {
     forwardAmount: Int as coins;
     // payload to forward
     forwardPayload: Cell?;
+}
+
+message(0xe1c6a3d9) SetContractJettonWallet {
+    queryId: Int as uint64;
+    thisContractJettonWallet: Address;
 }
 
 struct TokenTransferForwardPayload {

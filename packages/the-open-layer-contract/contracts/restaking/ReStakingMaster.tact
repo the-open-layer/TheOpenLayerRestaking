@@ -32,6 +32,7 @@ contract StakingWalletTemplate with StakingWallet {
 contract StakingMasterTemplate with StakingMaster {
     owner: Address;
     jettonMaster: Address;
+    thisContractJettonWallet: Address? = null;
     staticTax: Int as coins = ton("0.001");
     lockedValue: Int as coins = 0;
     unstakeThreshold: Int as uint32 = 5;
@@ -52,6 +53,7 @@ contract StakingMasterTemplate with StakingMaster {
 trait StakingMaster with Common, OwnableTransferable {
     owner: Address;
     jettonMaster: Address;
+    thisContractJettonWallet: Address?;
     staticTax: Int;
     lockedValue: Int;
     unstakeThreshold: Int;
@@ -71,6 +73,13 @@ trait StakingMaster with Common, OwnableTransferable {
         self.unstakeThreshold = msg.threshold;
     }
 
+    receive(msg: SetContractJettonWallet) {
+        let ctx = context();
+        // Only owner can modify the threshold
+        nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
+        self.thisContractJettonWallet = msg.thisContractJettonWallet;
+    }
+
     // user transfer jetton to staking master address,
     // and also set responseDestination to the staking master address.
     virtual fun receiveTransferNotification(msg: JettonTransferNotification) {
@@ -85,7 +94,6 @@ trait StakingMaster with Common, OwnableTransferable {
         let userWallet = self.getUserWallet(stakeMsg.responseDestination);
 
         // notify stake wallet to update staked info
-        self.reserveValue(0);
         send(SendParameters{
             to: contractAddress(userWallet),
             bounce: false,
@@ -112,18 +120,19 @@ trait StakingMaster with Common, OwnableTransferable {
             ctx.sender == contractAddress(self.getUserWallet(msg.destination)));
         let totalCost: Int = 0;
 
+        dump(msg.forwardAmount);
         send(SendParameters{
-            to: msg.jettonWallet,
+            to: self.thisContractJettonWallet!!,
             bounce: false,
-            value: 0,
+            value: msg.forwardAmount,
             body: JettonTransfer{
                 query_id: msg.queryId,
                 amount: msg.jettonAmount,
                 destination: msg.destination,
                 response_destination: msg.responseDestination,
                 custom_payload: "jetton-withdraw".asComment(),
-                forward_ton_amount: msg.forwardAmount,
-                forward_payload: msg.forwardPayload,
+                forward_ton_amount: 0,
+                forward_payload: emptyCell()
             }.toCell(),
         });
 
@@ -132,23 +141,20 @@ trait StakingMaster with Common, OwnableTransferable {
         nativeThrowUnless(codeInflowValueNotSufficient, ctx.value >= totalCost + self.staticTax);
 
         // forward
-        if (msg.forwardAmount > 0) {
-            send(SendParameters{
-                to: msg.destination,
-                bounce: false,
-                value: 0,
-                body: StakeReleaseNotification{
-                    queryId: msg.queryId,
-                    amount: msg.jettonAmount,
-                    stakeIndex: msg.stakeIndex,
-                    destination: msg.destination,
-                    forwardPayload: msg.forwardPayload,
-                }.toCell(),
-            });
-        }
+        send(SendParameters{
+            to: msg.destination,
+            bounce: false,
+            value: 0,
+            body: StakeReleaseNotification{
+                queryId: msg.queryId,
+                amount: msg.jettonAmount,
+                stakeIndex: msg.stakeIndex,
+                destination: msg.destination,
+                forwardPayload: msg.forwardPayload,
+            }.toCell(),
+        });
 
         // refund
-        self.reserveValue(0);
         send(SendParameters{
             to: msg.responseDestination,
             bounce: false,
@@ -171,4 +177,7 @@ trait StakingMaster with Common, OwnableTransferable {
         return self.unstakeThreshold;
     }
 
+    get fun thisJettonWallet(): Address? {
+        return self.thisContractJettonWallet;
+    }
 }
