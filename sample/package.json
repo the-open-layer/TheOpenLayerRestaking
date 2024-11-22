@@ -19,6 +19,7 @@
         "@tonconnect/ui": "^2.0.9",
         "@vitejs/plugin-react": "^4.3.3",
         "buffer": "^6.0.3",
+        "tonweb": "^0.0.66",
         "vite": "^5.4.11"
     },
     "devDependencies": {

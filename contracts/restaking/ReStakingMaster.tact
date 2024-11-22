@@ -31,12 +31,14 @@ contract StakingWalletTemplate with StakingWallet {
 
 contract StakingMasterTemplate with StakingMaster {
     owner: Address;
+    jettonMaster: Address;
     staticTax: Int as coins = ton("0.001");
     lockedValue: Int as coins = 0;
     unstakeThreshold: Int as uint32 = 5;
 
-    init(owner: Address) {
+    init(owner: Address, jettonMaster: Address) {
         self.owner = owner;
+        self.jettonMaster = jettonMaster;
     }
 
     override inline fun getUserWallet(owner: Address): StateInit {
@@ -49,6 +51,7 @@ contract StakingMasterTemplate with StakingMaster {
 
 trait StakingMaster with Common, OwnableTransferable {
     owner: Address;
+    jettonMaster: Address;
     staticTax: Int;
     lockedValue: Int;
     unstakeThreshold: Int;

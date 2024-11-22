@@ -1,6 +1,7 @@
 import { TonConnectUI } from '@tonconnect/ui';
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import { TonClient, Address, beginCell, toNano, fromNano } from "@ton/ton";
+import TonWeb from 'tonweb';
 import { 
     StakingMasterTemplate, 
     storeStakeJetton,
@@ -14,7 +15,6 @@ import {
 import {
     StakingWalletTemplate,
 } from '../build/ReStaking/tact_StakingWalletTemplate';
-import { ExampleJettonWallet } from '../build/JettonExample/tact_ExampleJettonWallet';
 
 // UI Elements
 const connectWalletBtn = document.getElementById('connectWallet') as HTMLButtonElement;
@@ -43,7 +43,8 @@ const tonConnectUI = new TonConnectUI({
 
 // Contract addresses from environment variables
 const STAKING_MASTER_ADDRESS = "EQCY2Z3jYGX_8aV4HsOxGAQkiWgKsYJOZywhB8KI2xTAgzul";
-const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
+//const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
+const JETTON_MASTER_ADDRESS = "kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN";
 
 let userAddress: string;
 let userWalletAddress: Address;
@@ -56,6 +57,22 @@ let client: TonClient;
 async function initClient() {
     const endpoint = await getHttpEndpoint({ network: 'testnet' });
     client = new TonClient({ endpoint });
+}
+
+const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
+    apiKey: ''
+  })
+);
+// Helper function to calculate jetton wallet address
+async function getJettonWalletAddress(ownerAddress: string, jettonMasterAddress: string): Promise<string> {
+    //@ts-ignore
+    const jettonMasterContract = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {
+        address: jettonMasterAddress
+    });
+
+    const jettonWalletAddress = await jettonMasterContract.getJettonWalletAddress(
+        new TonWeb.utils.Address(ownerAddress));
+    return jettonWalletAddress.toString();
 }
 
 // Initialize on load
@@ -78,12 +95,13 @@ tonConnectUI.onStatusChange(async (wallet) => {
         );
         stakingWalletAddress = stakingWallet.address;
         
-        // Calculate user staking address and master jetton wallet
-        const masterJettonWallet = await ExampleJettonWallet.fromInit(
-            Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-            Address.parseFriendly(JETTON_MASTER_ADDRESS).address
+        // Calculate master jetton wallet address using TonWeb
+        const masterJettonWalletAddress = await getJettonWalletAddress(
+            STAKING_MASTER_ADDRESS,
+            JETTON_MASTER_ADDRESS
         );
-        stakeMasterJettonAddress = masterJettonWallet.address;
+        stakeMasterJettonAddress = Address.parse(masterJettonWalletAddress);
+        console.log('masterJettonWalletAddress', masterJettonWalletAddress);
         userStakingAddress = stakingWalletAddress;
         
         // Enable buttons
@@ -119,10 +137,15 @@ async function updateBalances() {
         const balance = await client.getBalance(Address.parse(userAddress));
         walletBalanceSpan.textContent = fromNano(balance);
 
+        // Get user's jetton wallet address
+        const userJettonWalletAddress = await getJettonWalletAddress(
+            userAddress,
+            JETTON_MASTER_ADDRESS
+        );
+
         // Get staking info
         if (stakingWalletAddress) {
-            const stakingWallet = client.open(StakingWalletTemplate.fromAddress(
-                Address.parseFriendly(stakingWalletAddress.toString()).address));
+            const stakingWallet = client.open(StakingWalletTemplate.fromAddress(stakingWalletAddress));
             const stakedInfo = await stakingWallet.getStakedInfo();
             
             // Format staked positions
@@ -164,21 +187,28 @@ async function updateBalances() {
 
 async function stake() {
     try {
-        const amount = toNano(stakeAmountInput.value);
+        const amount = stakeAmountInput.value;
+        if (!amount) return;
+
+        // Get user's jetton wallet address
+        const userJettonWalletAddress = await getJettonWalletAddress(
+            userAddress,
+            JETTON_MASTER_ADDRESS
+        );
 
         // Prepare stake message
         const stakeMsg: StakeJetton = {
             $$type: 'StakeJetton',
             tonAmount: toNano('0.1'),
-            responseDestination: Address.parse(userAddress),
+            responseDestination: userWalletAddress,
             forwardAmount: toNano('0.05'),
-            forwardPayload: beginCell().endCell()
+            forwardPayload: beginCell().endCell(),
         };
 
         const jettonTransfer = {
             $$type: 'JettonTransfer' as const,
             query_id: BigInt(Math.ceil(Math.random() * 1000000)),
-            amount: amount,
+            amount: toNano(amount),
             destination: Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
             response_destination: userWalletAddress,
             custom_payload: null,
@@ -187,15 +217,11 @@ async function stake() {
         };
 
         // Create transaction
-        const userJettonWallet = await ExampleJettonWallet.fromInit(
-            userWalletAddress,
-            Address.parseFriendly(JETTON_MASTER_ADDRESS).address,
-        );
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 60,
             messages: [
                 {
-                    address: userJettonWallet.address.toString(),
+                    address: userJettonWalletAddress,
                     amount: toNano('0.5').toString(),
                     payload: beginCell()
                         .store(storeJettonTransfer(jettonTransfer))
@@ -206,11 +232,9 @@ async function stake() {
             ]
         };
 
-        const result = await tonConnectUI.sendTransaction(transaction);
-        console.log('Stake transaction:', result);
-        
-        addToHistory(`Staked ${stakeAmountInput.value} TBRTJ`);
-        await updateBalances();
+        // Send transaction
+        await tonConnectUI.sendTransaction(transaction);
+        addToHistory(`Staked ${amount} TBRTJ`);
     } catch (error) {
         console.error('Error staking:', error);
     }
