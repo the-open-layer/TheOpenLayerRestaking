@@ -6,12 +6,12 @@ import { formatNumber } from '@/lib/numbers';
 import Big from 'big.js';
 import { useAccount } from './useAccount';
 
-export const useUserRestaking = () => {
+export const useUserRestaking = (restakingMaster:string) => {
   const { address: userAddress } = useAccount();
   return useQuery({
     queryKey: ['user-restaking', userAddress],
     queryFn: async () => {
-      const info = await getStakingInfo(userAddress);
+      const info = await getStakingInfo(userAddress, restakingMaster);
       const [pendingJettons, stakedJettons, withdrawalJettons] = [
         info.pendingJettons?.values()?.map((v) => {
           return {
@@ -50,7 +50,7 @@ export const useUserRestaking = () => {
         }, Big(0)) ?? Big(0),
       };
     },
-    enabled: !!userAddress,
+    enabled: !!userAddress && !!restakingMaster,
     refetchOnMount: false,
   });
 };

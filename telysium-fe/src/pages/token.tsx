@@ -13,18 +13,19 @@ import {
 } from '@/hooks/useStakeMutation';
 
 export default function Token() {
-  const { data: restakingInfo, isLoading: restakingInfoLoading } =
-    useUserRestaking();
   const { token } = useParams();
   const { data: stakeList = [] } = useStakeList();
+  const restakeToken = stakeList.find((v) => v.symbol === token);
+
   // const { data: tokenPrice } = useTokenPrice(token!);
   // console.log({ restakingInfo, tokenPrice });
+  const { data: restakingInfo, isLoading: restakingInfoLoading } =
+    useUserRestaking(restakeToken!.restakingMaster);
   const restakeAmount = restakingInfo?.restakeAmount;
   const maxPendingAmount = restakingInfo?.maxPendingAmount;
-  const { mutate: withdraw } = useWithdrawMutation();
-  const { mutate: redeposit } = useRedepositMutation();
+  const { mutate: withdraw } = useWithdrawMutation(restakeToken!.restakingMaster);
+  const { mutate: redeposit } = useRedepositMutation(restakeToken!.restakingMaster);
 
-  const restakeToken = stakeList.find((v) => v.symbol === token);
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }
@@ -85,7 +86,7 @@ export default function Token() {
               {restakingInfoLoading ? (
                 <Skeleton className="w-24 h-8 bg-slate-300" />
               ) : (
-                restakeAmount?.toFixed(2)
+                restakeAmount?.toFixed(2) ?? 0
               )}
               <span className="text-muted-foreground">{token}</span>
             </div>
@@ -101,7 +102,7 @@ export default function Token() {
               {restakingInfoLoading ? (
                 <Skeleton className="w-24 h-8 bg-slate-300" />
               ) : (
-                maxPendingAmount?.toFixed(2)
+                maxPendingAmount?.toFixed(2) ?? 0
               )}{' '}
               <span className="text-muted-foreground">{token}</span>
             </div>

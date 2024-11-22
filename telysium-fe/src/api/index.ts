@@ -23,8 +23,9 @@ export const getTonWeb = () => {
 };
 
 interface RemoteData {
-  restakingMaster: string;
+  // restakingMaster: string;
   tokens: Array<{
+    restakingMaster: string;
     jettonMaster: string;
     name: string;
     symbol: string;

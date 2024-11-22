@@ -10,13 +10,13 @@ import { checkTxStatus } from '@/lib/stake';
 import { getLastTxHash } from '@/api';
 import { useUserRestaking } from './useUserRestaking';
 
-export const useWithdrawMutation = () => {
-  const { refetch } = useUserRestaking();
+export const useWithdrawMutation = (restakingMaster: string) => {
+  const { refetch } = useUserRestaking(restakingMaster);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (pendingIndex: bigint) => {
       const lastTxHash = await getLastTxHash(address);
-      const tx = await getWithdrawTx(pendingIndex, address);
+      const tx = await getWithdrawTx(pendingIndex, address, restakingMaster);
       const result = await tonConnectUI.sendTransaction(tx);
       console.log('Withdraw transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);
@@ -25,13 +25,13 @@ export const useWithdrawMutation = () => {
     },
   });
 };
-export const useRedepositMutation = () => {
-  const { refetch } = useUserRestaking();
+export const useRedepositMutation = (restakingMaster: string) => {
+  const { refetch } = useUserRestaking(restakingMaster);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (pendingIndex: bigint) => {
       const lastTxHash = await getLastTxHash(address);
-      const tx = await getRedepositTx(pendingIndex, address);
+      const tx = await getRedepositTx(pendingIndex, address, restakingMaster);
       const result = await tonConnectUI.sendTransaction(tx);
       console.log('Redeposit transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);
@@ -41,13 +41,21 @@ export const useRedepositMutation = () => {
   });
 };
 
-export const useStakeMutation = (jettonMasterAddress: string) => {
-  const { refetch } = useUserRestaking();
+export const useStakeMutation = (
+  jettonMasterAddress: string,
+  restakingMaster: string
+) => {
+  const { refetch } = useUserRestaking(restakingMaster);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (amount: string) => {
       const lastTxHash = await getLastTxHash(address);
-      const tx = await getStakeTx(amount, address, jettonMasterAddress);
+      const tx = await getStakeTx(
+        amount,
+        address,
+        jettonMasterAddress,
+        restakingMaster
+      );
       const result = await tonConnectUI.sendTransaction(tx);
       console.log('Stake transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);
@@ -57,14 +65,13 @@ export const useStakeMutation = (jettonMasterAddress: string) => {
   });
 };
 
-
-export const useUnstakeMutation = () => {
-  const { refetch } = useUserRestaking();
+export const useUnstakeMutation = (restakingMaster: string) => {
+  const { refetch } = useUserRestaking(restakingMaster);
   const { address, tonConnectUI } = useAccount();
   return useMutation({
     mutationFn: async (amount: string) => {
       const lastTxHash = await getLastTxHash(address);
-      const tx = await getUnstakeTx(amount, address);
+      const tx = await getUnstakeTx(amount, address, restakingMaster);
       const result = await tonConnectUI.sendTransaction(tx);
       console.log('Unstake transaction:', result);
       const res = await checkTxStatus(lastTxHash, address);

@@ -15,11 +15,13 @@ import { getTonClient, getLastTxHash } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { delay } from '@/lib/utils';
+import TonWeb from 'tonweb';
+import { getTonWeb } from '@/api';
 
-export const STAKING_MASTER_ADDRESS = import.meta.env
-  .VITE_STAKING_MASTER_ADDRESS;
-
-export const getStakingWallet = async (userAddress: string) => {
+export const getStakingWallet = async (
+  userAddress: string,
+  STAKING_MASTER_ADDRESS: string
+) => {
   const stakingWallet = await StakingWalletTemplate.fromInit(
     Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
     Address.parseRaw(userAddress)
@@ -29,7 +31,8 @@ export const getStakingWallet = async (userAddress: string) => {
 export const getStakeTx = async (
   amount: string,
   userAddress: string,
-  JETTON_MASTER_ADDRESS: string
+  JETTON_MASTER_ADDRESS: string,
+  STAKING_MASTER_ADDRESS: string
 ) => {
   // Prepare stake message using the generated type
   const stakeMsg: StakeJetton = {
@@ -72,7 +75,11 @@ export const getStakeTx = async (
   return transaction;
 };
 
-export const getUnstakeTx = async (amount: string, userAddress: string) => {
+export const getUnstakeTx = async (
+  amount: string,
+  userAddress: string,
+  STAKING_MASTER_ADDRESS: string
+) => {
   const unstakeMsg: UnStake = {
     $$type: 'UnStake',
     queryId: BigInt(Math.ceil(Math.random() * 1000000)),
@@ -106,9 +113,13 @@ export const getUnstakeTx = async (amount: string, userAddress: string) => {
 
 export const getRedepositTx = async (
   pendingIndex: bigint,
-  userAddress: string
+  userAddress: string,
+  JETTON_MASTER_ADDRESS: string
 ) => {
-  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const stakingWalletAddress = await getStakingWalletAddress(
+    userAddress,
+    JETTON_MASTER_ADDRESS
+  );
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60,
     messages: [
@@ -135,9 +146,13 @@ export const getRedepositTx = async (
 };
 export const getWithdrawTx = async (
   pendingIndex: bigint,
-  userAddress: string
+  userAddress: string,
+  STAKING_MASTER_ADDRESS: string
 ) => {
-  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const stakingWalletAddress = await getStakingWalletAddress(
+    userAddress,
+    STAKING_MASTER_ADDRESS
+  );
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60,
     messages: [
@@ -165,19 +180,34 @@ export const getWithdrawTx = async (
   };
   return transaction;
 };
-export const getStakingWalletAddress = async (userAddress: string) => {
-  const stakingWallet = await StakingWalletTemplate.fromInit(
-    Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
-    Address.parseFriendly(userAddress).address
+export const getStakingWalletAddress = async (
+  userAddress: string,
+  jettonMasterAddress: string
+) => {
+  const jettonMasterContract = new TonWeb.token.jetton.JettonMinter(
+    getTonWeb().provider,
+    //@ts-ignore
+    {
+      address: jettonMasterAddress,
+    }
   );
-  return stakingWallet.address;
+  const jettonWalletAddress = await jettonMasterContract.getJettonWalletAddress(
+    new TonWeb.utils.Address(userAddress)
+  );
+  return jettonWalletAddress.toString();
 };
 
-export const getStakingInfo = async (userAddress: string) => {
+export const getStakingInfo = async (
+  userAddress: string,
+  STAKING_MASTER_ADDRESS: string
+) => {
   const client = await getTonClient();
-  const stakingWalletAddress = await getStakingWalletAddress(userAddress);
+  const stakingWalletAddress = await getStakingWalletAddress(
+    userAddress,
+    STAKING_MASTER_ADDRESS
+  );
   const stakingWallet = client.open(
-    StakingWalletTemplate.fromAddress(stakingWalletAddress)
+    StakingWalletTemplate.fromAddress(Address.parse(stakingWalletAddress))
   );
   const res = await stakingWallet.getStakedInfo();
   return res;
@@ -225,7 +255,7 @@ export const checkTxStatus = async (
   let time = 0;
   while (true) {
     const newLastTxHash = await getLastTxHash(userAddress);
-    console.log({newLastTxHash, lastTxHash, time});
+    console.log({ newLastTxHash, lastTxHash, time });
     if (newLastTxHash !== lastTxHash) {
       return true;
     }

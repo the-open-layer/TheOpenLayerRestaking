@@ -35,17 +35,19 @@ export default function Action() {
   const [depositState, setDepositState] = useState<DepositStateEnum>(
     DepositStateEnum.IDLE
   );
-
-  const { data: restakingInfo, isLoading: restakingInfoLoading } =
-    useUserRestaking();
   const restakeToken = stakeList.find((v) => v.symbol === token);
+  const { data: restakingInfo, isLoading: restakingInfoLoading } =
+    useUserRestaking(restakeToken!.restakingMaster);
   const { data: tokenAmount, isLoading: isAmountLoading } = useBalance(
     restakeToken!.jettonMaster
   );
   const { mutateAsync: stakeMutation } = useStakeMutation(
-    restakeToken!.jettonMaster
+    restakeToken!.jettonMaster,
+    restakeToken!.restakingMaster
   );
-  const { mutateAsync: unstakeMutation } = useUnstakeMutation();
+  const { mutateAsync: unstakeMutation } = useUnstakeMutation(
+    restakeToken!.restakingMaster
+  );
 
   const maxAmount = useMemo(() => {
     if (action === ACTION_TYPES.DEPOSIT) {
