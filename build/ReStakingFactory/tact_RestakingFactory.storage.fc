@@ -1,0 +1,239 @@
+;;
+;; Type: StateInit
+;; TLB: _ code:^cell data:^cell = StateInit
+;;
+
+((cell, cell)) $StateInit$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (cell vvv'code, cell vvv'data) = __tact_tuple_destroy_2(v);
+    return (vvv'code, vvv'data);
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ bounce:bool to:address value:int257 mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell = SendParameters
+;;
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_bounce_to_value_mode_body_code_data(int $bounce, slice $to, int $value, int $mode, cell $body, cell $code, cell $data) inline {
+    return ($bounce, $to, $value, $mode, $body, $code, $data);
+}
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body_code_data(slice $to, int $value, int $mode, cell $body, cell $code, cell $data) inline {
+    return (true, $to, $value, $mode, $body, $code, $data);
+}
+
+;;
+;; Type: Deploy
+;; Header: 0x946a98b6
+;; TLB: deploy#946a98b6 queryId:uint64 = Deploy
+;;
+
+(slice, ((int))) $Deploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2490013878);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: DeployOk
+;; Header: 0xaff90f57
+;; TLB: deploy_ok#aff90f57 queryId:uint64 = DeployOk
+;;
+
+builder $DeployOk$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2952335191, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DeployOk$_store_cell((int) v) inline {
+    return $DeployOk$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline {
+    return ($queryId);
+}
+
+;;
+;; Type: ChangeOwner
+;; Header: 0x819dbe99
+;; TLB: change_owner#819dbe99 queryId:uint64 newOwner:address = ChangeOwner
+;;
+
+(slice, ((int, slice))) $ChangeOwner$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2174598809);
+    var v'queryId = sc_0~load_uint(64);
+    var v'newOwner = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'newOwner));
+}
+
+;;
+;; Type: ChangeOwnerOk
+;; Header: 0x327b2b4a
+;; TLB: change_owner_ok#327b2b4a queryId:uint64 newOwner:address = ChangeOwnerOk
+;;
+
+builder $ChangeOwnerOk$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'newOwner) = v;
+    build_0 = store_uint(build_0, 846932810, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'newOwner);
+    return build_0;
+}
+
+cell $ChangeOwnerOk$_store_cell((int, slice) v) inline {
+    return $ChangeOwnerOk$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $ChangeOwnerOk$_constructor_queryId_newOwner(int $queryId, slice $newOwner) inline {
+    return ($queryId, $newOwner);
+}
+
+;;
+;; Type: StakingMasterData
+;; TLB: _ jettonMaster:address symbol:^string name:^string image:^string = StakingMasterData
+;;
+
+builder $StakingMasterData$_store(builder build_0, (slice, slice, slice, slice) v) inline {
+    var (v'jettonMaster, v'symbol, v'name, v'image) = v;
+    build_0 = __tact_store_address(build_0, v'jettonMaster);
+    build_0 = build_0.store_ref(begin_cell().store_slice(v'symbol).end_cell());
+    build_0 = build_0.store_ref(begin_cell().store_slice(v'name).end_cell());
+    build_0 = build_0.store_ref(begin_cell().store_slice(v'image).end_cell());
+    return build_0;
+}
+
+cell $StakingMasterData$_store_cell((slice, slice, slice, slice) v) inline {
+    return $StakingMasterData$_store(begin_cell(), v).end_cell();
+}
+
+(slice, ((slice, slice, slice, slice))) $StakingMasterData$_load(slice sc_0) inline {
+    var v'jettonMaster = sc_0~__tact_load_address();
+    var v'symbol = sc_0~load_ref().begin_parse();
+    var v'name = sc_0~load_ref().begin_parse();
+    var v'image = sc_0~load_ref().begin_parse();
+    return (sc_0, (v'jettonMaster, v'symbol, v'name, v'image));
+}
+
+tuple $StakingMasterData$_as_optional((slice, slice, slice, slice) v) inline {
+    var (v'jettonMaster, v'symbol, v'name, v'image) = v;
+    return __tact_tuple_create_4(v'jettonMaster, v'symbol, v'name, v'image);
+}
+
+tuple $StakingMasterData$_load_opt(cell cl) inline {
+    if (null?(cl)) {
+        return null();
+    }
+    var sc = cl.begin_parse();
+    return $StakingMasterData$_as_optional(sc~$StakingMasterData$_load());
+}
+
+((slice, slice, slice, slice)) $StakingMasterData$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (slice vvv'jettonMaster, slice vvv'symbol, slice vvv'name, slice vvv'image) = __tact_tuple_destroy_4(v);
+    return (vvv'jettonMaster, vvv'symbol, vvv'name, vvv'image);
+}
+
+tuple $StakingMasterData$_to_tuple(((slice, slice, slice, slice)) v) inline {
+    var (v'jettonMaster, v'symbol, v'name, v'image) = v;
+    return __tact_tuple_create_4(v'jettonMaster, v'symbol, v'name, v'image);
+}
+
+tuple $StakingMasterData$_to_opt_tuple(tuple v) inline {
+    if (null?(v)) { return null(); } 
+    return $StakingMasterData$_to_tuple($StakingMasterData$_not_null(v)); 
+}
+
+tuple $StakingMasterData$_to_opt_external(tuple v) inline {
+    var loaded = $StakingMasterData$_to_opt_tuple(v);
+    if (null?(loaded)) {
+        return null();
+    } else {
+        return (loaded);
+    }
+}
+
+;;
+;; Type: DeployReStakingMaster
+;; Header: 0x02c7883a
+;; TLB: deploy_re_staking_master#02c7883a queryId:uint64 data:StakingMasterData{jettonMaster:address,symbol:^string,name:^string,image:^string} = DeployReStakingMaster
+;;
+
+(slice, ((int, (slice, slice, slice, slice)))) $DeployReStakingMaster$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 46630970);
+    var v'queryId = sc_0~load_uint(64);
+    var v'data = sc_0~$StakingMasterData$_load();
+    return (sc_0, (v'queryId, v'data));
+}
+
+;;
+;; Type: StakingMasterTemplate
+;;
+
+builder $StakingMasterTemplate$init$_store(builder build_0, (slice) v) inline {
+    var (v'owner) = v;
+    build_0 = __tact_store_address(build_0, v'owner);
+    return build_0;
+}
+
+(cell, cell) $StakingMasterTemplate$_init_child(cell sys', slice $owner) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: StakingMasterTemplate
+    cell mine = __tact_dict_get_code(source, 4482);
+    contracts = __tact_dict_set_code(contracts, 4482, mine);
+    
+    ;; Contract Code: StakingWalletTemplate
+    cell code_17236 = __tact_dict_get_code(source, 17236);
+    contracts = __tact_dict_set_code(contracts, 17236, code_17236);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $StakingMasterTemplate$init$_store(b, ($owner));
+    return (mine, b.end_cell());
+}
+
+;;
+;; Type: RestakingFactory
+;;
+
+builder $RestakingFactory$_store(builder build_0, (int, slice, cell) v) inline {
+    var (v'index, v'owner, v'masters) = v;
+    build_0 = build_0.store_uint(v'index, 64);
+    build_0 = __tact_store_address(build_0, v'owner);
+    build_0 = build_0.store_dict(v'masters);
+    return build_0;
+}
+
+(slice, ((int, slice, cell))) $RestakingFactory$_load(slice sc_0) inline {
+    var v'index = sc_0~load_uint(64);
+    var v'owner = sc_0~__tact_load_address();
+    var v'masters = sc_0~load_dict();
+    return (sc_0, (v'index, v'owner, v'masters));
+}
+
+(int, slice, cell) $RestakingFactory$_contract_load() impure inline_ref {
+    slice $sc = get_data().begin_parse();
+    __tact_context_sys = $sc~load_ref();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$RestakingFactory$_load();
+    } else {
+        ;; Allow only workchain deployments
+        throw_unless(137, my_address().preload_uint(11) == 1024);
+        return $RestakingFactory$_contract_init();
+    }
+}
+
+() $RestakingFactory$_contract_store((int, slice, cell) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_ref(__tact_context_sys);
+    b = b.store_int(true, 1);
+    b = $RestakingFactory$_store(b, v);
+    set_data(b.end_cell());
+}

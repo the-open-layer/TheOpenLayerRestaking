@@ -10,8 +10,7 @@ import {
   storeJettonTransfer,
 } from '../../../build/ReStaking/tact_StakingMasterTemplate';
 import { StakingWalletTemplate } from '../../../build/ReStaking/tact_StakingWalletTemplate';
-import { ExampleJettonWallet } from '../../../build/JettonExample/tact_ExampleJettonWallet';
-import { getTonClient, getLastTxHash } from '@/api';
+import { getTonClient, getLastTxHash, getUserJettonWallet } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { delay } from '@/lib/utils';
@@ -53,15 +52,12 @@ export const getStakeTx = async (
     forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell(),
   };
   // Create transaction
-  const userJettonWallet = await ExampleJettonWallet.fromInit(
-    Address.parse(userAddress),
-    Address.parseFriendly(JETTON_MASTER_ADDRESS).address
-  );
+  const userJettonWallet = await getUserJettonWallet(userAddress, JETTON_MASTER_ADDRESS);
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
     messages: [
       {
-        address: userJettonWallet.address.toString(),
+        address: userJettonWallet.toString(),
         amount: toNano('0.5').toString(),
         payload: beginCell()
           .store(storeJettonTransfer(jettonTransfer))

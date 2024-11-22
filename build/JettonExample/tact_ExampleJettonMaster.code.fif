@@ -1,0 +1,782 @@
+PROGRAM{
+  DECLPROC __tact_verify_address
+  DECLPROC __tact_load_address
+  DECLPROC __tact_store_address
+  DECLPROC __tact_create_address
+  DECLPROC __tact_compute_contract_address
+  DECLPROC __tact_not_null
+  DECLPROC __tact_context_get
+  DECLPROC __tact_context_get_sender
+  DECLPROC __tact_store_bool
+  DECLPROC __tact_slice_eq_bits
+  DECLPROC __tact_dict_set_code
+  DECLPROC __tact_dict_get_code
+  DECLPROC $Deploy$_load
+  DECLPROC $DeployOk$_store
+  DECLPROC $DeployOk$_store_cell
+  DECLPROC $JettonMint$_load
+  DECLPROC $JettonInternalTransfer$_store
+  DECLPROC $JettonInternalTransfer$_store_cell
+  DECLPROC $JettonBurnNotification$_load
+  DECLPROC $ExampleJettonMaster$_store
+  DECLPROC $ExampleJettonMaster$_load
+  DECLPROC $StateInit$_get_code
+  DECLPROC $StateInit$_not_null
+  DECLPROC $JettonData$_to_external
+  DECLPROC $ExampleJettonWallet$init$_store
+  DECLPROC $ExampleJettonMaster$init$_load
+  DECLPROC $ExampleJettonMaster$_contract_init
+  DECLPROC $ExampleJettonMaster$_contract_load
+  DECLPROC $ExampleJettonMaster$_contract_store
+  DECLPROC $global_emptyCell
+  DECLPROC $global_contractAddress
+  DECLPROC $global_send
+  DECLPROC $ExampleJettonWallet$_init_child
+  DECLPROC $SendParameters$_constructor_bounce_to_value_mode_body_code_data
+  DECLPROC $SendParameters$_constructor_to_value_bounce_mode_body_code_data
+  DECLPROC $JettonInternalTransfer$_constructor_query_id_amount_response_address_from_forward_ton_amount_forward_payload
+  DECLPROC $ExampleJettonMaster$_fun__mint_validate
+  DECLPROC $ExampleJettonMaster$_fun_calculate_jetton_wallet_init
+  DECLPROC $ExampleJettonMaster$_fun_forward
+  DECLPROC $ExampleJettonMaster$_fun_notify
+  DECLPROC $ExampleJettonMaster$_fun__mint
+  DECLPROC $ExampleJettonMaster$_fun__burn_notification_validate
+  DECLPROC $SendParameters$_constructor_to_value_bounce_mode
+  DECLPROC $ExampleJettonMaster$_fun__burn_notification
+  DECLPROC $JettonData$_constructor_total_supply_mintable_admin_address_jetton_content_jetton_wallet_code
+  DECLPROC $ExampleJettonMaster$_fun_get_jetton_data
+  DECLPROC $ExampleJettonMaster$_fun_get_wallet_address
+  DECLPROC $JettonMint$_constructor_origin_receiver_amount_custom_payload_forward_ton_amount_forward_payload
+  DECLPROC $DeployOk$_constructor_queryId
+  DECLPROC $ExampleJettonMaster$_internal_text_e0fcbe3422dd4e5d29490ee50319be4ee4095922f0443f72ca03692576b81596
+  DECLPROC $ExampleJettonMaster$_internal_binary_JettonBurnNotification
+  DECLPROC $ExampleJettonMaster$_internal_binary_JettonMint
+  DECLPROC $ExampleJettonMaster$_internal_binary_Deploy
+  106029 DECLMETHOD %get_jetton_data
+  103289 DECLMETHOD %get_wallet_address
+  115390 DECLMETHOD lazy_deployment_completed
+  DECLPROC $ExampleJettonMaster$_contract_router_internal
+  DECLPROC recv_internal
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_context_sys
+  DECLGLOBVAR __tact_randomized
+  __tact_verify_address PROCINLINE:<{
+    DUP
+    SBITS
+    267 PUSHINT
+    EQUAL
+    136 THROWIFNOT
+    DUP
+    11 PLDU
+    DUP
+    1279 PUSHINT
+    EQUAL
+    137 THROWIF
+    10 PUSHPOW2
+    EQUAL
+    136 THROWIFNOT
+  }>
+  __tact_load_address PROCINLINE:<{
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+  }>
+  __tact_store_address PROCINLINE:<{
+    __tact_verify_address INLINECALLDICT
+    STSLICER
+  }>
+  __tact_create_address PROCINLINE:<{
+    NEWC
+    2 PUSHINT
+    SWAP
+    2 STU
+    0 PUSHINT
+    SWAP
+    1 STU
+    s1 s2 XCHG
+    8 STI
+    256 STU
+    ENDC
+    CTOS
+    __tact_verify_address INLINECALLDICT
+  }>
+  __tact_compute_contract_address PROCINLINE:<{
+    NEWC
+    0 PUSHINT
+    SWAP
+    2 STU
+    3 PUSHINT
+    SWAP
+    2 STU
+    0 PUSHINT
+    SWAP
+    1 STU
+    s1 s2 XCHG
+    STREF
+    STREF
+    ENDC
+    HASHCU
+    __tact_create_address INLINECALLDICT
+  }>
+  __tact_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+  }>
+  __tact_context_get PROCINLINE:<{
+    __tact_context GETGLOB
+    4 UNTUPLE
+  }>
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  __tact_store_bool PROCINLINE:<{
+    SWAP
+    1 STI
+  }>
+  __tact_slice_eq_bits PROCINLINE:<{
+    SDEQ
+  }>
+  __tact_dict_set_code PROCINLINE:<{
+    s0 s2 XCHG
+    16 PUSHINT
+    DICTUSETREF
+  }>
+  __tact_dict_get_code PROCINLINE:<{
+    SWAP
+    16 PUSHINT
+    DICTUGETREF
+    NULLSWAPIFNOT
+    135 THROWIFNOT
+  }>
+  $Deploy$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    2490013878 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $DeployOk$_store PROCINLINE:<{
+    2952335191 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DeployOk$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $DeployOk$_store INLINECALLDICT
+    ENDC
+  }>
+  $JettonMint$_load PROCREF:<{
+    32 LDU
+    SWAP
+    510630957 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    __tact_load_address INLINECALLDICT
+    SWAP
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    1 LDI
+    SWAP
+    IF:<{
+      LDREF
+    }>ELSE<{
+      PUSHNULL
+      SWAP
+    }>
+    LDVARUINT16
+    1 LDI
+    SWAP
+    IF:<{
+      LDREF
+    }>ELSE<{
+      PUSHNULL
+      SWAP
+    }>
+    6 -ROLL
+  }>
+  $JettonInternalTransfer$_store PROCREF:<{
+    395134233 PUSHINT
+    s0 s7 XCHG2
+    32 STU
+    s1 s5 XCHG
+    64 STU
+    s0 s3 XCHG2
+    STVARUINT16
+    SWAP
+    __tact_store_address INLINECALLDICT
+    SWAP
+    __tact_store_address INLINECALLDICT
+    SWAP
+    STVARUINT16
+    OVER
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      STREF
+    }>ELSE<{
+      FALSE
+      s2 POP
+      1 STI
+    }>
+  }>
+  $JettonInternalTransfer$_store_cell PROCINLINE:<{
+    NEWC
+    6 -ROLL
+    $JettonInternalTransfer$_store INLINECALLDICT
+    ENDC
+  }>
+  $JettonBurnNotification$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    2078119902 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    LDVARUINT16
+    __tact_load_address INLINECALLDICT
+    SWAP
+    __tact_load_address INLINECALLDICT
+    s1 s4 XCHG
+    s3 s3 s0 XCHG3
+  }>
+  $ExampleJettonMaster$_store PROCINLINE:<{
+    s4 s3 XCHG2
+    STVARUINT16
+    1 STI
+    ROT
+    __tact_store_address INLINECALLDICT
+    STREF
+  }>
+  $ExampleJettonMaster$_load PROCINLINE:<{
+    LDVARUINT16
+    1 LDI
+    __tact_load_address INLINECALLDICT
+    SWAP
+    LDREF
+    4 -ROLL
+  }>
+  $StateInit$_get_code PROCINLINE:<{
+    DROP
+  }>
+  $StateInit$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+        2 UNTUPLE
+  }>
+  $JettonData$_to_external PROCINLINE:<{
+  }>
+  $ExampleJettonWallet$init$_store PROCINLINE:<{
+    -ROT
+    __tact_store_address INLINECALLDICT
+    SWAP
+    __tact_store_address INLINECALLDICT
+  }>
+  $ExampleJettonMaster$init$_load PROCINLINE:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    LDREF
+    -ROT
+  }>
+  $ExampleJettonMaster$_contract_init PROCREF:<{
+    0 PUSHINT
+    s0 s2 XCHG
+    TRUE
+    s0 s2 XCHG
+  }>
+  $ExampleJettonMaster$_contract_load PROCREF:<{
+    c4 PUSH
+    CTOS
+    LDREF
+    SWAP
+    __tact_context_sys SETGLOB
+    1 LDI
+    SWAP
+    IFJMP:<{
+      $ExampleJettonMaster$_load INLINECALLDICT
+      1 4 BLKDROP2
+    }>
+    MYADDR
+    11 PLDU
+    10 PUSHPOW2
+    EQUAL
+    137 THROWIFNOT
+    $ExampleJettonMaster$init$_load INLINECALLDICT
+    s0 s2 XCHG
+    ENDS
+    SWAP
+    $ExampleJettonMaster$_contract_init INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_contract_store PROCINLINE:<{
+    NEWC
+    __tact_context_sys GETGLOB
+    SWAP
+    STREF
+    TRUE
+    SWAP
+    1 STI
+    4 -ROLL
+    $ExampleJettonMaster$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $global_emptyCell PROCINLINE:<{
+        NEWC
+        ENDC
+  }>
+  $global_contractAddress PROCINLINE:<{
+    0 PUSHINT
+    -ROT
+    __tact_compute_contract_address INLINECALLDICT
+  }>
+  $global_send PROCINLINE:<{
+        NEWC
+    1 PUSHINT
+    SWAP
+    2 STI
+    s0 s7 XCHG2
+    __tact_store_bool INLINECALLDICT
+    0 PUSHINT
+    SWAP
+    3 STI
+    s0 s5 XCHG2
+    __tact_store_address INLINECALLDICT
+    s0 s3 XCHG2
+        STVARUINT16
+    0 PUSHINT
+    SWAP
+    105 STI
+    s3 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+    }>ELSE<{
+      s4 PUSH
+      ISNULL
+      NOT
+    }>
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+          NEWC
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+            STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+            STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+          ENDC
+      ROT
+          STREF
+    }>ELSE<{
+      s3 POP
+      s3 POP
+      SWAP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+    OVER
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      SWAP
+      __tact_not_null INLINECALLDICT
+      SWAP
+          STREF
+    }>ELSE<{
+      NIP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+        ENDC
+    SWAP
+        SENDMSG
+  }>
+  $ExampleJettonWallet$_init_child PROCINLINE:<{
+    s0 s2 XCHG
+    CTOS
+    LDDICT
+    DROP
+    NEWDICT
+    SWAP
+    40421 PUSHINT
+    __tact_dict_get_code INLINECALLDICT
+    SWAP
+    40421 PUSHINT
+    s2 PUSH
+    __tact_dict_set_code INLINECALLDICT
+    NEWC
+    SWAP
+    NEWC
+    STDICT
+    ENDC
+    SWAP
+    STREF
+    FALSE
+    SWAP
+    1 STI
+    s0 s0 s3 XCHG3
+    $ExampleJettonWallet$init$_store INLINECALLDICT
+    ENDC
+  }>
+  $SendParameters$_constructor_bounce_to_value_mode_body_code_data PROCINLINE:<{
+  }>
+  $SendParameters$_constructor_to_value_bounce_mode_body_code_data PROCINLINE:<{
+    s4 s6 XCHG
+    s4 s5 XCHG
+  }>
+  $JettonInternalTransfer$_constructor_query_id_amount_response_address_from_forward_ton_amount_forward_payload PROCINLINE:<{
+    s2 s3 XCHG
+  }>
+  $ExampleJettonMaster$_fun__mint_validate PROCINLINE:<{
+    10 BLKDROP
+    30061 PUSHINT
+    s3 PUSH
+    THROWANYIFNOT
+  }>
+  $ExampleJettonMaster$_fun_calculate_jetton_wallet_init PROCINLINE:<{
+    __tact_context_sys GETGLOB
+        MYADDR
+    s1 s2 XCHG
+    $ExampleJettonWallet$_init_child INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_fun_forward PROCINLINE:<{
+    PUSHNULL
+    PUSHNULL
+    s2 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      2DROP
+      $StateInit$_not_null INLINECALLDICT
+      SWAP
+    }>ELSE<{
+      s2 POP
+    }>
+    s2 s4 XCHG
+    0 PUSHINT
+    s0 s3 XCHG
+    s0 s4 XCHG
+    66 PUSHINT
+    s2 s3 XCHG2
+    $SendParameters$_constructor_bounce_to_value_mode_body_code_data INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
+  }>
+  $ExampleJettonMaster$_fun_notify PROCINLINE:<{
+    __tact_context_get_sender INLINECALLDICT
+    SWAP
+    FALSE
+    PUSHNULL
+    $ExampleJettonMaster$_fun_forward INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_fun__mint PROCINLINE:<{
+    s2 POP
+    s5 POP
+    s5 POP
+    s5 POP
+    s5 POP
+    s4 s8 XCHG
+    s3 s7 XCHG
+    s6 s5 s8 XCHG3
+    $ExampleJettonMaster$_fun_calculate_jetton_wallet_init INLINECALLDICT
+    s5 s8 XCPU
+    ADD
+    s1 s5 PUSH2
+    $global_contractAddress INLINECALLDICT
+    0 PUSHINT
+    FALSE
+    64 PUSHINT
+    s2 PUSH
+        MYADDR
+    s1 s5 XCHG
+    s4 s14 XCHG
+    s3 s15 XCHG
+    s0 s12 s13 XCHG3
+    $JettonInternalTransfer$_constructor_query_id_amount_response_address_from_forward_ton_amount_forward_payload INLINECALLDICT
+    $JettonInternalTransfer$_store_cell INLINECALLDICT
+    s6 s7 XCHG
+    s5 s9 XCHG
+    s4 s10 XCHG
+    s3 s8 XCHG
+    s0 s0 s7 XCHG3
+    $SendParameters$_constructor_to_value_bounce_mode_body_code_data INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
+    s3 s3 XCHG2
+  }>
+  $ExampleJettonMaster$_fun__burn_notification_validate PROCINLINE:<{
+    s1 s5 XCHG
+    5 BLKDROP
+    s2 POP
+    5 -ROLL
+    $ExampleJettonMaster$_fun_calculate_jetton_wallet_init INLINECALLDICT
+    SWAP
+    9739 PUSHINT
+    s0 s2 XCHG
+    $global_contractAddress INLINECALLDICT
+    s0 s6 XCHG2
+    __tact_slice_eq_bits INLINECALLDICT
+    s1 s5 XCHG
+    THROWANYIFNOT
+    3 ROLL
+  }>
+  $SendParameters$_constructor_to_value_bounce_mode PROCINLINE:<{
+    s3 s3 s0 XCHG3
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+  }>
+  $ExampleJettonMaster$_fun__burn_notification PROCINLINE:<{
+    NIP
+    s5 s6 XCHG2
+    5 BLKDROP
+    s1 s5 XCHG
+    SUB
+        B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
+    s5 PUSH
+    __tact_slice_eq_bits INLINECALLDICT
+    NOT
+    IF:<{
+      s0 s4 XCHG
+      0 PUSHINT
+      FALSE
+      66 PUSHINT
+      $SendParameters$_constructor_to_value_bounce_mode INLINECALLDICT
+      $global_send INLINECALLDICT
+      DROP
+    }>ELSE<{
+      s4 POP
+    }>
+  }>
+  $JettonData$_constructor_total_supply_mintable_admin_address_jetton_content_jetton_wallet_code PROCINLINE:<{
+  }>
+  $ExampleJettonMaster$_fun_get_jetton_data PROCINLINE:<{
+    s3 s2 s1 PUSH3
+    s3 PUSH
+        MYADDR
+    s4 s8 XCHG
+    s3 s7 XCHG
+    s6 s5 s0 XCHG3
+    $ExampleJettonMaster$_fun_calculate_jetton_wallet_init INLINECALLDICT
+    $StateInit$_get_code INLINECALLDICT
+    s4 s8 XCHG
+    s3 s7 XCHG
+    s6 s5 s0 XCHG3
+    $JettonData$_constructor_total_supply_mintable_admin_address_jetton_content_jetton_wallet_code INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_fun_get_wallet_address PROCINLINE:<{
+    $ExampleJettonMaster$_fun_calculate_jetton_wallet_init INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+  }>
+  $JettonMint$_constructor_origin_receiver_amount_custom_payload_forward_ton_amount_forward_payload PROCINLINE:<{
+  }>
+  $DeployOk$_constructor_queryId PROCINLINE:<{
+  }>
+  $ExampleJettonMaster$_internal_text_e0fcbe3422dd4e5d29490ee50319be4ee4095922f0443f72ca03692576b81596 PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    1000000000000 PUSHINT
+    $global_emptyCell INLINECALLDICT
+    0 PUSHINT
+    $global_emptyCell INLINECALLDICT
+    s6 PUSH
+    s4 s7 XCPU
+    s4 s3 s4 XCHG3
+    $JettonMint$_constructor_origin_receiver_amount_custom_payload_forward_ton_amount_forward_payload INLINECALLDICT
+    s3 s13 XCHG
+    s12 s11 s10 XCHG3
+    s9 s8 s7 PUSH3
+    s9 s8 s7 PUSH3
+    19 s() PUSH
+    19 s() PUSH
+    19 s() PUSH
+    19 s() PUSH
+    $ExampleJettonMaster$_fun__mint_validate INLINECALLDICT
+    s3 s13 XCHG
+    s12 s11 s10 XCHG3
+    $ExampleJettonMaster$_fun__mint INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_internal_binary_JettonBurnNotification PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s3 s11 XCHG
+    s10 s9 s8 XCHG3
+    s11 s10 s9 PUSH3
+    s11 s10 s9 PUSH3
+    s11 s10 PUSH2
+    $ExampleJettonMaster$_fun__burn_notification_validate INLINECALLDICT
+    8 4 BLKSWAP
+    $ExampleJettonMaster$_fun__burn_notification INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_internal_binary_JettonMint PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s3 s13 XCHG
+    s12 s11 s10 XCHG3
+    s13 s12 s11 PUSH3
+    s13 s12 s11 PUSH3
+    s13 s12 s11 PUSH3
+    s13 PUSH
+    $ExampleJettonMaster$_fun__mint_validate INLINECALLDICT
+    10 4 BLKSWAP
+    $ExampleJettonMaster$_fun__mint INLINECALLDICT
+  }>
+  $ExampleJettonMaster$_internal_binary_Deploy PROCINLINE:<{
+    $DeployOk$_constructor_queryId INLINECALLDICT
+    $DeployOk$_store_cell INLINECALLDICT
+    $ExampleJettonMaster$_fun_notify INLINECALLDICT
+  }>
+  %get_jetton_data PROC:<{
+    $ExampleJettonMaster$_contract_load INLINECALLDICT
+    $ExampleJettonMaster$_fun_get_jetton_data INLINECALLDICT
+    4 5 BLKDROP2
+    $JettonData$_to_external INLINECALLDICT
+  }>
+  %get_wallet_address PROC:<{
+    __tact_verify_address INLINECALLDICT
+    $ExampleJettonMaster$_contract_load INLINECALLDICT
+    4 ROLL
+    $ExampleJettonMaster$_fun_get_wallet_address INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  lazy_deployment_completed PROC:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+  }>
+  $ExampleJettonMaster$_contract_router_internal PROCREF:<{
+    c2 SAVE
+    SAMEALTSAVE
+    SWAP
+    IFJMP:<{
+      DROP
+      TRUE
+    }>
+    0 PUSHINT
+    OVER
+    SBITS
+    31 GTINT
+    IF:<{
+      DROP
+      DUP
+      32 PLDU
+    }>
+    DUP
+    2078119902 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $JettonBurnNotification$_load INLINECALLDICT
+      1 4 BLKDROP2
+      $ExampleJettonMaster$_internal_binary_JettonBurnNotification INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    510630957 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $JettonMint$_load INLINECALLDICT
+      1 6 BLKDROP2
+      $ExampleJettonMaster$_internal_binary_JettonMint INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    2490013878 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $Deploy$_load INLINECALLDICT
+      NIP
+      $ExampleJettonMaster$_internal_binary_Deploy INLINECALLDICT
+      TRUE
+    }>
+    0 EQINT
+    IF:<{
+      HASHSU
+      101764636280370598715105654011285498216663292226339877569534229894954413987222 PUSHINT
+      EQUAL
+      IFJMP:<{
+        $ExampleJettonMaster$_internal_text_e0fcbe3422dd4e5d29490ee50319be4ee4095922f0443f72ca03692576b81596 INLINECALLDICT
+        TRUE
+        RETALT
+      }>
+    }>ELSE<{
+      DROP
+    }>
+    FALSE
+  }>
+  recv_internal PROC:<{
+    SWAP
+    CTOS
+    4 LDU
+    SWAP
+    1 PUSHINT
+    AND
+    NEGATE
+    SWAP
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+    s0 s4 s2 PUXCPU
+    s0 s3 XCHG
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $ExampleJettonMaster$_contract_load INLINECALLDICT
+    2 4 BLKSWAP
+    $ExampleJettonMaster$_contract_router_internal INLINECALLDICT
+    130 THROWIFNOT
+    $ExampleJettonMaster$_contract_store INLINECALLDICT
+  }>
+}END>c

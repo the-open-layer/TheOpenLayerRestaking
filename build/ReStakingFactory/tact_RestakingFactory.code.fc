@@ -1,0 +1,167 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_RestakingFactory.headers.fc";
+#include "tact_RestakingFactory.stdlib.fc";
+#include "tact_RestakingFactory.storage.fc";
+
+;;
+;; Contract RestakingFactory functions
+;;
+
+(int, slice, cell) $RestakingFactory$_contract_init() impure inline_ref {
+    var (($self'index, $self'owner, $self'masters)) = (null(), null(), null());
+    $self'index = 0;
+    $self'owner = __tact_context_get_sender();
+    $self'masters = null();
+    return ($self'index, $self'owner, $self'masters);
+}
+
+((int, slice, cell), int) $RestakingFactory$_fun_index((int, slice, cell) $self) impure inline_ref {
+    var (($self'index, $self'owner, $self'masters)) = $self;
+    var $fresh$ret_39 = $self'index;
+    return (($self'index, $self'owner, $self'masters), $fresh$ret_39);
+}
+
+((int, slice, cell), tuple) $RestakingFactory$_fun_master((int, slice, cell) $self, slice $jettonMaster) impure inline_ref {
+    var (($self'index, $self'owner, $self'masters)) = $self;
+    var $fresh$ret_40 = $StakingMasterData$_load_opt(__tact_dict_get_slice_cell($self'masters, 267, $jettonMaster));
+    return (($self'index, $self'owner, $self'masters), $fresh$ret_40);
+}
+
+((int, slice, cell), ()) $RestakingFactory$_fun_requireOwner((int, slice, cell) $self) impure inline_ref {
+    var (($self'index, $self'owner, $self'masters)) = $self;
+    throw_unless(132, ( __tact_slice_eq_bits($self'owner, __tact_context_get_sender()) ));
+    return (($self'index, $self'owner, $self'masters), ());
+}
+
+((int, slice, cell), slice) $RestakingFactory$_fun_owner((int, slice, cell) $self) impure inline_ref {
+    var (($self'index, $self'owner, $self'masters)) = $self;
+    var $fresh$ret_41 = $self'owner;
+    return (($self'index, $self'owner, $self'masters), $fresh$ret_41);
+}
+
+;;
+;; Receivers of a Contract RestakingFactory
+;;
+
+(((int, slice, cell)), ()) $RestakingFactory$_internal_binary_DeployReStakingMaster((int, slice, cell) $self, (int, (slice, slice, slice, slice)) $msg) impure inline {
+    var ($self'index, $self'owner, $self'masters) = $self;
+    var ($msg'queryId, ($msg'data'jettonMaster, $msg'data'symbol, $msg'data'name, $msg'data'image)) = $msg;
+    throw_unless(4429, ( __tact_slice_eq_bits($self'owner, __tact_context_get_sender()) ));
+    var ($data'jettonMaster, $data'symbol, $data'name, $data'image) = ($msg'data'jettonMaster, $msg'data'symbol, $msg'data'name, $msg'data'image);
+    var ($init'code, $init'data) = $StakingMasterTemplate$_init_child(__tact_context_sys, $data'jettonMaster);
+    slice $address = $global_contractAddress(($init'code, $init'data));
+    $self'masters~__tact_dict_set_slice_cell(267, $address, $StakingMasterData$_store_cell(($data'jettonMaster, $data'symbol, $data'name, $data'image)));
+    $self'index = ($self'index + 1);
+    $global_send($SendParameters$_constructor_to_value_mode_body_code_data($address, 100000000, 64, $global_emptyCell(), $init'code, $init'data));
+    return (($self'index, $self'owner, $self'masters), ());
+}
+
+(((int, slice, cell)), ()) $RestakingFactory$_internal_binary_Deploy((int, slice, cell) $self, (int) $deploy) impure inline {
+    var ($self'index, $self'owner, $self'masters) = $self;
+    var ($deploy'queryId) = $deploy;
+    ($self'index, $self'owner, $self'masters)~$RestakingFactory$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId)));
+    return (($self'index, $self'owner, $self'masters), ());
+}
+
+(((int, slice, cell)), ()) $RestakingFactory$_internal_binary_ChangeOwner((int, slice, cell) $self, (int, slice) $msg) impure inline {
+    var ($self'index, $self'owner, $self'masters) = $self;
+    var ($msg'queryId, $msg'newOwner) = $msg;
+    ($self'index, $self'owner, $self'masters)~$RestakingFactory$_fun_requireOwner();
+    $self'owner = $msg'newOwner;
+    ($self'index, $self'owner, $self'masters)~$RestakingFactory$_fun_reply($ChangeOwnerOk$_store_cell($ChangeOwnerOk$_constructor_queryId_newOwner($msg'queryId, $msg'newOwner)));
+    return (($self'index, $self'owner, $self'masters), ());
+}
+
+;;
+;; Get methods of a Contract RestakingFactory
+;;
+
+_ %index() method_id(67267) {
+    var self = $RestakingFactory$_contract_load();
+    var res = self~$RestakingFactory$_fun_index();
+    return res;
+}
+
+_ %master(slice $jettonMaster) method_id(120253) {
+    slice $jettonMaster = __tact_verify_address($jettonMaster);
+    var self = $RestakingFactory$_contract_load();
+    var res = self~$RestakingFactory$_fun_master($jettonMaster);
+    return $StakingMasterData$_to_opt_external(res);
+}
+
+_ %owner() method_id(83229) {
+    var self = $RestakingFactory$_contract_load();
+    var res = self~$RestakingFactory$_fun_owner();
+    return res;
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract RestakingFactory
+;;
+
+((int, slice, cell), int) $RestakingFactory$_contract_router_internal((int, slice, cell) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive DeployReStakingMaster message
+    if (op == 46630970) {
+        var msg = in_msg~$DeployReStakingMaster$_load();
+        self~$RestakingFactory$_internal_binary_DeployReStakingMaster(msg);
+        return (self, true);
+    }
+    
+    ;; Receive Deploy message
+    if (op == 2490013878) {
+        var msg = in_msg~$Deploy$_load();
+        self~$RestakingFactory$_internal_binary_Deploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ChangeOwner message
+    if (op == 2174598809) {
+        var msg = in_msg~$ChangeOwner$_load();
+        self~$RestakingFactory$_internal_binary_ChangeOwner(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $RestakingFactory$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$RestakingFactory$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $RestakingFactory$_contract_store(self);
+}
