@@ -15,8 +15,6 @@ import { getTonClient, getLastTxHash } from '@/api';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from '@/constant';
 import { delay } from '@/lib/utils';
-import TonWeb from 'tonweb';
-import { getTonWeb } from '@/api';
 
 export const getStakingWallet = async (
   userAddress: string,
@@ -184,17 +182,11 @@ export const getStakingWalletAddress = async (
   userAddress: string,
   jettonMasterAddress: string
 ) => {
-  const jettonMasterContract = new TonWeb.token.jetton.JettonMinter(
-    getTonWeb().provider,
-    //@ts-ignore
-    {
-      address: jettonMasterAddress,
-    }
+  const stakingWallet = await StakingWalletTemplate.fromInit(
+    Address.parse(jettonMasterAddress),
+    Address.parse(userAddress)
   );
-  const jettonWalletAddress = await jettonMasterContract.getJettonWalletAddress(
-    new TonWeb.utils.Address(userAddress)
-  );
-  return jettonWalletAddress.toString();
+  return stakingWallet.address;
 };
 
 export const getStakingInfo = async (
@@ -207,7 +199,7 @@ export const getStakingInfo = async (
     STAKING_MASTER_ADDRESS
   );
   const stakingWallet = client.open(
-    StakingWalletTemplate.fromAddress(Address.parse(stakingWalletAddress))
+    StakingWalletTemplate.fromAddress(stakingWalletAddress)
   );
   const res = await stakingWallet.getStakedInfo();
   return res;
