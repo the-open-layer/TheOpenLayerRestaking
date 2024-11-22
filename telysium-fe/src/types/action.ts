@@ -2,13 +2,13 @@ export interface Action {
   type: string;
 }
 
-export enum DepositStateEnum {
+export enum txStateEnum {
   IDLE = 'idle',
   CONFIRMING = 'confirming',
   SUCCESS = 'success',
   ERROR = 'error',
 }
-export interface DepositState {
+export interface txState {
   amount: string;
-  status: DepositStateEnum;
+  status: txStateEnum;
 }

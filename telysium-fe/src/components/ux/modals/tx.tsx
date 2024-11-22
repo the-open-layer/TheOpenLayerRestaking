@@ -6,20 +6,27 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { DepositStateEnum } from '@/types/action';
+import { txStateEnum } from '@/types/action';
 import { Spinner } from '@/components/ui/spiner';
+import {
+  ACTION_TYPES,
+  ACTION_TYPES_NOW_MAP,
+  ACTION_TYPES_TITLE_MAP,
+} from '@/constant';
 
-export default function Deposit({
+export default function TXModal({
+  title,
   amount,
   symol,
   status,
   handleClose,
   handleTryAgain,
-  handleBacktodashboard
+  handleBacktodashboard,
 }: {
+  title: ACTION_TYPES;
   amount: string;
   symol: string;
-  status: DepositStateEnum;
+  status: txStateEnum;
   handleClose: () => void;
   handleTryAgain: () => void;
   handleBacktodashboard: () => void;
@@ -27,32 +34,33 @@ export default function Deposit({
   // console.log('status', status);
   const renderDialogContent = () => {
     switch (status) {
-      case DepositStateEnum.CONFIRMING:
+      case txStateEnum.CONFIRMING:
         return (
           <>
-            <DialogTitle>Deposit</DialogTitle>
+            <DialogTitle>
+              {ACTION_TYPES_TITLE_MAP[title]}
+            </DialogTitle>
             <DialogDescription>
               Please confirm and sign the transaction in your wallet.
             </DialogDescription>
             <div className="space-y-4 mt-4">
-            
               <div className="flex items-center gap-2 text-sm">
-                <Spinner className='size-4 rounded-full' />
+                <Spinner className="size-4 rounded-full" />
                 <div className="text-muted-foreground">
-                  Depositing {amount || '0.000'} {symol}
+                  {ACTION_TYPES_NOW_MAP[title]} {amount || '0.000'} {symol}
                 </div>
               </div>
             </div>
           </>
         );
-      case DepositStateEnum.SUCCESS:
+      case txStateEnum.SUCCESS:
         return (
           <>
             <div className="mx-auto rounded-full p-3 bg-slate-100 mb-2">
               <Check className="w-6 h-6" />
             </div>
             <DialogDescription className="text-center">
-              Deposit Successful
+              {title} Successful
             </DialogDescription>
             <div className="text-center">
               <Button className="mt-4" onClick={handleBacktodashboard}>
@@ -61,7 +69,7 @@ export default function Deposit({
             </div>
           </>
         );
-      case DepositStateEnum.ERROR:
+      case txStateEnum.ERROR:
         return (
           <>
             <div className="mx-auto rounded-full p-3 bg-red-100 mb-2">
@@ -90,7 +98,8 @@ export default function Deposit({
   };
 
   return (
-    <Dialog open={status !== DepositStateEnum.IDLE} onOpenChange={handleClose}>
+    <Dialog open={status !== txStateEnum.IDLE} onOpenChange={handleClose}>
+      <DialogTitle className="hidden">{title}</DialogTitle>
       <DialogContent className="w-[calc(100vw_-_6rem)] rounded-lg">
         {renderDialogContent()}
       </DialogContent>

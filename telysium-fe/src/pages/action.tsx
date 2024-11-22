@@ -13,10 +13,10 @@ import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
-import { DepositStateEnum } from '@/types/action';
-import DepositModal from '@/components/ux/modals/deposit';
+import { txStateEnum } from '@/types/action';
+import DepositModal from '@/components/ux/modals/tx';
 import { Navigate } from 'react-router-dom';
-import { ACTION_TYPES, ACTION_TYPES_LIST } from '@/constant';
+import { ACTION_TYPES, SUPPORTED_ACTION_TYPES } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
 // import { getStakeTx, getUnstakeTx, checkTxStatus } from '@/lib/stake';
 import { useBalance } from '@/hooks/useBalance';
@@ -33,8 +33,8 @@ export default function Action() {
   const [amount, setAmount] = useState('');
   const { data: tonPrice } = useTonPrice();
   const navigate = useNavigate();
-  const [depositState, setDepositState] = useState<DepositStateEnum>(
-    DepositStateEnum.ERROR
+  const [txState, settxState] = useState<txStateEnum>(
+    txStateEnum.IDLE
   );
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const { data: restakingInfo, isLoading: restakingInfoLoading } =
@@ -61,42 +61,42 @@ export default function Action() {
 
   const handleSubmit = async () => {
     if (action === ACTION_TYPES.DEPOSIT) {
-      setDepositState(DepositStateEnum.CONFIRMING);
+      settxState(txStateEnum.CONFIRMING);
       try {
         const res = await stakeMutation(amount);
         if (res) {
-          setDepositState(DepositStateEnum.SUCCESS);
+          settxState(txStateEnum.SUCCESS);
         } else {
-          setDepositState(DepositStateEnum.ERROR);
+          settxState(txStateEnum.ERROR);
         }
       } catch (error) {
-        setDepositState(DepositStateEnum.ERROR);
+        settxState(txStateEnum.ERROR);
       }
     } else {
-      setDepositState(DepositStateEnum.CONFIRMING);
+      settxState(txStateEnum.CONFIRMING);
       try {
         const res = await unstakeMutation(amount);
         if (res) {
-          setDepositState(DepositStateEnum.SUCCESS);
+          settxState(txStateEnum.SUCCESS);
         } else {
-          setDepositState(DepositStateEnum.ERROR);
+          settxState(txStateEnum.ERROR);
         }
       } catch (error) {
         console.error('Transaction failed', error);
-        setDepositState(DepositStateEnum.ERROR);
+        settxState(txStateEnum.ERROR);
       }
     }
   };
 
   const handleClose = () => {
-    setDepositState(DepositStateEnum.IDLE);
+    settxState(txStateEnum.IDLE);
   };
   const handleBacktodashboard = () => {
     handleClose();
     navigate(`/restake/${token}`);
   };
   if (
-    !ACTION_TYPES_LIST.includes(action as ACTION_TYPES) ||
+    !SUPPORTED_ACTION_TYPES.includes(action as ACTION_TYPES) ||
     !stakeList.some((v) => v.symbol === token)
   ) {
     return <Navigate to="/404" />;
@@ -245,9 +245,10 @@ export default function Action() {
       )}
 
       <DepositModal
+        title={action as ACTION_TYPES}
         amount={amount}
         symol={token!}
-        status={depositState}
+        status={txState}
         handleClose={handleClose}
         handleTryAgain={handleSubmit}
         handleBacktodashboard={handleBacktodashboard}
