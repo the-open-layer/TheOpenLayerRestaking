@@ -147,7 +147,6 @@ async function updateBalances() {
         if (stakingWalletAddress) {
             const stakingWallet = client.open(StakingWalletTemplate.fromAddress(stakingWalletAddress));
             const stakedInfo = await stakingWallet.getStakedInfo();
-            
             // Format staked positions
             let totalStaked = 0n;
             const stakeItems = [];

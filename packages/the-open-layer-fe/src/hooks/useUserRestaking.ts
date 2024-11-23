@@ -9,14 +9,23 @@ import { useAccount } from './useAccount';
 export const useUserRestaking = (restakingMaster:string) => {
   const { address: userAddress } = useAccount();
   return useQuery({
-    queryKey: ['user-restaking', userAddress],
+    queryKey: ['user-restaking', userAddress, restakingMaster],
     queryFn: async () => {
       const info = await getStakingInfo(userAddress, restakingMaster);
+      if(info === null){
+        return {
+          pendingJettons: [],
+          stakedJettons: [],
+          withdrawalJettons: [],
+          restakeAmount: Big(0),
+          maxPendingAmount: Big(0), 
+        }
+      }
       const [pendingJettons, stakedJettons, withdrawalJettons] = [
         info.pendingJettons?.values()?.map((v) => {
           return {
             ...v,
-            stakeTimeFmt: formatTime(v.stakeTime),
+            // stakeTimeFmt: formatTime(v.stakeTime),
             unstakeTimeFmt: formatTime(v.unstakeTime),
             isLocked: getLocked(v.unstakeTime, v.unstakeThreshold),
             amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,

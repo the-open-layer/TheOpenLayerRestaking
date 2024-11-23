@@ -51,7 +51,10 @@ export const getStakeTx = async (
     forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell(),
   };
   // Create transaction
-  const userJettonWallet = await getUserJettonWallet(userAddress, JETTON_MASTER_ADDRESS);
+  const userJettonWallet = await getUserJettonWallet(
+    userAddress,
+    JETTON_MASTER_ADDRESS
+  );
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 60, // 60 sec
     messages: [
@@ -191,12 +194,17 @@ export const getStakingInfo = async (
     userAddress,
     STAKING_MASTER_ADDRESS
   );
-  const stakingWallet = client.open(
-    StakingWalletTemplate.fromAddress(stakingWalletAddress)
-  );
-  const res = await stakingWallet.getStakedInfo();
-  console.log('getStakingInfo-->', res);
-  return res;
+  try {
+    const stakingWallet = client.open(
+      StakingWalletTemplate.fromAddress(stakingWalletAddress)
+    );
+    const res = await stakingWallet.getStakedInfo();
+    // console.log('getStakingInfo-->', res);
+    return res;
+  } catch (error) {
+    console.error('getStakingInfo-->', error);
+    return null;
+  }
 };
 
 export const getTokenTVL = async (tokenAddress: string) => {

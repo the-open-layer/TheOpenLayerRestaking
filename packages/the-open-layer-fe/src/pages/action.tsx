@@ -11,7 +11,7 @@ import {
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
-import useTonPrice from '@/hooks/api/useTonPrice';
+// import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
 import { txStateEnum } from '@/types/action';
 import TXModal from '@/components/ux/modals/tx';
@@ -30,7 +30,7 @@ export default function Action() {
   const { data: stakeList = [] } = useStakeList();
   const { connected, tonConnectUI } = useAccount();
   const [amount, setAmount] = useState('');
-  const { data: tonPrice } = useTonPrice();
+  // const { data: tonPrice } = useTonPrice();
   const navigate = useNavigate();
   const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
   const restakeToken = stakeList.find((v) => v.symbol === token);
@@ -67,6 +67,7 @@ export default function Action() {
           settxState(txStateEnum.ERROR);
         }
       } catch (error) {
+        console.error('Transaction failed', error);
         settxState(txStateEnum.ERROR);
       }
     } else {
@@ -98,40 +99,33 @@ export default function Action() {
   ) {
     return <Navigate to="/404" />;
   }
-  const { DepositList } = useMemo(() => {
-    let DepositList: Array<{ text: string; value: JSX.Element }> = [];
-    DepositList = [
-      {
-        text:
-          action === ACTION_TYPES.DEPOSIT
-            ? 'Available to stake'
-            : 'Available to unstake',
-        value: connected ? (
-          action === ACTION_TYPES.DEPOSIT ? (
-            isAmountLoading ? (
-              <Skeleton className="w-24 h-8 bg-slate-300" />
-            ) : (
-              <div>
-                {maxAmount} {token}
-              </div>
-            )
-          ) : restakingInfoLoading ? (
+  const DepositList = [
+    {
+      text:
+        action === ACTION_TYPES.DEPOSIT
+          ? 'Available to stake'
+          : 'Available to unstake',
+      value: connected ? (
+        action === ACTION_TYPES.DEPOSIT ? (
+          isAmountLoading ? (
             <Skeleton className="w-24 h-8 bg-slate-300" />
           ) : (
             <div>
               {maxAmount} {token}
             </div>
           )
+        ) : restakingInfoLoading ? (
+          <Skeleton className="w-24 h-8 bg-slate-300" />
         ) : (
-          <div>0 {token}</div>
-        ),
-      },
-    ];
-
-    return {
-      DepositList: DepositList,
-    };
-  }, [tonPrice, amount, maxAmount, isAmountLoading, action]);
+          <div>
+            {maxAmount} {token}
+          </div>
+        )
+      ) : (
+        <div>0 {token}</div>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">

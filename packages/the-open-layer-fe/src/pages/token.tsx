@@ -78,7 +78,7 @@ export default function Token() {
       }
     }
   };
-  console.log({ restakingInfo });
+  // console.log({ restakingInfo });
   if (!stakeList.some((v) => v.symbol === token)) {
     return <Navigate to="/404" />;
   }
