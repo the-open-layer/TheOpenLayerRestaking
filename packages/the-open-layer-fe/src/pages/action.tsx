@@ -149,7 +149,7 @@ export default function Action() {
             </div>
           </Link>
           <a
-            href={`https://testnet.tonscan.org/${restakeToken?.address}`}
+            href={`https://testnet.tonscan.org/address/${restakeToken?.jettonMaster}`}
             target="_blank"
           >
             <TonscanIcon className="text-8 cursor-pointer" />
