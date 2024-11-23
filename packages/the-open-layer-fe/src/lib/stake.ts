@@ -1,6 +1,5 @@
 import { Address, beginCell, toNano } from '@ton/ton';
 import {
-  StakingMasterTemplate,
   storeStakeJetton,
   storeUnStake,
   StakeJetton,
@@ -37,7 +36,7 @@ export const getStakeTx = async (
     $$type: 'StakeJetton',
     tonAmount: toNano('0.1'),
     responseDestination: Address.parse(userAddress),
-    forwardAmount: toNano('0.05'),
+    forwardAmount: 0n,
     forwardPayload: beginCell().endCell(),
   };
 
@@ -169,7 +168,7 @@ export const getWithdrawTx = async (
               pendingIndex: pendingIndex,
               tonAmount: toNano('0.1'),
               forwardAmount: toNano('0.05'),
-              jettonWallet: Address.parse(JETTON_MASTER_ADDRESS),
+              // jettonWallet: Address.parse(JETTON_MASTER_ADDRESS),
               responseDestination: Address.parse(userAddress),
               forwardPayload: beginCell().endCell(),
             })

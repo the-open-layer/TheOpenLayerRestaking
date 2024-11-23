@@ -42,7 +42,7 @@ const tonConnectUI = new TonConnectUI({
 });
 
 // Contract addresses from environment variables
-const STAKING_MASTER_ADDRESS = "EQCgM10Ib9nuDcAa7bj4EbLTTDu6eDEZzwr49PxCRbeMqN9H";
+const STAKING_MASTER_ADDRESS = "EQBMpNvxOUm0jr9FgKMHxUNwTj_ChgVsDgFahQwIgQQW_zWZ";
 //const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
 const JETTON_MASTER_ADDRESS = "kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN";
 
@@ -201,7 +201,7 @@ async function stake() {
             $$type: 'StakeJetton',
             tonAmount: toNano('0.1'),
             responseDestination: userWalletAddress,
-            forwardAmount: toNano('0.05'),
+            forwardAmount: 0n,
             forwardPayload: beginCell().endCell(),
         };
 
@@ -333,7 +333,7 @@ async function withdraw() {
                             pendingIndex: pendingIndex,
                             tonAmount: toNano('0.1'),
                             forwardAmount: toNano('0.05'),
-                            jettonWallet: stakeMasterJettonAddress,
+                            // jettonWallet: stakeMasterJettonAddress,
                             responseDestination: userWalletAddress,
                             forwardPayload: beginCell().endCell()
                         }))

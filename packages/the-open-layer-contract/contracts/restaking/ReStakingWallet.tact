@@ -188,18 +188,18 @@ trait StakingWallet with Common, Ownable {
             stakeIndex: pending!!.pendingIndex,
             responseDestination: msg.responseDestination,
         };
-        // told staking master to transfer released jetton
-        send(SendParameters{
-            to: self.master,
-            bounce: true,
-            value: 0,
-            mode: SendRemainingValue,
-            body: withdrawInternal.toCell(),
-        });
         self.pendingJettons.del(pending!!.pendingIndex);
         self.withdrawalJettons.set(pending!!.pendingIndex, WithdrawalJettonInfo{
             jettonAmount: pending!!.jettonAmount,
             withdrawTime: now(),
+        });
+        // told staking master to transfer released jetton
+        send(SendParameters{
+            to: self.master,
+            bounce: true,
+            value: msg.forwardAmount,
+            mode: SendRemainingValue,
+            body: withdrawInternal.toCell(),
         });
     }
 

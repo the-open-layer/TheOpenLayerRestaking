@@ -1,9 +1,9 @@
 # TACT Compilation Report
 Contract: StakingWalletTemplate
-BOC Size: 3302 bytes
+BOC Size: 2882 bytes
 
 # Types
-Total Types: 52
+Total Types: 53
 
 ## StateInit
 TLB: `_ code:^cell data:^cell = StateInit`
@@ -90,12 +90,12 @@ TLB: `un_stake#4d8a3c70 queryId:uint64 jettonAmount:coins jettonWallet:address f
 Signature: `UnStake{queryId:uint64,jettonAmount:coins,jettonWallet:address,forwardPayload:Maybe ^cell}`
 
 ## Withdraw
-TLB: `withdraw#6b2f1e9d queryId:uint64 pendingIndex:uint32 tonAmount:coins forwardAmount:coins jettonWallet:address responseDestination:address forwardPayload:Maybe ^cell = Withdraw`
-Signature: `Withdraw{queryId:uint64,pendingIndex:uint32,tonAmount:coins,forwardAmount:coins,jettonWallet:address,responseDestination:address,forwardPayload:Maybe ^cell}`
+TLB: `withdraw#6b2f1e9d queryId:uint64 pendingIndex:uint32 tonAmount:coins forwardAmount:coins responseDestination:address forwardPayload:Maybe ^cell = Withdraw`
+Signature: `Withdraw{queryId:uint64,pendingIndex:uint32,tonAmount:coins,forwardAmount:coins,responseDestination:address,forwardPayload:Maybe ^cell}`
 
 ## WithdrawInternal
-TLB: `withdraw_internal#c5b9a2d1 queryId:uint64 jettonAmount:coins forwardAmount:coins tonAmount:coins stakeIndex:uint32 jettonWallet:address destination:address responseDestination:address forwardPayload:Maybe ^cell = WithdrawInternal`
-Signature: `WithdrawInternal{queryId:uint64,jettonAmount:coins,forwardAmount:coins,tonAmount:coins,stakeIndex:uint32,jettonWallet:address,destination:address,responseDestination:address,forwardPayload:Maybe ^cell}`
+TLB: `withdraw_internal#c5b9a2d1 queryId:uint64 jettonAmount:coins forwardAmount:coins tonAmount:coins stakeIndex:uint32 destination:address responseDestination:address forwardPayload:Maybe ^cell = WithdrawInternal`
+Signature: `WithdrawInternal{queryId:uint64,jettonAmount:coins,forwardAmount:coins,tonAmount:coins,stakeIndex:uint32,destination:address,responseDestination:address,forwardPayload:Maybe ^cell}`
 
 ## Redeposit
 TLB: `redeposit#c5a9b412 queryId:uint64 pendingIndex:uint32 forwardAmount:coins forwardPayload:Maybe ^cell = Redeposit`
@@ -112,6 +112,10 @@ Signature: `StakeReleaseNotification{queryId:uint64,amount:coins,stakeIndex:uint
 ## StakeRelease
 TLB: `stake_release#51fa3a81 queryId:uint64 amount:coins jettons:dict<uint64, ^StakeReleaseJettonInfo{tonAmount:coins,jettonAmount:coins,jettonWallet:address,destination:address,customPayload:Maybe ^cell,forwardAmount:coins,forwardPayload:Maybe ^cell}> jettonsIdx:uint64 owner:address destination:address responseDestination:address customPayload:Maybe ^cell forwardAmount:coins forwardPayload:Maybe ^cell = StakeRelease`
 Signature: `StakeRelease{queryId:uint64,amount:coins,jettons:dict<uint64, ^StakeReleaseJettonInfo{tonAmount:coins,jettonAmount:coins,jettonWallet:address,destination:address,customPayload:Maybe ^cell,forwardAmount:coins,forwardPayload:Maybe ^cell}>,jettonsIdx:uint64,owner:address,destination:address,responseDestination:address,customPayload:Maybe ^cell,forwardAmount:coins,forwardPayload:Maybe ^cell}`
+
+## SetContractJettonWallet
+TLB: `set_contract_jetton_wallet#e1c6a3d9 queryId:uint64 thisContractJettonWallet:address = SetContractJettonWallet`
+Signature: `SetContractJettonWallet{queryId:uint64,thisContractJettonWallet:address}`
 
 ## TokenTransferForwardPayload
 TLB: `_ type:uint8 stakeJetton:Maybe StakeJetton{tonAmount:coins,responseDestination:address,forwardAmount:coins,forwardPayload:Maybe ^cell} stakeRelease:Maybe StakeReleaseNotification{queryId:uint64,amount:coins,stakeIndex:uint64,destination:address,forwardPayload:Maybe ^cell} = TokenTransferForwardPayload`
@@ -134,20 +138,20 @@ TLB: `_ jettonAmount:coins stakeIndex:uint32 stakeTime:uint32 unstakeThreshold:u
 Signature: `StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}`
 
 ## PendingJettonInfo
-TLB: `_ jettonAmount:coins stakeTime:uint32 pendingIndex:uint32 unstakeTime:uint32 unstakeThreshold:uint32 = PendingJettonInfo`
-Signature: `PendingJettonInfo{jettonAmount:coins,stakeTime:uint32,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}`
+TLB: `_ jettonAmount:coins pendingIndex:uint32 unstakeTime:uint32 unstakeThreshold:uint32 = PendingJettonInfo`
+Signature: `PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}`
 
 ## StakedToPending
 TLB: `_ jettonAmount:coins pendingIndex:uint32 = StakedToPending`
 Signature: `StakedToPending{jettonAmount:coins,pendingIndex:uint32}`
 
 ## PendingToStaked
-TLB: `_ jettonAmount:coins pendingIndex:uint32 = PendingToStaked`
-Signature: `PendingToStaked{jettonAmount:coins,pendingIndex:uint32}`
+TLB: `_ jettonAmount:coins pendingIndex:uint32 stakedIndex:uint32 = PendingToStaked`
+Signature: `PendingToStaked{jettonAmount:coins,pendingIndex:uint32,stakedIndex:uint32}`
 
 ## StakedInfo
-TLB: `_ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,stakeTime:uint32,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> = StakedInfo`
-Signature: `StakedInfo{stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}>,pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,stakeTime:uint32,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}>,withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}>}`
+TLB: `_ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> = StakedInfo`
+Signature: `StakedInfo{stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}>,pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}>,withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}>}`
 
 ## WithdrawalJettonInfo
 TLB: `_ jettonAmount:coins withdrawTime:uint32 = WithdrawalJettonInfo`

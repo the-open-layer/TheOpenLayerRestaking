@@ -195,51 +195,38 @@ cell $StakeInternal$_store_cell((int, slice, int, slice, int, cell, int) v) inli
 ;;
 ;; Type: WithdrawInternal
 ;; Header: 0xc5b9a2d1
-;; TLB: withdraw_internal#c5b9a2d1 queryId:uint64 jettonAmount:coins forwardAmount:coins tonAmount:coins stakeIndex:uint32 jettonWallet:address destination:address responseDestination:address forwardPayload:Maybe ^cell = WithdrawInternal
+;; TLB: withdraw_internal#c5b9a2d1 queryId:uint64 jettonAmount:coins forwardAmount:coins tonAmount:coins stakeIndex:uint32 destination:address responseDestination:address forwardPayload:Maybe ^cell = WithdrawInternal
 ;;
 
-(slice, ((int, int, int, int, int, slice, slice, slice, cell))) $WithdrawInternal$_load(slice sc_0) inline_ref {
+(slice, ((int, int, int, int, int, slice, slice, cell))) $WithdrawInternal$_load(slice sc_0) inline_ref {
     throw_unless(129, sc_0~load_uint(32) == 3317277393);
     var v'queryId = sc_0~load_uint(64);
     var v'jettonAmount = sc_0~load_coins();
     var v'forwardAmount = sc_0~load_coins();
     var v'tonAmount = sc_0~load_coins();
     var v'stakeIndex = sc_0~load_uint(32);
-    var v'jettonWallet = sc_0~__tact_load_address();
+    var v'destination = sc_0~__tact_load_address();
     slice sc_1 = sc_0~load_ref().begin_parse();
-    var v'destination = sc_1~__tact_load_address();
     var v'responseDestination = sc_1~__tact_load_address();
     var v'forwardPayload = sc_1~load_int(1) ? sc_1~load_ref() : null();
-    return (sc_0, (v'queryId, v'jettonAmount, v'forwardAmount, v'tonAmount, v'stakeIndex, v'jettonWallet, v'destination, v'responseDestination, v'forwardPayload));
+    return (sc_0, (v'queryId, v'jettonAmount, v'forwardAmount, v'tonAmount, v'stakeIndex, v'destination, v'responseDestination, v'forwardPayload));
 }
 
-((int, int, int, int, int, slice, slice, slice, cell)) $WithdrawInternal$_tensor_cast((int, int, int, int, int, slice, slice, slice, cell) v) asm """
+((int, int, int, int, int, slice, slice, cell)) $WithdrawInternal$_tensor_cast((int, int, int, int, int, slice, slice, cell) v) asm """
     NOP
 """;
 
 ;;
-;; Type: StakeReleaseNotification
-;; Header: 0xe656dfa2
-;; TLB: stake_release_notification#e656dfa2 queryId:uint64 amount:coins stakeIndex:uint64 destination:address forwardPayload:Maybe ^cell = StakeReleaseNotification
+;; Type: SetContractJettonWallet
+;; Header: 0xe1c6a3d9
+;; TLB: set_contract_jetton_wallet#e1c6a3d9 queryId:uint64 thisContractJettonWallet:address = SetContractJettonWallet
 ;;
 
-builder $StakeReleaseNotification$_store(builder build_0, (int, int, int, slice, cell) v) inline {
-    var (v'queryId, v'amount, v'stakeIndex, v'destination, v'forwardPayload) = v;
-    build_0 = store_uint(build_0, 3864453026, 32);
-    build_0 = build_0.store_uint(v'queryId, 64);
-    build_0 = build_0.store_coins(v'amount);
-    build_0 = build_0.store_uint(v'stakeIndex, 64);
-    build_0 = __tact_store_address(build_0, v'destination);
-    build_0 = ~ null?(v'forwardPayload) ? build_0.store_int(true, 1).store_ref(v'forwardPayload) : build_0.store_int(false, 1);
-    return build_0;
-}
-
-cell $StakeReleaseNotification$_store_cell((int, int, int, slice, cell) v) inline {
-    return $StakeReleaseNotification$_store(begin_cell(), v).end_cell();
-}
-
-((int, int, int, slice, cell)) $StakeReleaseNotification$_constructor_queryId_amount_stakeIndex_destination_forwardPayload(int $queryId, int $amount, int $stakeIndex, slice $destination, cell $forwardPayload) inline {
-    return ($queryId, $amount, $stakeIndex, $destination, $forwardPayload);
+(slice, ((int, slice))) $SetContractJettonWallet$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 3787891673);
+    var v'queryId = sc_0~load_uint(64);
+    var v'thisContractJettonWallet = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'thisContractJettonWallet));
 }
 
 ;;
@@ -322,23 +309,28 @@ builder $StakingWalletTemplate$init$_store(builder build_0, (slice, slice) v) in
 ;; Type: StakingMasterTemplate
 ;;
 
-builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, int, int, int) v) inline {
-    var (v'owner, v'jettonMaster, v'staticTax, v'lockedValue, v'unstakeThreshold) = v;
+builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, slice, int, int, int) v) inline {
+    var (v'owner, v'jettonMaster, v'thisContractJettonWallet, v'staticTax, v'lockedValue, v'unstakeThreshold) = v;
     build_0 = __tact_store_address(build_0, v'owner);
     build_0 = __tact_store_address(build_0, v'jettonMaster);
+    build_0 = __tact_store_address_opt(build_0, v'thisContractJettonWallet);
     build_0 = build_0.store_coins(v'staticTax);
-    build_0 = build_0.store_coins(v'lockedValue);
-    build_0 = build_0.store_uint(v'unstakeThreshold, 32);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_coins(v'lockedValue);
+    build_1 = build_1.store_uint(v'unstakeThreshold, 32);
+    build_0 = store_ref(build_0, build_1.end_cell());
     return build_0;
 }
 
-(slice, ((slice, slice, int, int, int))) $StakingMasterTemplate$_load(slice sc_0) inline {
+(slice, ((slice, slice, slice, int, int, int))) $StakingMasterTemplate$_load(slice sc_0) inline {
     var v'owner = sc_0~__tact_load_address();
     var v'jettonMaster = sc_0~__tact_load_address();
+    var v'thisContractJettonWallet = sc_0~__tact_load_address_opt();
     var v'staticTax = sc_0~load_coins();
-    var v'lockedValue = sc_0~load_coins();
-    var v'unstakeThreshold = sc_0~load_uint(32);
-    return (sc_0, (v'owner, v'jettonMaster, v'staticTax, v'lockedValue, v'unstakeThreshold));
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'lockedValue = sc_1~load_coins();
+    var v'unstakeThreshold = sc_1~load_uint(32);
+    return (sc_0, (v'owner, v'jettonMaster, v'thisContractJettonWallet, v'staticTax, v'lockedValue, v'unstakeThreshold));
 }
 
 (slice, ((slice, slice))) $StakingMasterTemplate$init$_load(slice sc_0) inline {
@@ -347,7 +339,7 @@ builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, int, int, 
     return (sc_0, (v'owner, v'jettonMaster));
 }
 
-(slice, slice, int, int, int) $StakingMasterTemplate$_contract_load() impure inline_ref {
+(slice, slice, slice, int, int, int) $StakingMasterTemplate$_contract_load() impure inline_ref {
     slice $sc = get_data().begin_parse();
     __tact_context_sys = $sc~load_ref();
     int $loaded = $sc~load_int(1);
@@ -362,7 +354,7 @@ builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, int, int, 
     }
 }
 
-() $StakingMasterTemplate$_contract_store((slice, slice, int, int, int) v) impure inline {
+() $StakingMasterTemplate$_contract_store((slice, slice, slice, int, int, int) v) impure inline {
     builder b = begin_cell();
     b = b.store_ref(__tact_context_sys);
     b = b.store_int(true, 1);

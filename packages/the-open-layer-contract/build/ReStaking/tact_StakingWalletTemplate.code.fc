@@ -30,14 +30,6 @@
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), $fresh$ret_0);
 }
 
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_reserveValue((slice, slice, int, int, int, int, cell, cell, cell) $self, int $delta) impure inline {
-    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
-    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
-    int $val = $global_max((($global_myBalance() - $ctx'value) + $self'staticTax), ($self'lockedValue + $self'staticTax));
-    $global_nativeReserve(($val + $delta), 0);
-    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
-}
-
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveStakeInternal((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, slice, int, slice, int, cell, int) $msg) impure inline {
     var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
     var (($msg'queryId, $msg'jettonWallet, $msg'jettonAmount, $msg'responseDestination, $msg'forwardAmount, $msg'forwardPayload, $msg'unstakeThreshold)) = $msg;
@@ -48,8 +40,7 @@
     if (($msg'forwardAmount > 0)) {
         $global_send($SendParameters$_constructor_to_bounce_value_body($self'owner, false, $msg'forwardAmount, $StakeNotification$_store_cell($StakeNotification$_constructor_queryId_jettonAmount_jettonWallet_forwardPayload($msg'queryId, $msg'jettonAmount, $msg'jettonWallet, $msg'forwardPayload))));
     }
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_reserveValue(0);
-    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($msg'responseDestination, false, 0, 128, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
+    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($msg'responseDestination, false, 0, 64, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 
@@ -60,8 +51,7 @@
     throw_unless(1003, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
     int $remainingToUnstake = $msg'jettonAmount;
     int $totalUnstaked = 0;
-    int $pendingStakeTime = $global_now();
-    var ($pending'jettonAmount, $pending'stakeTime, $pending'pendingIndex, $pending'unstakeTime, $pending'unstakeThreshold) = $PendingJettonInfo$_constructor_jettonAmount_stakeTime_pendingIndex_unstakeTime_unstakeThreshold(0, $pendingStakeTime, $self'pendingIndex, $global_now(), 0);
+    var ($pending'jettonAmount, $pending'pendingIndex, $pending'unstakeTime, $pending'unstakeThreshold) = $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold(0, $self'pendingIndex, $global_now(), 0);
     cell $stakes = $self'stakedJettons;
     var ($i, $staked, $fresh$flag_1) = __tact_dict_min_int_cell($stakes, 257);
     while ($fresh$flag_1) {
@@ -82,7 +72,7 @@
     }
     throw_unless(50308, ($totalUnstaked >= $msg'jettonAmount));
     if (($pending'jettonAmount > 0)) {
-        $self'pendingJettons~__tact_dict_set_int_cell(257, $self'pendingIndex, $PendingJettonInfo$_store_cell(($pending'jettonAmount, $pending'stakeTime, $pending'pendingIndex, $pending'unstakeTime, $pending'unstakeThreshold)));
+        $self'pendingJettons~__tact_dict_set_int_cell(257, $self'pendingIndex, $PendingJettonInfo$_store_cell(($pending'jettonAmount, $pending'pendingIndex, $pending'unstakeTime, $pending'unstakeThreshold)));
         $global_emit($StakedToPending$_store_cell($StakedToPending$_constructor_jettonAmount_pendingIndex($pending'jettonAmount, $self'pendingIndex)));
         $self'pendingIndex = $self'pendingIndex + 1;
     }
@@ -99,36 +89,34 @@
     throw_unless(50306, (~ null?($pending)));
     $self'pendingJettons~__tact_dict_delete_int(257, $index);
     var ($newStaked'jettonAmount, $newStaked'stakeIndex, $newStaked'stakeTime, $newStaked'unstakeThreshold) = $StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold($PendingJettonInfo$_get_jettonAmount($PendingJettonInfo$_not_null($pending)), $self'stakeIndex, $global_now(), $PendingJettonInfo$_get_unstakeThreshold($PendingJettonInfo$_not_null($pending)));
-    $self'stakedJettons~__tact_dict_set_int_cell(257, $index, $StakedJettonInfo$_store_cell(($newStaked'jettonAmount, $newStaked'stakeIndex, $newStaked'stakeTime, $newStaked'unstakeThreshold)));
+    $self'stakedJettons~__tact_dict_set_int_cell(257, $self'stakeIndex, $StakedJettonInfo$_store_cell(($newStaked'jettonAmount, $newStaked'stakeIndex, $newStaked'stakeTime, $newStaked'unstakeThreshold)));
     $self'stakeIndex = $self'stakeIndex + 1;
-    $global_emit($PendingToStaked$_store_cell($PendingToStaked$_constructor_jettonAmount_pendingIndex($newStaked'jettonAmount, $index)));
+    $global_emit($PendingToStaked$_store_cell($PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex($newStaked'jettonAmount, $index, $newStaked'stakeIndex)));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveWithdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, slice, cell) $msg) impure inline {
+((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveWithdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, cell) $msg) impure inline {
     var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
-    var (($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'jettonWallet, $msg'responseDestination, $msg'forwardPayload)) = $msg;
+    var (($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'responseDestination, $msg'forwardPayload)) = $msg;
     var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
     throw_unless(1003, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
     tuple $pending = $PendingJettonInfo$_load_opt(__tact_dict_get_int_cell($self'pendingJettons, 257, $msg'pendingIndex));
     throw_unless(50306, (~ null?($pending)));
-    throw_unless(50307, (($PendingJettonInfo$_get_unstakeTime($PendingJettonInfo$_not_null($pending)) + $PendingJettonInfo$_get_unstakeThreshold($PendingJettonInfo$_not_null($pending))) >= $global_now()));
-    $self'pendingJettons~__tact_dict_delete_int(257, $PendingJettonInfo$_get_pendingIndex($PendingJettonInfo$_not_null($pending)));
+    throw_unless(50307, (($PendingJettonInfo$_get_unstakeTime($PendingJettonInfo$_not_null($pending)) + $PendingJettonInfo$_get_unstakeThreshold($PendingJettonInfo$_not_null($pending))) <= $global_now()));
     int $totalCost = 0;
     $totalCost = $totalCost + $msg'forwardAmount;
     throw_unless(1001, ($ctx'value >= ($totalCost + $self'staticTax)));
-    var ($withdrawInternal'queryId, $withdrawInternal'jettonAmount, $withdrawInternal'forwardAmount, $withdrawInternal'tonAmount, $withdrawInternal'stakeIndex, $withdrawInternal'jettonWallet, $withdrawInternal'destination, $withdrawInternal'responseDestination, $withdrawInternal'forwardPayload) = $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_jettonWallet_destination_stakeIndex_responseDestination($msg'queryId, $PendingJettonInfo$_get_jettonAmount($PendingJettonInfo$_not_null($pending)), $msg'forwardAmount, $msg'tonAmount, $msg'forwardPayload, $msg'jettonWallet, $ctx'sender, $PendingJettonInfo$_get_pendingIndex($PendingJettonInfo$_not_null($pending)), $msg'responseDestination);
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_reserveValue(0);
-    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($self'master, true, 0, 128, $WithdrawInternal$_store_cell(($withdrawInternal'queryId, $withdrawInternal'jettonAmount, $withdrawInternal'forwardAmount, $withdrawInternal'tonAmount, $withdrawInternal'stakeIndex, $withdrawInternal'jettonWallet, $withdrawInternal'destination, $withdrawInternal'responseDestination, $withdrawInternal'forwardPayload))));
+    var ($withdrawInternal'queryId, $withdrawInternal'jettonAmount, $withdrawInternal'forwardAmount, $withdrawInternal'tonAmount, $withdrawInternal'stakeIndex, $withdrawInternal'destination, $withdrawInternal'responseDestination, $withdrawInternal'forwardPayload) = $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination($msg'queryId, $PendingJettonInfo$_get_jettonAmount($PendingJettonInfo$_not_null($pending)), $msg'forwardAmount, $msg'tonAmount, $msg'forwardPayload, $ctx'sender, $PendingJettonInfo$_get_pendingIndex($PendingJettonInfo$_not_null($pending)), $msg'responseDestination);
+    $self'pendingJettons~__tact_dict_delete_int(257, $PendingJettonInfo$_get_pendingIndex($PendingJettonInfo$_not_null($pending)));
     $self'withdrawalJettons~__tact_dict_set_int_cell(257, $PendingJettonInfo$_get_pendingIndex($PendingJettonInfo$_not_null($pending)), $WithdrawalJettonInfo$_store_cell($WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime($PendingJettonInfo$_get_jettonAmount($PendingJettonInfo$_not_null($pending)), $global_now())));
+    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($self'master, true, $msg'forwardAmount, 64, $WithdrawInternal$_store_cell(($withdrawInternal'queryId, $withdrawInternal'jettonAmount, $withdrawInternal'forwardAmount, $withdrawInternal'tonAmount, $withdrawInternal'stakeIndex, $withdrawInternal'destination, $withdrawInternal'responseDestination, $withdrawInternal'forwardPayload))));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveExcesses((slice, slice, int, int, int, int, cell, cell, cell) $self, (int) $msg) impure inline {
     var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
     var (($msg'query_id)) = $msg;
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_reserveValue(0);
-    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($self'owner, false, 0, 128, $JettonExcesses$_store_cell(($msg'query_id))));
+    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($self'owner, false, 0, 64, $JettonExcesses$_store_cell(($msg'query_id))));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 
@@ -185,10 +173,10 @@
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 
-(((slice, slice, int, int, int, int, cell, cell, cell)), ()) $StakingWalletTemplate$_internal_binary_Withdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, slice, cell) $msg) impure inline {
+(((slice, slice, int, int, int, int, cell, cell, cell)), ()) $StakingWalletTemplate$_internal_binary_Withdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, cell) $msg) impure inline {
     var ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons) = $self;
-    var ($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'jettonWallet, $msg'responseDestination, $msg'forwardPayload) = $msg;
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_receiveWithdraw($Withdraw$_tensor_cast(($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'jettonWallet, $msg'responseDestination, $msg'forwardPayload)));
+    var ($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'responseDestination, $msg'forwardPayload) = $msg;
+    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_receiveWithdraw($Withdraw$_tensor_cast(($msg'queryId, $msg'pendingIndex, $msg'tonAmount, $msg'forwardAmount, $msg'responseDestination, $msg'forwardPayload)));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 

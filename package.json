@@ -3,7 +3,10 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "build-fe": "yarn workspace @the-open-layer/fe run build"
+        "build-fe": "yarn workspace @the-open-layer/fe run build",
+        "build-contract": "yarn workspace @the-open-layer/contract run build ReStaking",
+        "test": "yarn workspace @the-open-layer/contract test",
+        "run": "yarn workspace @the-open-layer/contract blueprint run"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",

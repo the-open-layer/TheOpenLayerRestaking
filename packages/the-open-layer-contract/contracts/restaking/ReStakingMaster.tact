@@ -120,8 +120,7 @@ trait StakingMaster with Common, OwnableTransferable {
             ctx.sender == contractAddress(self.getUserWallet(msg.destination)));
         let totalCost: Int = 0;
 
-        dump(msg.forwardAmount);
-        send(SendParameters{
+         send(SendParameters{
             to: self.thisContractJettonWallet!!,
             bounce: false,
             value: msg.forwardAmount,
@@ -139,20 +138,6 @@ trait StakingMaster with Common, OwnableTransferable {
         // check cost
         totalCost += msg.forwardAmount;
         nativeThrowUnless(codeInflowValueNotSufficient, ctx.value >= totalCost + self.staticTax);
-
-        // forward
-        send(SendParameters{
-            to: msg.destination,
-            bounce: false,
-            value: 0,
-            body: StakeReleaseNotification{
-                queryId: msg.queryId,
-                amount: msg.jettonAmount,
-                stakeIndex: msg.stakeIndex,
-                destination: msg.destination,
-                forwardPayload: msg.forwardPayload,
-            }.toCell(),
-        });
 
         // refund
         send(SendParameters{

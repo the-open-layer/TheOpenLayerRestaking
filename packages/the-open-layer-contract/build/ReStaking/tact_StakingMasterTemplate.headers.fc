@@ -9,8 +9,14 @@ slice __tact_verify_address(slice address) impure inline;
 ;; __tact_load_address
 (slice, slice) __tact_load_address(slice cs) inline;
 
+;; __tact_load_address_opt
+(slice, slice) __tact_load_address_opt(slice cs) inline;
+
 ;; __tact_store_address
 builder __tact_store_address(builder b, slice address) inline;
+
+;; __tact_store_address_opt
+builder __tact_store_address_opt(builder b, slice address) inline;
 
 ;; __tact_create_address
 slice __tact_create_address(int chain, int hash) inline;
@@ -103,13 +109,10 @@ builder $StakeInternal$_store(builder build_0, (int, slice, int, slice, int, cel
 cell $StakeInternal$_store_cell((int, slice, int, slice, int, cell, int) v) inline;
 
 ;; $WithdrawInternal$_load
-(slice, ((int, int, int, int, int, slice, slice, slice, cell))) $WithdrawInternal$_load(slice sc_0) inline_ref;
+(slice, ((int, int, int, int, int, slice, slice, cell))) $WithdrawInternal$_load(slice sc_0) inline_ref;
 
-;; $StakeReleaseNotification$_store
-builder $StakeReleaseNotification$_store(builder build_0, (int, int, int, slice, cell) v) inline;
-
-;; $StakeReleaseNotification$_store_cell
-cell $StakeReleaseNotification$_store_cell((int, int, int, slice, cell) v) inline;
+;; $SetContractJettonWallet$_load
+(slice, ((int, slice))) $SetContractJettonWallet$_load(slice sc_0) inline;
 
 ;; $StakeJetton$_load
 (slice, ((int, slice, int, cell))) $StakeJetton$_load(slice sc_0) inline;
@@ -124,10 +127,10 @@ cell $StakeReleaseNotification$_store_cell((int, int, int, slice, cell) v) inlin
 (slice, ((int))) $SetStaticTaxFee$_load(slice sc_0) inline;
 
 ;; $StakingMasterTemplate$_store
-builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, int, int, int) v) inline;
+builder $StakingMasterTemplate$_store(builder build_0, (slice, slice, slice, int, int, int) v) inline;
 
 ;; $StakingMasterTemplate$_load
-(slice, ((slice, slice, int, int, int))) $StakingMasterTemplate$_load(slice sc_0) inline;
+(slice, ((slice, slice, slice, int, int, int))) $StakingMasterTemplate$_load(slice sc_0) inline;
 
 ;; $StateInit$_not_null
 ((cell, cell)) $StateInit$_not_null(tuple v) inline;
@@ -139,13 +142,16 @@ builder $StakingWalletTemplate$init$_store(builder build_0, (slice, slice) v) in
 (slice, ((slice, slice))) $StakingMasterTemplate$init$_load(slice sc_0) inline;
 
 ;; $StakingMasterTemplate$_contract_init
-(slice, slice, int, int, int) $StakingMasterTemplate$_contract_init(slice $owner, slice $jettonMaster) impure inline_ref;
+(slice, slice, slice, int, int, int) $StakingMasterTemplate$_contract_init(slice $owner, slice $jettonMaster) impure inline_ref;
 
 ;; $StakingMasterTemplate$_contract_load
-(slice, slice, int, int, int) $StakingMasterTemplate$_contract_load() impure inline_ref;
+(slice, slice, slice, int, int, int) $StakingMasterTemplate$_contract_load() impure inline_ref;
 
 ;; $StakingMasterTemplate$_contract_store
-() $StakingMasterTemplate$_contract_store((slice, slice, int, int, int) v) impure inline;
+() $StakingMasterTemplate$_contract_store((slice, slice, slice, int, int, int) v) impure inline;
+
+;; $global_emptyCell
+cell $global_emptyCell() impure inline;
 
 ;; $global_contractAddress
 slice $global_contractAddress((cell, cell) $s) impure inline;
@@ -172,16 +178,16 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ((int)) $JettonExcesses$_constructor_query_id(int $query_id) inline;
 
 ;; $StakingMasterTemplate$_fun_getUserWallet
-((slice, slice, int, int, int), (cell, cell)) $StakingMasterTemplate$_fun_getUserWallet((slice, slice, int, int, int) $self, slice $owner) impure inline;
+((slice, slice, slice, int, int, int), (cell, cell)) $StakingMasterTemplate$_fun_getUserWallet((slice, slice, slice, int, int, int) $self, slice $owner) impure inline;
 
 ;; $StakingMasterTemplate$_fun_forward
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_forward((slice, slice, int, int, int) $self, slice $to, cell $body, int $bounce, tuple $init) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_forward((slice, slice, slice, int, int, int) $self, slice $to, cell $body, int $bounce, tuple $init) impure inline;
 
 ;; $StakingMasterTemplate$_fun_reply
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_reply((slice, slice, int, int, int) $self, cell $body) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_reply((slice, slice, slice, int, int, int) $self, cell $body) impure inline;
 
 ;; $StakingMasterTemplate$_fun_notify
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_notify((slice, slice, int, int, int) $self, cell $body) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_notify((slice, slice, slice, int, int, int) $self, cell $body) impure inline;
 
 ;; $SendParameters$_constructor_to_bounce_value_mode_body_data_code
 ((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_mode_body_data_code(slice $to, int $bounce, int $value, int $mode, cell $body, cell $data, cell $code) inline;
@@ -189,41 +195,35 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $StakeInternal$_constructor_queryId_jettonWallet_jettonAmount_responseDestination_forwardAmount_forwardPayload_unstakeThreshold
 ((int, slice, int, slice, int, cell, int)) $StakeInternal$_constructor_queryId_jettonWallet_jettonAmount_responseDestination_forwardAmount_forwardPayload_unstakeThreshold(int $queryId, slice $jettonWallet, int $jettonAmount, slice $responseDestination, int $forwardAmount, cell $forwardPayload, int $unstakeThreshold) inline;
 
-;; $StakingMasterTemplate$_fun_reserveValue
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_reserveValue((slice, slice, int, int, int) $self, int $delta) impure inline;
-
 ;; $StakingMasterTemplate$_fun_receiveTransferNotification
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveTransferNotification((slice, slice, int, int, int) $self, (int, int, slice, cell) $msg) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveTransferNotification((slice, slice, slice, int, int, int) $self, (int, int, slice, cell) $msg) impure inline;
 
 ;; $JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload
 ((int, int, slice, slice, cell, int, cell)) $JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload(int $query_id, int $amount, slice $destination, slice $response_destination, cell $custom_payload, int $forward_ton_amount, cell $forward_payload) inline;
 
-;; $StakeReleaseNotification$_constructor_queryId_amount_stakeIndex_destination_forwardPayload
-((int, int, int, slice, cell)) $StakeReleaseNotification$_constructor_queryId_amount_stakeIndex_destination_forwardPayload(int $queryId, int $amount, int $stakeIndex, slice $destination, cell $forwardPayload) inline;
-
 ;; $StakingMasterTemplate$_fun_receiveWithdrawInternal
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveWithdrawInternal((slice, slice, int, int, int) $self, (int, int, int, int, int, slice, slice, slice, cell) $msg) impure inline;
-
-;; $StakingMasterTemplate$_fun_userWalletAddress
-((slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_userWalletAddress((slice, slice, int, int, int) $self, slice $owner) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveWithdrawInternal((slice, slice, slice, int, int, int) $self, (int, int, int, int, int, slice, slice, cell) $msg) impure inline;
 
 ;; $StakingMasterTemplate$_fun_userWallet
-((slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_userWallet((slice, slice, int, int, int) $self, slice $owner) impure inline;
+((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_userWallet((slice, slice, slice, int, int, int) $self, slice $owner) impure inline;
 
 ;; $StakingMasterTemplate$_fun_unstakeThreshold
-((slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_unstakeThreshold((slice, slice, int, int, int) $self) impure inline;
+((slice, slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_unstakeThreshold((slice, slice, slice, int, int, int) $self) impure inline;
+
+;; $StakingMasterTemplate$_fun_thisJettonWallet
+((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_thisJettonWallet((slice, slice, slice, int, int, int) $self) impure inline;
 
 ;; $StakingMasterTemplate$_fun_staticTaxFee
-((slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_staticTaxFee((slice, slice, int, int, int) $self) impure inline;
+((slice, slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_staticTaxFee((slice, slice, slice, int, int, int) $self) impure inline;
 
 ;; $StakingMasterTemplate$_fun_receiveSetStaticTaxFee
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveSetStaticTaxFee((slice, slice, int, int, int) $self, (int) $msg) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveSetStaticTaxFee((slice, slice, slice, int, int, int) $self, (int) $msg) impure inline;
 
 ;; $StakingMasterTemplate$_fun_requireOwner
-((slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_requireOwner((slice, slice, int, int, int) $self) impure inline;
+((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_requireOwner((slice, slice, slice, int, int, int) $self) impure inline;
 
 ;; $StakingMasterTemplate$_fun_owner
-((slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_owner((slice, slice, int, int, int) $self) impure inline;
+((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_owner((slice, slice, slice, int, int, int) $self) impure inline;
 
 ;; $ChangeOwnerOk$_constructor_queryId_newOwner
 ((int, slice)) $ChangeOwnerOk$_constructor_queryId_newOwner(int $queryId, slice $newOwner) inline;

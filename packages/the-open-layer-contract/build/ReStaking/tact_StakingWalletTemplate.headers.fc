@@ -97,13 +97,13 @@ cell $JettonExcesses$_store_cell((int) v) inline;
 (slice, ((int, int, slice, cell))) $UnStake$_load(slice sc_0) inline;
 
 ;; $Withdraw$_load
-(slice, ((int, int, int, int, slice, slice, cell))) $Withdraw$_load(slice sc_0) inline_ref;
+(slice, ((int, int, int, int, slice, cell))) $Withdraw$_load(slice sc_0) inline_ref;
 
 ;; $WithdrawInternal$_store
-builder $WithdrawInternal$_store(builder build_0, (int, int, int, int, int, slice, slice, slice, cell) v) inline_ref;
+builder $WithdrawInternal$_store(builder build_0, (int, int, int, int, int, slice, slice, cell) v) inline_ref;
 
 ;; $WithdrawInternal$_store_cell
-cell $WithdrawInternal$_store_cell((int, int, int, int, int, slice, slice, slice, cell) v) inline;
+cell $WithdrawInternal$_store_cell((int, int, int, int, int, slice, slice, cell) v) inline;
 
 ;; $Redeposit$_load
 (slice, ((int, int, int, cell))) $Redeposit$_load(slice sc_0) inline;
@@ -130,16 +130,16 @@ tuple $StakedJettonInfo$_as_optional((int, int, int, int) v) inline;
 tuple $StakedJettonInfo$_load_opt(cell cl) inline;
 
 ;; $PendingJettonInfo$_store
-builder $PendingJettonInfo$_store(builder build_0, (int, int, int, int, int) v) inline;
+builder $PendingJettonInfo$_store(builder build_0, (int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_store_cell
-cell $PendingJettonInfo$_store_cell((int, int, int, int, int) v) inline;
+cell $PendingJettonInfo$_store_cell((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_load
-(slice, ((int, int, int, int, int))) $PendingJettonInfo$_load(slice sc_0) inline;
+(slice, ((int, int, int, int))) $PendingJettonInfo$_load(slice sc_0) inline;
 
 ;; $PendingJettonInfo$_as_optional
-tuple $PendingJettonInfo$_as_optional((int, int, int, int, int) v) inline;
+tuple $PendingJettonInfo$_as_optional((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_load_opt
 tuple $PendingJettonInfo$_load_opt(cell cl) inline;
@@ -151,10 +151,10 @@ builder $StakedToPending$_store(builder build_0, (int, int) v) inline;
 cell $StakedToPending$_store_cell((int, int) v) inline;
 
 ;; $PendingToStaked$_store
-builder $PendingToStaked$_store(builder build_0, (int, int) v) inline;
+builder $PendingToStaked$_store(builder build_0, (int, int, int) v) inline;
 
 ;; $PendingToStaked$_store_cell
-cell $PendingToStaked$_store_cell((int, int) v) inline;
+cell $PendingToStaked$_store_cell((int, int, int) v) inline;
 
 ;; $WithdrawalJettonInfo$_store
 builder $WithdrawalJettonInfo$_store(builder build_0, (int, int) v) inline;
@@ -178,19 +178,19 @@ builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, 
 ((int, int, int, int)) $StakedJettonInfo$_not_null(tuple v) inline;
 
 ;; $PendingJettonInfo$_get_jettonAmount
-_ $PendingJettonInfo$_get_jettonAmount((int, int, int, int, int) v) inline;
+_ $PendingJettonInfo$_get_jettonAmount((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_get_pendingIndex
-_ $PendingJettonInfo$_get_pendingIndex((int, int, int, int, int) v) inline;
+_ $PendingJettonInfo$_get_pendingIndex((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_get_unstakeTime
-_ $PendingJettonInfo$_get_unstakeTime((int, int, int, int, int) v) inline;
+_ $PendingJettonInfo$_get_unstakeTime((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_get_unstakeThreshold
-_ $PendingJettonInfo$_get_unstakeThreshold((int, int, int, int, int) v) inline;
+_ $PendingJettonInfo$_get_unstakeThreshold((int, int, int, int) v) inline;
 
 ;; $PendingJettonInfo$_not_null
-((int, int, int, int, int)) $PendingJettonInfo$_not_null(tuple v) inline;
+((int, int, int, int)) $PendingJettonInfo$_not_null(tuple v) inline;
 
 ;; $StakedInfo$_to_external
 (cell, cell, cell) $StakedInfo$_to_external(((cell, cell, cell)) v) inline;
@@ -252,14 +252,11 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $JettonExcesses$_constructor_query_id
 ((int)) $JettonExcesses$_constructor_query_id(int $query_id) inline;
 
-;; $StakingWalletTemplate$_fun_reserveValue
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_reserveValue((slice, slice, int, int, int, int, cell, cell, cell) $self, int $delta) impure inline;
-
 ;; $StakingWalletTemplate$_fun_receiveStakeInternal
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveStakeInternal((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, slice, int, slice, int, cell, int) $msg) impure inline;
 
-;; $PendingJettonInfo$_constructor_jettonAmount_stakeTime_pendingIndex_unstakeTime_unstakeThreshold
-((int, int, int, int, int)) $PendingJettonInfo$_constructor_jettonAmount_stakeTime_pendingIndex_unstakeTime_unstakeThreshold(int $jettonAmount, int $stakeTime, int $pendingIndex, int $unstakeTime, int $unstakeThreshold) inline;
+;; $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold
+((int, int, int, int)) $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold(int $jettonAmount, int $pendingIndex, int $unstakeTime, int $unstakeThreshold) inline;
 
 ;; $StakedToPending$_constructor_jettonAmount_pendingIndex
 ((int, int)) $StakedToPending$_constructor_jettonAmount_pendingIndex(int $jettonAmount, int $pendingIndex) inline;
@@ -267,20 +264,20 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $StakingWalletTemplate$_fun_receiveUnstake
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveUnstake((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, slice, cell) $msg) impure inline;
 
-;; $PendingToStaked$_constructor_jettonAmount_pendingIndex
-((int, int)) $PendingToStaked$_constructor_jettonAmount_pendingIndex(int $jettonAmount, int $pendingIndex) inline;
+;; $PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex
+((int, int, int)) $PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex(int $jettonAmount, int $pendingIndex, int $stakedIndex) inline;
 
 ;; $StakingWalletTemplate$_fun_receiveReDeposit
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveReDeposit((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, cell) $msg) impure inline;
 
-;; $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_jettonWallet_destination_stakeIndex_responseDestination
-((int, int, int, int, int, slice, slice, slice, cell)) $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_jettonWallet_destination_stakeIndex_responseDestination(int $queryId, int $jettonAmount, int $forwardAmount, int $tonAmount, cell $forwardPayload, slice $jettonWallet, slice $destination, int $stakeIndex, slice $responseDestination) inline;
+;; $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination
+((int, int, int, int, int, slice, slice, cell)) $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination(int $queryId, int $jettonAmount, int $forwardAmount, int $tonAmount, cell $forwardPayload, slice $destination, int $stakeIndex, slice $responseDestination) inline;
 
 ;; $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime
 ((int, int)) $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime(int $jettonAmount, int $withdrawTime) inline;
 
 ;; $StakingWalletTemplate$_fun_receiveWithdraw
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveWithdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, slice, cell) $msg) impure inline;
+((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveWithdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, cell) $msg) impure inline;
 
 ;; $StakingWalletTemplate$_fun_receiveExcesses
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveExcesses((slice, slice, int, int, int, int, cell, cell, cell) $self, (int) $msg) impure inline;
