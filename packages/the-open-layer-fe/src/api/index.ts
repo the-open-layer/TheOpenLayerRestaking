@@ -11,13 +11,10 @@ export const getTonClient = async (): Promise<TonClient> => {
   }
   return client;
 };
-export const getTonWeb = () => {
+export const getTonWeb = async () => {
   if (!tonweb) {
-    tonweb = new TonWeb(
-      new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
-        apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
-      })
-    );
+    const endpoint = await getHttpEndpoint({ network: 'testnet' });
+    tonweb = new TonWeb(new TonWeb.HttpProvider(endpoint));
   }
   return tonweb;
 };
@@ -74,7 +71,7 @@ export const getUserJettonWallet = async function (
   userAddress: string,
   tokenMasterAddress: string
 ) {
-  const tonweb = getTonWeb();
+  const tonweb = await getTonWeb();
   //@ts-ignore
   const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {
     address: tokenMasterAddress,
@@ -91,7 +88,7 @@ export const getTokenBalance = async function (
   userAddress: string,
   tokenMasterAddress: string
 ) {
-  const tonweb = getTonWeb();
+  const tonweb = await getTonWeb();
   const jettonWalletAddress = await getUserJettonWallet(
     userAddress,
     tokenMasterAddress
@@ -106,7 +103,7 @@ export const getTokenBalance = async function (
   return balance;
 };
 export const getLastTxHash = async (userAddress: string) => {
-  const tonweb = getTonWeb();
+  const tonweb = await getTonWeb();
   const info = await tonweb.provider.getWalletInfo(userAddress);
   return info?.last_transaction_id?.hash;
 };
