@@ -189,7 +189,7 @@ export const getStakingInfo = async (
   userAddress: string,
   STAKING_MASTER_ADDRESS: string
 ) => {
-  const client = await getTonClient();
+  const client = getTonClient();
   const stakingWalletAddress = await getStakingWalletAddress(
     userAddress,
     STAKING_MASTER_ADDRESS
@@ -208,6 +208,7 @@ export const getStakingInfo = async (
 };
 
 export const getTokenTVL = async (tokenAddress: string) => {
+  console.log("tokenAddress", tokenAddress);
   return 100000000;
 };
 
@@ -225,13 +226,11 @@ export const getLocked = (timestamp: bigint, threshold: bigint) => {
   return dayjs.unix(Number(timestamp) + Number(threshold)).isAfter(dayjs());
 };
 
-// https://toncenter.com/api/v2/#/accounts/get_address_information_getAddressInformation_get
 export const checkTxStatus = async (
   lastTxHash: string,
   userAddress: string,
   retryTimes = 60
 ) => {
-  // https://testnet.toncenter.com/api/v2/getTransactions?address=0QCXxZtVYOOsa5JFtmxYbQSm0ODpLzpL0V3MQK_mVD07QZxq
   let time = 0;
   while (true) {
     const newLastTxHash = await getLastTxHash(userAddress);

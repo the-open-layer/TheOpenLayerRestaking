@@ -47,6 +47,7 @@ export const useUserRestaking = (restakingMaster:string) => {
           };
         }),
       ];
+      console.log("stakingInfo", { pendingJettons, stakedJettons, withdrawalJettons });
       return {
         pendingJettons,
         stakedJettons,
