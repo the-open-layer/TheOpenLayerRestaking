@@ -1,14 +1,16 @@
 // import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { TonClient } from '@ton/ton';
 import TonWeb from 'tonweb';
-
+const endpoint = import.meta.env.VITE_TENCENTER_ENDPOINT;
+const apiKey = import.meta.env.VITE_TONCENTER_API_KEY;
 let client: TonClient | null = null;
 let tonweb: TonWeb | null = null;
+
 export const getTonClient = () => {
   if (!client) {
     client = new TonClient({
-      endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-      apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
+      endpoint,
+      apiKey,
     });
   }
   return client;
@@ -16,8 +18,8 @@ export const getTonClient = () => {
 export const getTonWeb = () => {
   if (!tonweb) {
     tonweb = new TonWeb(
-      new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {
-        apiKey: import.meta.env.VITE_TONCENTER_API_KEY,
+      new TonWeb.HttpProvider(endpoint, {
+        apiKey,
       })
     );
   }
