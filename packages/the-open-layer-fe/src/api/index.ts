@@ -36,10 +36,9 @@ interface RemoteData {
     description: string;
   }>;
 }
+const configUrl = import.meta.env.VITE_CONFIG_URL;
 export const getStakeList = async function () {
-  const data: RemoteData = await fetch(
-    'https://static.tbook.vip/restaking/testnet/config.json'
-  ).then((res) => res.json());
+  const data: RemoteData = await fetch(configUrl).then((res) => res.json());
   return data?.tokens ?? [];
   // return [
   //   {

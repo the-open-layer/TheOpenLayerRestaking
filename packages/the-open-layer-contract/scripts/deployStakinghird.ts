@@ -4,9 +4,15 @@ import TonWeb from 'tonweb';
 import { StakingMasterTemplate } from '../build/ReStaking/tact_StakingMasterTemplate';
 
 // const jettonMasterAddress = 'kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN';
-const jettonMasterAddress = 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS';
+//const jettonMasterAddress = 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS';
+// stTon
+// const jettonMasterAddress = 'EQDNhy-nxYFgUqzfUzImBEP67JqsyMIcyk2S5_RwNNEYku0k';
+// tsTon
+const jettonMasterAddress = 'EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav';
 
-const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
+
+// const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
+const tonweb = new TonWeb();
 
 // Helper function to calculate jetton wallet address
 async function getJettonWalletAddress(ownerAddress: string): Promise<string> {
@@ -57,4 +63,15 @@ export async function run(provider: NetworkProvider) {
     );
     const thisJettonWallet = await stakingMasterContract.getThisJettonWallet();
     console.log('Master Jetton Wallet', masterJettonWallet);
+
+    await stakingMasterContract.send(
+        provider.sender(),
+        {
+            value: toNano('0.1'),
+        },
+        {
+            $$type: 'SetUnstakeThreshold',
+            queryId: 0n,
+            threshold: BigInt(60 * 60 * 24 * 7)
+        });
 }

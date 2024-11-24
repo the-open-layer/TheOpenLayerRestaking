@@ -8,7 +8,7 @@
     "build": "vite build --mode prod",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build-staging": "vite build"
+    "build-staging": "vite build --mode staging"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
