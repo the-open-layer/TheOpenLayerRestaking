@@ -37,7 +37,7 @@ const txHistoryDiv = document.getElementById('txHistory') as HTMLDivElement;
 
 // Initialize TonConnect
 const tonConnectUI = new TonConnectUI({
-    manifestUrl: 'https://static.tbook.vip/ton/ton_manifest.json',
+    manifestUrl: 'https://openlayer-static.s3.ap-southeast-1.amazonaws.com/ton_manifest.json',
     buttonRootId: 'connectWallet'
 });
 
