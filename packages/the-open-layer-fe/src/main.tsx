@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <TonConnectUIProvider
-          manifestUrl="https://static.tbook.vip/ton/ton_manifest.json"
+          manifestUrl="https://openlayer-static.s3.ap-southeast-1.amazonaws.com/ton_manifest.json"
           uiPreferences={{ theme: THEME.LIGHT }}
         >
           <App />
