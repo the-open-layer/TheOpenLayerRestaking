@@ -43,7 +43,7 @@
     var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
     throw_unless(1003, ( __tact_slice_eq_bits($global_contractAddress(($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)~$StakingMasterTemplate$_fun_getUserWallet($msg'destination)), $ctx'sender) ));
     int $totalCost = 0;
-    $global_send($SendParameters$_constructor_to_bounce_value_body(__tact_not_null($self'thisContractJettonWallet), false, $msg'forwardAmount, $JettonTransfer$_store_cell($JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload($msg'queryId, $msg'jettonAmount, $msg'destination, $msg'responseDestination, __gen_cell_comment_b4a7bc41dd2ee6dda6e55be5fa7fd8a5ce04ff3222e08084c35539e94008f156(), 0, $global_emptyCell()))));
+    $global_send($SendParameters$_constructor_to_bounce_value_body(__tact_not_null($self'thisContractJettonWallet), false, $msg'forwardAmount, $JettonTransfer$_store_cell($JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload($msg'queryId, $msg'jettonAmount, $msg'destination, $msg'responseDestination, __gen_cell_comment_b4a7bc41dd2ee6dda6e55be5fa7fd8a5ce04ff3222e08084c35539e94008f156(), $msg'tonAmount, $global_emptyCell()))));
     $totalCost = $totalCost + $msg'forwardAmount;
     throw_unless(1001, ($ctx'value >= ($totalCost + $self'staticTax)));
     $global_send($SendParameters$_constructor_to_bounce_value_mode_body($msg'responseDestination, false, 0, 64, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));

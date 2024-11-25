@@ -130,7 +130,7 @@ trait StakingMaster with Common, OwnableTransferable {
                 destination: msg.destination,
                 response_destination: msg.responseDestination,
                 custom_payload: "jetton-withdraw".asComment(),
-                forward_ton_amount: 0,
+                forward_ton_amount: msg.tonAmount,
                 forward_payload: emptyCell()
             }.toCell(),
         });

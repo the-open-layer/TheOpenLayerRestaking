@@ -1004,43 +1004,39 @@ PROGRAM{
   }>
   $StakingMasterTemplate$_fun_receiveWithdrawInternal PROCINLINE:<{
     DROP
-    2 2 BLKDROP2
+    s2 POP
     __tact_context_get INLINECALLDICT
     DROP
     s2 POP
-    s5 s12 XCHG
-    s4 s11 XCHG
-    s3 s10 XCHG
-    s9 s8 s7 XCHG3
+    s5 s13 XCHG
+    s4 s12 XCHG
+    s3 s11 XCHG
+    s10 s9 s8 XCHG3
     s10 PUSH
     $StakingMasterTemplate$_fun_getUserWallet INLINECALLDICT
     $global_contractAddress INLINECALLDICT
-    s0 s8 XCHG2
+    s0 s9 XCHG2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
     s2 PUSH
     __tact_not_null INLINECALLDICT
     FALSE
         B{b5ee9c72410101010015000026000000006a6574746f6e2d776974686472617718e83ea2} B>boc PUSHREF
-    0 PUSHINT
     $global_emptyCell INLINECALLDICT
     s10 PUSH
-    s0 s5 XCHG
-    s4 17 s() XCHG
-    s3 s15 XCHG
-    s14 PUSH
-    s0 s3 XCHG
-    s2 16 s() XCHG
-    SWAP
-    s0 16 s() XCHG
+    s5 s15 XCPU
+    s5 s11 XCHG
+    s4 s15 XCHG
+    s3 s1 s3 XCHG3
+    s1 17 s() XCHG
     $JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload INLINECALLDICT
     $JettonTransfer$_store_cell INLINECALLDICT
-    s10 s12 s0 XCHG3
-    s11 s(-1) PUXC
+    s5 s9 s0 XCHG3
+    s12 s(-1) PUXC
     $SendParameters$_constructor_to_bounce_value_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
-    s8 s7 XCPU
+    s9 s6 XCPU
     ADD
     s1 s5 XCHG
     GEQ
@@ -1051,14 +1047,14 @@ PROGRAM{
     s0 s4 XCHG
     $JettonExcesses$_constructor_query_id INLINECALLDICT
     $JettonExcesses$_store_cell INLINECALLDICT
-    s4 s7 XCHG
+    s4 s8 XCHG
     s1 s3 s0 XCHG3
-    s1 s7 XCHG
+    s1 s8 XCHG
     $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
-    s5 s4 s0 XCHG3
-    s3 s3 s0 XCHG3
+    s1 s5 XCHG
+    s1 s4 XCHG
   }>
   $StakingMasterTemplate$_fun_userWallet PROCINLINE:<{
     $StakingMasterTemplate$_fun_getUserWallet INLINECALLDICT

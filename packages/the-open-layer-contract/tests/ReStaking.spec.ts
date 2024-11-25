@@ -600,8 +600,8 @@ describe('ReStaking', () => {
                 $$type: 'Withdraw',
                 queryId: 0n,
                 pendingIndex: 0n,
-                tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.1'),
+                tonAmount: toNano('0.02'),
+                forwardAmount: toNano('0.05'),
                 //jettonWallet: masterJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null
@@ -622,9 +622,8 @@ describe('ReStaking', () => {
                 $$type: 'Withdraw',
                 queryId: 1n,
                 pendingIndex: 0n,
-                tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.1'),
-                //jettonWallet: masterJettonWallet.address,
+                tonAmount: toNano('0.02'),
+                forwardAmount: toNano('0.05'),
                 responseDestination: user.getSender().address,
                 forwardPayload: null
             }
