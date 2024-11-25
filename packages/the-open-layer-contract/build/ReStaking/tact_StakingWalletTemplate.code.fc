@@ -37,10 +37,12 @@
     throw_unless(1003, ( __tact_slice_eq_bits($self'master, $ctx'sender) ));
     $self'stakedJettons~__tact_dict_set_int_cell(257, $self'stakeIndex, $StakedJettonInfo$_store_cell($StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold($msg'jettonAmount, $self'stakeIndex, $global_now(), $msg'unstakeThreshold)));
     $self'stakeIndex = $self'stakeIndex + 1;
+    int $totalCost = (($self'staticTax + 10000000) + 10000000);
     if (($msg'forwardAmount > 0)) {
         $global_send($SendParameters$_constructor_to_bounce_value_body($self'owner, false, $msg'forwardAmount, $StakeNotification$_store_cell($StakeNotification$_constructor_queryId_jettonAmount_jettonWallet_forwardPayload($msg'queryId, $msg'jettonAmount, $msg'jettonWallet, $msg'forwardPayload))));
+        $totalCost = (($totalCost + $msg'forwardAmount) + 10000000);
     }
-    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($msg'responseDestination, false, 0, 64, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
+    $global_send($SendParameters$_constructor_to_bounce_value_body($msg'responseDestination, false, ($ctx'value - $totalCost), $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
     return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
 }
 

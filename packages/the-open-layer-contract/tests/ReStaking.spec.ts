@@ -28,6 +28,11 @@ describe('ReStaking', () => {
     let masterJettonWallet: SandboxContract<ExampleJettonWallet>;
     let deployerJettonWallet: SandboxContract<ExampleJettonWallet>;
 
+    async function getMasterBalance() {
+        const balance = (await blockchain.getContract(stakingMaster.address)).balance;
+        return balance;
+    }
+
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         deployer = await blockchain.treasury('deployer');
@@ -137,7 +142,9 @@ describe('ReStaking', () => {
             forwardAmount: 0n,
             forwardPayload: null
         };
-    
+
+        const beforeBalance = await getMasterBalance();
+
         // Transfer jettons to staking contract
         const stakeResult = await userJettonWallet.send(
             user.getSender(),
@@ -154,14 +161,20 @@ describe('ReStaking', () => {
                     storeStakeJetton(stakeMsg)).endCell()
             }
         );
-
-        //console.log(stakeResult);
+        expect(stakeResult.transactions).toHaveTransaction({
+            from: userJettonWallet.address,
+            to: masterJettonWallet.address,
+            success: true,
+        });
 
         // Verify stake
         const stakedInfo = await stakingWallet.getStakedInfo();
         expect(stakedInfo.stakedJettons.size).toEqual(1);
         const firstStake = stakedInfo.stakedJettons.get(0n);
         expect(firstStake?.jettonAmount).toEqual(stakeAmount);
+
+        const afterBalance = await getMasterBalance();
+        expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
     });
 
     it('should unstake jettons successfully', async () => {
@@ -184,6 +197,7 @@ describe('ReStaking', () => {
             forwardPayload: null
         };
     
+        const beforeBalance = await getMasterBalance();
         // Transfer jettons to staking contract twice
         await userJettonWallet.send(
             user.getSender(),
@@ -242,6 +256,9 @@ describe('ReStaking', () => {
 
         const pendingJetton = stakedInfo.pendingJettons.get(0n);
         expect(pendingJetton?.jettonAmount).toEqual(unstakeAmount);
+
+        const afterBalance = await getMasterBalance();
+        expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
     });
 
     it('should withdraw jettons successfully', async () => {
@@ -255,6 +272,7 @@ describe('ReStaking', () => {
             forwardPayload: null
         };
 
+        const beforeBalance = await getMasterBalance();
         await userJettonWallet.send(
             user.getSender(),
             { value: toNano('1') },
@@ -312,6 +330,9 @@ describe('ReStaking', () => {
 
         const withdrawalJetton = stakedInfo.withdrawalJettons.get(0n);
         expect(withdrawalJetton?.jettonAmount).toEqual(stakeAmount);
+
+        const afterBalance = await getMasterBalance();
+        expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
     }, 50000);
 
     it('should redeposit pending jettons successfully', async () => {
@@ -562,6 +583,8 @@ describe('ReStaking', () => {
             forwardPayload: null
         };
 
+        const beforeBalance = await getMasterBalance();
+
         await userJettonWallet.send(
             user.getSender(),
             { value: toNano('1') },
@@ -636,6 +659,9 @@ describe('ReStaking', () => {
         expect(stakedInfo.pendingJettons.size).toEqual(0);
         console.log({initialBalance, beforeAmount, afterAmount, stakeAmount});
         expect(afterAmount).toEqual(beforeAmount + stakeAmount);
+
+        const afterBalance = await getMasterBalance();
+        expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
     }, 20000);
 
     it('should unstake partial amount from multiple stakes', async () => {
@@ -648,7 +674,7 @@ describe('ReStaking', () => {
             forwardAmount: 0n,
             forwardPayload: null
         };
-        
+        const beforeBalance = await getMasterBalance();
         // First stake
         await userJettonWallet.send(
             user.getSender(),
@@ -715,5 +741,7 @@ describe('ReStaking', () => {
         expect(stakedInfo.pendingJettons.size).toEqual(1);
         const pendingJetton = stakedInfo.pendingJettons.get(0n);
         expect(pendingJetton?.jettonAmount).toEqual(unstakeAmount);
+        const afterBalance = await getMasterBalance();
+        expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
     });
 });

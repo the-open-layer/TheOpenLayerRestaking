@@ -15,6 +15,8 @@ trait StakingWallet with Common, Ownable {
     lockedValue: Int;
     stakeIndex: Int;
     pendingIndex: Int;
+    virtual const minTonsForStorage: Int = ton("0.01");
+    virtual const gasConsumption: Int = ton("0.01");
 
     stakedJettons: map<Int, StakedJettonInfo>;
     pendingJettons: map<Int, PendingJettonInfo>;
@@ -58,7 +60,7 @@ trait StakingWallet with Common, Ownable {
             }
         );
         self.stakeIndex += 1;
-
+        let totalCost = self.staticTax + self.minTonsForStorage + self.gasConsumption;
         if (msg.forwardAmount > 0) {
             send(SendParameters{
                 to: self.owner,
@@ -71,14 +73,14 @@ trait StakingWallet with Common, Ownable {
                     forwardPayload: msg.forwardPayload,
                 }.toCell(),
             });
+            totalCost = totalCost + msg.forwardAmount + self.gasConsumption;
         }
 
         // refund
         send(SendParameters{
             to: msg.responseDestination,
             bounce: false,
-            value: 0,
-            mode: SendRemainingValue,
+            value: ctx.value - totalCost,
             body: JettonExcesses{
                 query_id: msg.queryId,
             }.toCell(),

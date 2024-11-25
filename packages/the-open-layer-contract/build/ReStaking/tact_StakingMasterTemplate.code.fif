@@ -55,7 +55,6 @@ PROGRAM{
   DECLPROC $StakingWalletTemplate$_init_child
   DECLPROC $SendParameters$_constructor_bounce_to_value_mode_body_code_data
   DECLPROC $SendParameters$_constructor_to_bounce_value_body
-  DECLPROC $SendParameters$_constructor_to_bounce_value_mode_body
   DECLPROC $JettonExcesses$_constructor_query_id
   DECLPROC $StakingMasterTemplate$_fun_getUserWallet
   DECLPROC $StakingMasterTemplate$_fun_forward
@@ -888,11 +887,6 @@ PROGRAM{
     PUSHNULL
     PUSHNULL
   }>
-  $SendParameters$_constructor_to_bounce_value_mode_body PROCINLINE:<{
-    s3 s4 XCHG
-    PUSHNULL
-    PUSHNULL
-  }>
   $JettonExcesses$_constructor_query_id PROCINLINE:<{
   }>
   $StakingMasterTemplate$_fun_getUserWallet PROCINLINE:<{
@@ -1018,43 +1012,49 @@ PROGRAM{
     s0 s9 XCHG2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
-    s2 PUSH
+    OVER
+    10000000 PUSHINT
+    ADD
+    20000000 PUSHINT
+    ADD
+    s3 PUSH
     __tact_not_null INLINECALLDICT
     FALSE
         B{b5ee9c72410101010015000026000000006a6574746f6e2d776974686472617718e83ea2} B>boc PUSHREF
     $global_emptyCell INLINECALLDICT
-    s10 PUSH
-    s5 s15 XCPU
-    s5 s11 XCHG
-    s4 s15 XCHG
+    s11 PUSH
+    s0 s5 XCHG
+    s4 s11 XCHG
+    s3 s15 XCHG
+    16 s() PUSH
     s3 s1 s3 XCHG3
-    s1 17 s() XCHG
+    s1 18 s() XCHG
     $JettonTransfer$_constructor_query_id_amount_destination_response_destination_custom_payload_forward_ton_amount_forward_payload INLINECALLDICT
     $JettonTransfer$_store_cell INLINECALLDICT
-    s5 s9 s0 XCHG3
-    s12 s(-1) PUXC
+    s6 s10 s0 XCHG3
+    s13 s(-1) PUXC
     $SendParameters$_constructor_to_bounce_value_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
-    s9 s6 XCPU
+    s9 s10 XCHG2
     ADD
-    s1 s5 XCHG
+    s5 s0 PUSH2
     GEQ
     1001 THROWIFNOT
+    s0 s5 XCHG
     FALSE
-    0 PUSHINT
-    64 PUSHINT
-    s0 s4 XCHG
+    s0 s6 XCHG
+    SUB
+    s0 s3 XCHG
     $JettonExcesses$_constructor_query_id INLINECALLDICT
     $JettonExcesses$_store_cell INLINECALLDICT
-    s4 s8 XCHG
-    s1 s3 s0 XCHG3
-    s1 s8 XCHG
-    $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
+    s3 s7 XCHG
+    s5 s7 s0 XCHG3
+    $SendParameters$_constructor_to_bounce_value_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
-    s1 s5 XCHG
-    s1 s4 XCHG
+    s3 s5 XCHG
+    s1 s2 XCHG
   }>
   $StakingMasterTemplate$_fun_userWallet PROCINLINE:<{
     $StakingMasterTemplate$_fun_getUserWallet INLINECALLDICT

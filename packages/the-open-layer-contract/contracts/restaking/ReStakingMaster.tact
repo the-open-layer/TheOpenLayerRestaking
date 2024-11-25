@@ -57,6 +57,8 @@ trait StakingMaster with Common, OwnableTransferable {
     staticTax: Int;
     lockedValue: Int;
     unstakeThreshold: Int;
+    virtual const minTonsForStorage: Int = ton("0.01");
+    virtual const gasConsumption: Int = ton("0.01");
 
     receive(msg: WithdrawInternal) {
         self.receiveWithdrawInternal(msg);
@@ -118,7 +120,7 @@ trait StakingMaster with Common, OwnableTransferable {
         // check sender
         nativeThrowUnless(codeUnauthorized,
             ctx.sender == contractAddress(self.getUserWallet(msg.destination)));
-        let totalCost: Int = 0;
+        let totalCost: Int = self.staticTax + self.minTonsForStorage + self.gasConsumption * 2;
 
          send(SendParameters{
             to: self.thisContractJettonWallet!!,
@@ -137,14 +139,13 @@ trait StakingMaster with Common, OwnableTransferable {
 
         // check cost
         totalCost += msg.forwardAmount;
-        nativeThrowUnless(codeInflowValueNotSufficient, ctx.value >= totalCost + self.staticTax);
+        nativeThrowUnless(codeInflowValueNotSufficient, ctx.value >= totalCost);
 
         // refund
         send(SendParameters{
             to: msg.responseDestination,
             bounce: false,
-            value: 0,
-            mode: SendRemainingValue,
+            value: ctx.value - totalCost,
             body: JettonExcesses{
                 query_id: msg.queryId,
             }.toCell(),
