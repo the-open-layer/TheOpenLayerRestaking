@@ -208,7 +208,7 @@ export const getStakingInfo = async (
 };
 
 export const getTokenTVL = async (tokenAddress: string) => {
-  console.log("tokenAddress", tokenAddress);
+  console.log('tokenAddress', tokenAddress);
   return 100000000;
 };
 

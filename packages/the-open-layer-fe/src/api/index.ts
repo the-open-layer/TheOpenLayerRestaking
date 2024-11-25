@@ -108,8 +108,8 @@ export const getTokenBalance = async function (
   console.log('jetton.balance-->', balance);
   return balance;
 };
-export const getLastTxHash = async (userAddress: string) => {
+export const getLastTxHash = async (stakingWalletAddress: string) => {
   const tonweb = getTonWeb();
-  const info = await tonweb.provider.getWalletInfo(userAddress);
+  const info = await tonweb.provider.getWalletInfo(stakingWalletAddress);
   return info?.last_transaction_id?.hash;
 };
