@@ -87,7 +87,9 @@ export const useStakeMutation = (
   const { data: stakingWallet } = useStakingWalletAddress(restakingMaster);
   return useMutation({
     mutationFn: async (amount: string) => {
-      const lastTxHash = await getLastTxHash(stakingWallet!);
+      const lastTxHash = stakingWallet
+        ? await getLastTxHash(stakingWallet!)
+        : null;
       const tx = await getStakeTx(
         amount,
         address,
