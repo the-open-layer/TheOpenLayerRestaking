@@ -197,7 +197,7 @@ trait StakingWallet with Common, Ownable {
         send(SendParameters{
             to: self.master,
             bounce: true,
-            value: msg.forwardAmount,
+            value: 0,
             mode: SendRemainingValue,
             body: withdrawInternal.toCell(),
         });

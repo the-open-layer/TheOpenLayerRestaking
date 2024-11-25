@@ -1314,45 +1314,41 @@ PROGRAM{
     OVER
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_pendingIndex INLINECALLDICT
-    s6 s8 XCHG
-    s5 s0 s1 XC2PU
-    s0 s5 XCHG
-    s4 s9 XCHG
-    s3 s9 XCHG
-    s2 s8 XCHG
+    s7 s8 XCHG
+    s1 s6 XCHG
+    s8 s0 s4 XCHG3
     $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination INLINECALLDICT
     257 PUSHINT
-    s10 PUSH
+    s9 PUSH
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_pendingIndex INLINECALLDICT
-    s0 s13 s13 XCHG3
+    s0 s12 s12 XCHG3
         DICTIDEL
     DROP
     257 PUSHINT
-    s10 PUSH
+    s9 PUSH
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_pendingIndex INLINECALLDICT
-    s0 s11 XCHG
+    s0 s10 XCHG
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_jettonAmount INLINECALLDICT
         NOW
     $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime INLINECALLDICT
     $WithdrawalJettonInfo$_store_cell INLINECALLDICT
-    s3 s12 XCHG
-    s1 s11 s0 XCHG3
+    s3 s11 XCHG
+    s1 s10 s0 XCHG3
     __tact_dict_set_int_cell INLINECALLDICT
-    s0 s6 XCHG
-    s0 s5 XCHG
-    s0 s4 XCHG
-    s3 s1 s3 XCHG3
+    s4 s6 XCHG
+    s3 s5 XCHG
+    s6 s5 s6 XCHG3
     TRUE
-    s2 s10 XCHG2
+    0 PUSHINT
+    s7 s10 XCHG2
     64 PUSHINT
     s0 s12 XCHG
     $WithdrawInternal$_store_cell INLINECALLDICT
     s11 PUSH
-    s0 s4 XCHG
-    s3 s5 XCHG
+    s3 s1 s4 XCHG3
     s5 s6 s6 XCHG3
     $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
     $global_send INLINECALLDICT
