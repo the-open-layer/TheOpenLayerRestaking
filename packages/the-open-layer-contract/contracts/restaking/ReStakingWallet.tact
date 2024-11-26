@@ -174,6 +174,7 @@ trait StakingWallet with Common, Ownable {
         nativeThrowUnless(codePendingIndexNotFound, pending != null);
         nativeThrowUnless(codePendingJettonNotMaturity, 
             pending!!.unstakeTime + pending!!.unstakeThreshold <= now());
+        nativeThrowUnless(codeForwardAmountNotSufficient, msg.forwardAmount > msg.tonAmount);
 
         let totalCost = 0;
         // check cost

@@ -314,7 +314,7 @@ describe('ReStaking', () => {
                 queryId: 0n,
                 pendingIndex: 0n,
                 tonAmount: toNano('0.1'),
-                forwardAmount: toNano('0.1'),
+                forwardAmount: toNano('0.2'),
                 //jettonWallet: userJettonWallet.address,
                 responseDestination: user.getSender().address,
                 forwardPayload: null

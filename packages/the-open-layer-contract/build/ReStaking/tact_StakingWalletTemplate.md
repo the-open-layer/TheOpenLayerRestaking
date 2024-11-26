@@ -1,6 +1,6 @@
 # TACT Compilation Report
 Contract: StakingWalletTemplate
-BOC Size: 3003 bytes
+BOC Size: 3012 bytes
 
 # Types
 Total Types: 53

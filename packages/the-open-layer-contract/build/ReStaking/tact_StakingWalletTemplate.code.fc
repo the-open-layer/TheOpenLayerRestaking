@@ -105,6 +105,7 @@
     tuple $pending = $PendingJettonInfo$_load_opt(__tact_dict_get_int_cell($self'pendingJettons, 257, $msg'pendingIndex));
     throw_unless(50306, (~ null?($pending)));
     throw_unless(50307, (($PendingJettonInfo$_get_unstakeTime($PendingJettonInfo$_not_null($pending)) + $PendingJettonInfo$_get_unstakeThreshold($PendingJettonInfo$_not_null($pending))) <= $global_now()));
+    throw_unless(50309, ($msg'forwardAmount > $msg'tonAmount));
     int $totalCost = 0;
     $totalCost = $totalCost + $msg'forwardAmount;
     throw_unless(1001, ($ctx'value >= ($totalCost + $self'staticTax)));
