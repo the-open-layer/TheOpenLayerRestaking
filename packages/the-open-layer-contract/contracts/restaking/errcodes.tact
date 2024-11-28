@@ -7,3 +7,4 @@ const codeStakeIndexNotFound: Int = 50305;
 const codePendingIndexNotFound: Int = 50306;
 const codePendingJettonNotMaturity: Int = 50307;
 const codeInsufficientStakeAmount: Int = 50308;
+const codeForwardAmountNotSufficient: Int = 50309;

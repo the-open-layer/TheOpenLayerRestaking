@@ -171,9 +171,6 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $SendParameters$_constructor_to_bounce_value_body
 ((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_body(slice $to, int $bounce, int $value, cell $body) inline;
 
-;; $SendParameters$_constructor_to_bounce_value_mode_body
-((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_mode_body(slice $to, int $bounce, int $value, int $mode, cell $body) inline;
-
 ;; $JettonExcesses$_constructor_query_id
 ((int)) $JettonExcesses$_constructor_query_id(int $query_id) inline;
 

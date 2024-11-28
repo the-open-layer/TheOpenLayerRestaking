@@ -246,9 +246,6 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $StakeNotification$_constructor_queryId_jettonAmount_jettonWallet_forwardPayload
 ((int, int, slice, cell)) $StakeNotification$_constructor_queryId_jettonAmount_jettonWallet_forwardPayload(int $queryId, int $jettonAmount, slice $jettonWallet, cell $forwardPayload) inline;
 
-;; $SendParameters$_constructor_to_bounce_value_mode_body
-((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_mode_body(slice $to, int $bounce, int $value, int $mode, cell $body) inline;
-
 ;; $JettonExcesses$_constructor_query_id
 ((int)) $JettonExcesses$_constructor_query_id(int $query_id) inline;
 
@@ -275,6 +272,9 @@ cell $String$_fun_asComment(slice $self) impure inline;
 
 ;; $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime
 ((int, int)) $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime(int $jettonAmount, int $withdrawTime) inline;
+
+;; $SendParameters$_constructor_to_bounce_value_mode_body
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_mode_body(slice $to, int $bounce, int $value, int $mode, cell $body) inline;
 
 ;; $StakingWalletTemplate$_fun_receiveWithdraw
 ((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_receiveWithdraw((slice, slice, int, int, int, int, cell, cell, cell) $self, (int, int, int, int, slice, cell) $msg) impure inline;
