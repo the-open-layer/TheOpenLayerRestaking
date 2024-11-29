@@ -6,8 +6,8 @@ import { StakingMasterTemplate } from '../build/ReStaking/tact_StakingMasterTemp
 // Ty Test Jetton for testing
 const tyTestJettonMasterAddress = 'kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN';
 
-// TB Test Jetton for testing
-const tbTestjettonMasterAddress = 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS';
+// OLTT Jetton for testing
+const opttJettonMasterAddress = 'EQDhwT3q_ZFB7FVuIzZS9AR5EVqQjsIZVUSRaCO9-GAVQ-3_';
 
 const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
 
@@ -75,6 +75,6 @@ async function deployOfJettonMaster(jettonMasterAddress: string, provider: Netwo
 }
 
 export async function run(provider: NetworkProvider) {
-    await deployOfJettonMaster(tbTestjettonMasterAddress, provider);
+    // await deployOfJettonMaster(opttJettonMasterAddress, provider);
     await deployOfJettonMaster(tyTestJettonMasterAddress, provider);
 }

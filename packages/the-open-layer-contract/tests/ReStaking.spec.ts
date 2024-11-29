@@ -14,7 +14,7 @@ const jettonContent = buildJettonContent({
     description: 'TB Test Jetton',
     symbol: 'TBRTJ',
     decimals: '9',
-    image: 'https://i.tbook.com/logo.svg',
+    image: 'https://openlayer-static.s3.ap-southeast-1.amazonaws.com/op_image.png',
 });
 
 describe('ReStaking', () => {
