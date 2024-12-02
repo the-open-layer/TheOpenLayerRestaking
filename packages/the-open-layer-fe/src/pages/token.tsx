@@ -61,6 +61,7 @@ export default function Token() {
           settxState(txStateEnum.ERROR);
         }
       } catch (error) {
+        console.error('Transaction failed', error);
         settxState(txStateEnum.ERROR);
       }
     } else {
@@ -183,7 +184,6 @@ export default function Token() {
                   <div className="flex gap-3 flex-col md:flex-row">
                     <Button
                       className="flex-1"
-                      disabled={tx.isLocked}
                       onClick={() => {
                         setAction(ACTION_TYPES.REDEPOSIT);
                         settxState(txStateEnum.CONFIRMING);
