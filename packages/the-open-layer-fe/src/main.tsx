@@ -6,16 +6,18 @@ import { store } from '@/store';
 import { THEME, TonConnectUIProvider } from '@tonconnect/ui-react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '@/query-client';
+import stagingManifest from '@/assets/manifest/staging.tonconnect-manifest.json?url';
+import proManifest from '@/assets/manifest/pro.tonconnect-manifest.json?url';
 import './index.css';
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <TonConnectUIProvider
-          manifestUrl={import.meta.env.VITE_MANIFESTURL}
+          manifestUrl={
+            import.meta.env.MODE === 'staging' ? stagingManifest : proManifest
+          }
           uiPreferences={{ theme: THEME.LIGHT }}
         >
           <App />
