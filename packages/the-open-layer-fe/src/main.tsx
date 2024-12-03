@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <TonConnectUIProvider
-          manifestUrl={`/manifest/${import.meta.env.MODE === 'staging' ? 'staging.tonconnect-manifest.json' : 'tonconnect-manifest.json'}`}
+          manifestUrl={import.meta.env.VITE_MANIFESTURL}
           uiPreferences={{ theme: THEME.LIGHT }}
         >
           <App />
