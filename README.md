@@ -6,3 +6,6 @@ A TON-centric restaking infrastructure for TeFi, providing secure, scalable solu
 -   `sample` - sample
 -   `the-open-layer-fe` - frontend
 -   `the-open-layer-contracts` - contracts
+   
+## Audit Report
+see [TheOpenLayer Smart Contract Security Audit Report from BeosinTech](./TheOpenLayer.pdf)
