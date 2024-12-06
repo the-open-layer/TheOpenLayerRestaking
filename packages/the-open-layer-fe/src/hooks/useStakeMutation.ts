@@ -106,8 +106,12 @@ export const useStakeMutation = (
   });
 };
 
-export const useUnstakeMutation = (restakingMaster: string) => {
+export const useUnstakeMutation = (
+  jettonMasterAddress: string,
+  restakingMaster: string
+) => {
   const { refetch } = useUserRestaking(restakingMaster);
+  const { refetch: refetchBalance } = useBalance(jettonMasterAddress);
   const { address, tonConnectUI } = useAccount();
   const { data: stakingWallet } = useStakingWalletAddress(restakingMaster);
   return useMutation({
@@ -118,6 +122,7 @@ export const useUnstakeMutation = (restakingMaster: string) => {
       console.log('Unstake transaction:', result);
       const res = await checkTxStatus(lastTxHash, stakingWallet!);
       await refetch();
+      await refetchBalance();
       return res;
     },
   });
