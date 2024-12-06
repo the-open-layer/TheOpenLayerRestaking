@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
+        "dev-fe": "yarn workspace @the-open-layer/fe run dev --host",
         "build-fe": "yarn workspace @the-open-layer/fe run build",
         "build-contract": "yarn workspace @the-open-layer/contract run build ReStaking",
         "test": "yarn workspace @the-open-layer/contract test",
