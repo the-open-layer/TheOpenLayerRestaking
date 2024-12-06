@@ -1,27 +1,30 @@
 // import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { TonClient } from '@ton/ton';
+import { ToncoreAdapter, TonWebAdapter } from '@tonx/adapter';
+
 import TonWeb from 'tonweb';
-const endpoint = import.meta.env.VITE_TENCENTER_ENDPOINT;
-const apiKey = import.meta.env.VITE_TONCENTER_API_KEY;
+// const endpoint = import.meta.env.VITE_TENCENTER_ENDPOINT;
+// const apiKey = import.meta.env.VITE_TONCENTER_API_KEY;
+const tonxAPIKey = import.meta.env.VITE_TONXAPI_API_KEY;
 let client: TonClient | null = null;
 let tonweb: TonWeb | null = null;
 
+const network = import.meta.env.VITE_NETWORK;
 export const getTonClient = () => {
   if (!client) {
-    client = new TonClient({
-      endpoint,
-      apiKey,
+    client = new ToncoreAdapter({
+      network,
+      apiKey: tonxAPIKey,
     });
   }
   return client;
 };
 export const getTonWeb = () => {
   if (!tonweb) {
-    tonweb = new TonWeb(
-      new TonWeb.HttpProvider(endpoint, {
-        apiKey,
-      })
-    );
+    tonweb = new TonWebAdapter({
+      network,
+      apiKey: tonxAPIKey,
+    });
   }
   return tonweb;
 };

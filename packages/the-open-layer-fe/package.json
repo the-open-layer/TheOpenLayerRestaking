@@ -20,6 +20,7 @@
     "@tonconnect/sdk": "^3.0.5",
     "@tonconnect/ui": "^2.0.9",
     "@tonconnect/ui-react": "^2.0.9",
+    "@tonx/adapter": "^2.0.5",
     "@twa-dev/sdk": "^7.10.1",
     "@types/big.js": "^6.2.2",
     "big.js": "^6.2.2",
