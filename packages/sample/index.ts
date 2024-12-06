@@ -1,6 +1,7 @@
 import { TonConnectUI } from '@tonconnect/ui';
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import { TonClient, Address, beginCell, toNano, fromNano } from "@ton/ton";
+import { TonApiClient } from '@ton-api/client';
 import TonWeb from 'tonweb';
 import { 
     StakingMasterTemplate, 
@@ -39,6 +40,11 @@ const txHistoryDiv = document.getElementById('txHistory') as HTMLDivElement;
 const tonConnectUI = new TonConnectUI({
     manifestUrl: 'https://openlayer-static.s3.ap-southeast-1.amazonaws.com/ton_manifest.json',
     buttonRootId: 'connectWallet'
+});
+
+const ta = new TonApiClient({
+    baseUrl: 'https://tonapi.io',
+    apiKey: 'AFH6Y47CRCTZTJIAAAANRASC2FTZT2PDJTZF7NICQV3KBDNQEC7DREMOQXO7XQNLTCXPNSI'
 });
 
 // Contract addresses from environment variables
@@ -111,6 +117,7 @@ tonConnectUI.onStatusChange(async (wallet) => {
         withdrawButton.disabled = false;
         
         await updateBalances();
+        refreshEvents();
     } else {
         userAddress = '';
         stakingWalletAddress = undefined!;
@@ -358,6 +365,23 @@ function addToHistory(message: string) {
     const entry = document.createElement('div');
     entry.textContent = `[${time}] ${message}`;
     txHistoryDiv.insertBefore(entry, txHistoryDiv.firstChild);
+}
+
+const eventsDiv = document.getElementById('events') as HTMLDivElement;
+function refreshEvents() {
+    if (userAddress && userAddress.length > 0) {
+        ta.accounts.getAccountEvents(Address.parse(userAddress), {limit: 10})
+        .then((events) => {
+            eventsDiv.innerHTML = '';
+            for (const event of events.events) {
+                const entry = document.createElement('div');
+                entry.textContent = JSON.stringify(event, null, 2);
+                eventsDiv.appendChild(entry);
+            }
+            if (userAddress && userAddress.length > 0)
+                setTimeout(refreshEvents, 1000);
+        });
+    }
 }
 
 // Event Listeners

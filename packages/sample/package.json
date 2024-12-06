@@ -15,6 +15,7 @@
     "description": "",
     "dependencies": {
         "@orbs-network/ton-access": "^2.3.3",
+        "@ton-api/client": "^0.3.0",
         "@ton/ton": "^15.1.0",
         "@tonconnect/ui": "^2.0.9",
         "@vitejs/plugin-react": "^4.3.3",
