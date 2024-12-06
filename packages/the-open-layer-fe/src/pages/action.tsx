@@ -44,6 +44,7 @@ export default function Action() {
     restakeToken!.restakingMaster
   );
   const { mutateAsync: unstakeMutation } = useUnstakeMutation(
+    restakeToken!.jettonMaster,
     restakeToken!.restakingMaster
   );
 
