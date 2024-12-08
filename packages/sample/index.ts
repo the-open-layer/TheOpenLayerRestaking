@@ -1,6 +1,6 @@
 import { TonConnectUI } from '@tonconnect/ui';
 import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { TonClient, Address, beginCell, toNano, fromNano } from "@ton/ton";
+import { TonClient, Address, beginCell, toNano, fromNano, storeMessage, Transaction } from "@ton/ton";
 import { TonApiClient } from '@ton-api/client';
 import TonWeb from 'tonweb';
 import { 
@@ -48,7 +48,7 @@ const ta = new TonApiClient({
 });
 
 // Contract addresses from environment variables
-const STAKING_MASTER_ADDRESS = "EQBMpNvxOUm0jr9FgKMHxUNwTj_ChgVsDgFahQwIgQQW_zWZ";
+const STAKING_MASTER_ADDRESS = "EQCpc-r4-L9xRRlJUrY8pfpVnyrrXd4Nu3PtiMIEf3faW7du";
 //const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
 const JETTON_MASTER_ADDRESS = "kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN";
 
@@ -117,7 +117,7 @@ tonConnectUI.onStatusChange(async (wallet) => {
         withdrawButton.disabled = false;
         
         await updateBalances();
-        refreshEvents();
+        //refreshEvents();
     } else {
         userAddress = '';
         stakingWalletAddress = undefined!;
@@ -331,14 +331,14 @@ async function withdraw() {
             messages: [
                 {
                     address: userStakingAddress.toString(),
-                    amount: toNano('0.1').toString(),
+                    amount: toNano('0.15').toString(),
                     payload: beginCell()
                         .store(storeWithdraw({
                             $$type: 'Withdraw' as const,
                             queryId: BigInt(Math.ceil(Math.random() * 1000000)),
                             pendingIndex: pendingIndex,
-                            tonAmount: toNano('0.1'),
-                            forwardAmount: toNano('0.05'),
+                            tonAmount: toNano('0.05'),
+                            forwardAmount: toNano('0.1'),
                             // jettonWallet: stakeMasterJettonAddress,
                             responseDestination: userWalletAddress,
                             forwardPayload: beginCell().endCell()
@@ -353,6 +353,13 @@ async function withdraw() {
         const result = await tonConnectUI.sendTransaction(transaction);
         console.log('Withdraw transaction:', result);
         
+        const transactionResult = await waitForTransaction({
+            address: userAddress.toString(),
+            hash: result.boc,
+        }, client);
+
+        console.log('Withdraw transaction result:', transactionResult);
+
         addToHistory(`Withdrew from pending position ${pendingIndex}`);
         await updateBalances();
     } catch (error) {
@@ -383,7 +390,60 @@ function refreshEvents() {
         });
     }
 }
+interface WaitForTransactionOptions {
+    address: string;
+    hash: string;
+    refetchInterval?: number;
+    refetchLimit?: number;
+}
 
+const waitForTransaction = async (
+    options: WaitForTransactionOptions,
+    client: TonClient
+  ): Promise<Transaction | null> => {
+    const { hash, refetchInterval = 1000, refetchLimit, address } = options;
+  
+    return new Promise((resolve) => {
+      let refetches = 0;
+      const walletAddress = Address.parse(address);
+      const interval = setInterval(async () => {
+        refetches += 1;
+  
+        console.log("waiting transaction...");
+        const state = await client.getContractState(walletAddress);
+        if (!state || !state.lastTransaction) {
+          clearInterval(interval);
+          resolve(null);
+          return;
+        }
+        const lastLt = state.lastTransaction.lt;
+        const lastHash = state.lastTransaction.hash;
+        const lastTx = await client.getTransaction(
+          walletAddress,
+          lastLt,
+          lastHash
+        );
+  
+        if (lastTx && lastTx.inMessage) {
+          const msgCell = beginCell()
+            .store(storeMessage(lastTx.inMessage))
+            .endCell();
+  
+          const inMsgHash = msgCell.hash().toString("base64");
+          console.log("InMsgHash", inMsgHash);
+          if (inMsgHash === hash) {
+            clearInterval(interval);
+            resolve(lastTx);
+          }
+        }
+        if (refetchLimit && refetches >= refetchLimit) {
+          clearInterval(interval);
+          resolve(null);
+        }
+      }, refetchInterval);
+    });
+  };
+  
 // Event Listeners
 stakeButton.addEventListener('click', stake);
 unstakeButton.addEventListener('click', unstake);

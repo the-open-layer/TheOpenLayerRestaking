@@ -162,7 +162,7 @@ export const getWithdrawTx = async (
     messages: [
       {
         address: stakingWalletAddress.toString(),
-        amount: toNano('0.1').toString(),
+        amount: toNano('0.15').toString(),
         payload: beginCell()
           .store(
             storeWithdraw({
