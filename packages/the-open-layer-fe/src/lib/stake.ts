@@ -162,15 +162,15 @@ export const getWithdrawTx = async (
     messages: [
       {
         address: stakingWalletAddress.toString(),
-        amount: toNano('0.1').toString(),
+        amount: toNano('0.15').toString(),
         payload: beginCell()
           .store(
             storeWithdraw({
               $$type: 'Withdraw' as const,
               queryId: BigInt(Math.ceil(Math.random() * 1000000)),
               pendingIndex: pendingIndex,
-              tonAmount: toNano('0.1'),
-              forwardAmount: toNano('0.05'),
+              tonAmount: toNano('0.05'),
+              forwardAmount: toNano('0.1'),
               // jettonWallet: Address.parse(JETTON_MASTER_ADDRESS),
               responseDestination: Address.parse(userAddress),
               forwardPayload: beginCell().endCell(),

@@ -1,6 +1,6 @@
 # TACT Compilation Report
 Contract: StakingMasterTemplate
-BOC Size: 3163 bytes
+BOC Size: 3183 bytes
 
 # Types
 Total Types: 53

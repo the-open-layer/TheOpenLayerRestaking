@@ -3,19 +3,16 @@ import { NetworkProvider } from '@ton/blueprint';
 import TonWeb from 'tonweb';
 import { StakingMasterTemplate } from '../build/ReStaking/tact_StakingMasterTemplate';
 
-// const jettonMasterAddress = 'kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN';
-//const jettonMasterAddress = 'kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS';
 // stTon
-// const jettonMasterAddress = 'EQDNhy-nxYFgUqzfUzImBEP67JqsyMIcyk2S5_RwNNEYku0k';
+const stTonJettonMasterAddress = 'EQDNhy-nxYFgUqzfUzImBEP67JqsyMIcyk2S5_RwNNEYku0k';
+
 // tsTon
-const jettonMasterAddress = 'EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav';
+const tsTonJettonMasterAddress = 'EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav';
 
-
-// const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
 const tonweb = new TonWeb();
 
 // Helper function to calculate jetton wallet address
-async function getJettonWalletAddress(ownerAddress: string): Promise<string> {
+async function getJettonWalletAddress(ownerAddress: string, jettonMasterAddress: string): Promise<string> {
     //@ts-ignore
     const jettonMasterContract = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {
         address: jettonMasterAddress
@@ -26,8 +23,8 @@ async function getJettonWalletAddress(ownerAddress: string): Promise<string> {
     return jettonWalletAddress.toString();
 }
 
-export async function run(provider: NetworkProvider) {
-    const deployer = provider.sender();
+async function deployOfJettonMaster(jettonMasterAddress: string, provider: NetworkProvider) {
+        const deployer = provider.sender();
     console.log('Deploying contract with deployer address', deployer.address);
     const stakingMasterContract = provider.open(
         await StakingMasterTemplate.fromInit(
@@ -49,7 +46,8 @@ export async function run(provider: NetworkProvider) {
 
     await provider.waitForDeploy(stakingMasterContract.address);
 
-    const masterJettonWallet = await getJettonWalletAddress(stakingMasterContract.address.toString())
+    const masterJettonWallet = await getJettonWalletAddress(
+        stakingMasterContract.address.toString(), jettonMasterAddress)
     await stakingMasterContract.send(
         provider.sender(),
         {
@@ -74,4 +72,9 @@ export async function run(provider: NetworkProvider) {
             queryId: 0n,
             threshold: BigInt(60 * 60 * 24 * 7)
         });
+}
+
+export async function run(provider: NetworkProvider) {
+    //await deployOfJettonMaster(stTonJettonMasterAddress, provider);
+    await deployOfJettonMaster(tsTonJettonMasterAddress, provider);
 }
