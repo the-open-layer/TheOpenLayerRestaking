@@ -1,6 +1,6 @@
 import { TonConnectUI } from '@tonconnect/ui';
 import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { TonClient, Address, beginCell, toNano, fromNano, storeMessage, Transaction } from "@ton/ton";
+import { TonClient, Address, beginCell, toNano, fromNano, storeMessage, Transaction, Cell } from "@ton/ton";
 import { TonApiClient } from '@ton-api/client';
 import TonWeb from 'tonweb';
 import { 
@@ -239,7 +239,18 @@ async function stake() {
         };
 
         // Send transaction
-        await tonConnectUI.sendTransaction(transaction);
+        const result = await tonConnectUI.sendTransaction(transaction);
+        const hash = Cell.fromBase64(result.boc)
+        .hash()
+        .toString("base64");
+
+        const transactionResult = await waitForTransaction({
+            address: userAddress.toString(),
+            hash: hash,
+        }, client);
+
+        console.log('stake transaction result:', transactionResult);
+
         addToHistory(`Staked ${amount} TBRTJ`);
     } catch (error) {
         console.error('Error staking:', error);
@@ -352,10 +363,14 @@ async function withdraw() {
 
         const result = await tonConnectUI.sendTransaction(transaction);
         console.log('Withdraw transaction:', result);
-        
+
+        const hash = Cell.fromBase64(result.boc)
+        .hash()
+        .toString("base64");
+
         const transactionResult = await waitForTransaction({
             address: userAddress.toString(),
-            hash: result.boc,
+            hash: hash,
         }, client);
 
         console.log('Withdraw transaction result:', transactionResult);
