@@ -36,7 +36,8 @@
     "react-use": "^17.5.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "tonweb": "^0.0.66"
+    "tonweb": "^0.0.66",
+    "vconsole": "^3.15.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -57,6 +58,7 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
-    "vite-plugin-svgr": "^4.2.0"
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-plugin-vconsole": "^2.1.1"
   }
 }
