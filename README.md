@@ -1,6 +1,8 @@
 # What is TheOpenLayer
 A TON-centric restaking infrastructure for TeFi, providing secure, scalable solutions that unlock new opportunities in the trillion-dollar market.
 
+## Try our mini app
+- https://t.me/TheOpenLayer_bot
 
 ## Project structure
 -   `sample` - sample
