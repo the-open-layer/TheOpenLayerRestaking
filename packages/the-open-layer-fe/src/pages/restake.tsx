@@ -19,13 +19,11 @@ export default function Restake() {
   return (
     <main className="container mx-auto p-4">
       <div className="space-y-2 mb-6">
-        <h2 className="text-xl md:text-4xl font-medium text-gray-400 tracking-wide">
-          CLAIM MORE SBT TO GAIN UP TO
-        </h2>
-        <div className="text-4xl md:text-7xl font-bold">130% OPEN XP</div>
-        <p className="text-sm md:text-xl text-gray-500">
-          Earn <span className="text-gray-900 font-medium">OPEN XP</span> based
-          on your CoinAge, and unlock more investment opportunity.
+        <div className="leading-snug text-[28px] font-bold">
+          Earn Even More with TheOpenLayer Restaking.
+        </div>
+        <p className="text-sm text-gray-500">
+          Restake your liquid tokens. Earn More Than APY.
         </p>
       </div>
 
@@ -33,9 +31,9 @@ export default function Restake() {
         <div className="p-4 px-0 text-sm text-gray-500 mb-">
           Restake and earn
         </div>
-        <div className='p-0'>
+        <div className="p-0">
           {isLoading ? (
-            <Skeleton className='h-4 w-20 bg-slate-200'/>
+            <Skeleton className="h-4 w-20 bg-slate-200" />
           ) : stakeList.length > 0 ? (
             <div className="space-y-1">
               {stakeList.map((asset, index) => (
