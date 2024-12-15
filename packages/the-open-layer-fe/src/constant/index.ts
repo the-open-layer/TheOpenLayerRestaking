@@ -44,3 +44,5 @@ export enum WITHDRAWSTATUS {
   PENDING = 'pending',
   COMPLETED = 'compeleted',
 }
+
+export const precision = 4;

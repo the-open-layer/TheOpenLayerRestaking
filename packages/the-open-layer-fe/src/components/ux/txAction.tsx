@@ -14,6 +14,7 @@ import { fromNano } from '@ton/ton';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStakeMutation, useUnstakeMutation } from '@/hooks/useStakeMutation';
+import { precision } from '@/constant';
 
 export default function TXAction({
   action,
@@ -45,10 +46,10 @@ export default function TXAction({
 
   const maxAmount = useMemo(() => {
     if (action === ACTION_TYPES.STAKE) {
-      return Big(fromNano(tokenAmount ?? 0).toString()).toFixed(2);
+      return Big(fromNano(tokenAmount ?? 0).toString()).toFixed(precision);
     } else {
       // action === ACTION_TYPES.UNSTAKE
-      return restakingInfo?.restakeAmount.toFixed(2);
+      return restakingInfo?.restakeAmount.toFixed(precision);
     }
   }, [action, tokenAmount, restakingInfo]);
 
@@ -101,14 +102,14 @@ export default function TXAction({
       value: connected ? (
         action === ACTION_TYPES.STAKE ? (
           isAmountLoading ? (
-            <Skeleton className="w-24 h-8 bg-slate-300" />
+            <Skeleton className="w-10 h-5 bg-slate-300" />
           ) : (
             <div>
               {maxAmount} {token}
             </div>
           )
         ) : restakingInfoLoading ? (
-          <Skeleton className="w-24 h-8 bg-slate-300" />
+          <Skeleton className="w-10 h-5 bg-slate-300" />
         ) : (
           <div>
             {maxAmount} {token}
@@ -140,7 +141,7 @@ export default function TXAction({
                 onChange={(e) => {
                   setAmount(e.target.value);
                 }}
-                step={0.1}
+                step={0.001}
                 placeholder="0.0000"
                 className="h-20 text-6xl"
               />
