@@ -29,7 +29,7 @@ export default function Restake() {
   return (
     <main className="container p-4 mx-auto">
       <div className="mb-4 space-y-2">
-        <div className="leading-snug text-[28px] font-bold">
+        <div className="leading-snug text-2xl font-bold">
           Earn More With Restaking in TheOpenLayer
         </div>
         <p className="text-sm text-gray-500">
@@ -50,12 +50,11 @@ export default function Restake() {
                   <AccordionItem
                     value={index.toString()}
                     key={index}
-                    // to={`/restake/${asset.symbol}`}
                     className="mb-2 bg-[#C9D4F2] rounded-3xl"
                   >
                     <div className="flex p-4 items-center justify-between rounded-3xl gap-x-4">
                       <div
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-2"
                         onClick={() => {
                           navigate(`/restake/${asset.symbol}`);
                         }}
@@ -65,12 +64,7 @@ export default function Restake() {
                           alt={asset.symbol}
                           className="rounded-full size-10"
                         />
-                        <div className="flex-1">
-                          <div>{asset.name}</div>
-                          <div className="text-sm text-gray-500">
-                            {asset.symbol}
-                          </div>
-                        </div>
+                        <div>{asset.symbol} Restaking</div>
                       </div>
 
                       <AccordionTrigger hideIcon>
@@ -133,12 +127,7 @@ export default function Restake() {
                         alt={asset.symbol}
                         className="rounded-full size-10"
                       />
-                      <div>
-                        <div>{asset.name}</div>
-                        <div className="text-sm text-gray-500">
-                          {asset.symbol}
-                        </div>
-                      </div>
+                      <div>{asset.symbol} Restaking</div>
                     </Link>
                   </TableCell>
                   <TableCell className="text-[#828898]">

@@ -81,14 +81,16 @@ export default function Token() {
   }
   return (
     <main className="container p-4 mx-auto space-y-6 lg:space-y-8">
-      <Card className="text-center text-white bg-black rounded-2xl ">
+      <Card className="text-center text-white bg-black rounded-2xl shadow-none border-none">
         <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
             <div className="mb-2 text-2xl md:text-3xl md:pt-5">
               Current Restaking Reward Rate for {restakeToken?.symbol}
             </div>
             <p className="text-lg md:text-2xl">
-              <span className="text-[#8BAFFF] mr-2">20 OPEN XP</span>
+              <span className="text-[#8BAFFF] font-medium mr-2">
+                20 OPEN XP
+              </span>
               <span>per {restakeToken?.symbol} per day</span>
             </p>
           </div>
@@ -99,7 +101,7 @@ export default function Token() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl bg-[#C9D4F2]">
+      <Card className="rounded-2xl bg-[#C9D4F2] shadow-none border-none">
         <CardHeader>
           <CardTitle>RESTAKED BALANCES</CardTitle>
           <div className="flex gap-2 text-2xl font-medium">
@@ -126,7 +128,7 @@ export default function Token() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl bg-[#C9D4F2]">
+      <Card className="rounded-2xl bg-[#C9D4F2] shadow-none border-none">
         <CardHeader>
           <CardTitle>UNSTAKED BALANCE</CardTitle>
           <div className="flex gap-2 text-2xl font-medium">
