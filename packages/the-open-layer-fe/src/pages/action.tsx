@@ -58,7 +58,7 @@ export default function Action() {
   }, [action, tokenAmount, restakingInfo]);
 
   const handleSubmit = async () => {
-    if (action === ACTION_TYPES.DEPOSIT) {
+    if (action === ACTION_TYPES.STAKE) {
       settxState(txStateEnum.CONFIRMING);
       try {
         const res = await stakeMutation(amount);
