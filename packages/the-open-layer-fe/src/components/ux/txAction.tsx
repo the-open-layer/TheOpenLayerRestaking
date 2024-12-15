@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAccount } from '@/hooks/useAccount';
-// import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
 import { txStateEnum } from '@/types/action';
 import TXModal from '@/components/ux/modals/tx';
@@ -86,7 +85,7 @@ export default function TXAction({
   const handleClose = () => {
     settxState(txStateEnum.IDLE);
   };
-  console.log({ action });
+
   if (
     !SUPPORTED_ACTION_TYPES.includes(action as ACTION_TYPES) ||
     !stakeList.some((v) => v.symbol === token)

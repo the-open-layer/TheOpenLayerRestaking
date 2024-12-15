@@ -16,7 +16,7 @@ const Header = () => {
   const { connected, tonConnectUI } = useAccount();
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 ">
+    <header className="flex items-center justify-between px-6 py-4 relative">
       <Link to="/">
         {isMobile ? (
           <Logo className="size-8" />
@@ -55,13 +55,13 @@ const Header = () => {
         )}
       </nav>
 
-
-      {/* TODO: title */}
-      <nav className="flex md:hidden md:gap-x-2.5">
+      {/* <nav className="flex md:hidden md:gap-x-2.5 absolute left-1/2 -translate-x-1/2">
         {navItems
-          .filter(item => item.isReady && item.link === window.location.pathname)
-          .map(item => item.text)}
-      </nav>
+          .filter(
+            (item) => item.isReady && item.link === window.location.pathname
+          )
+          .map((item) => item.text)}
+      </nav> */}
 
       <div className="flex items-center space-x-4">
         {connected && (
