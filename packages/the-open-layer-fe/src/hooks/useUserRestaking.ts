@@ -5,6 +5,7 @@ import { fromNano } from '@ton/ton';
 import { formatNumber } from '@/lib/numbers';
 import Big from 'big.js';
 import { useAccount } from './useAccount';
+import { precision } from '@/constant';
 
 export const useUserRestaking = (restakingMaster: string) => {
   const { address: userAddress } = useAccount();
@@ -28,7 +29,7 @@ export const useUserRestaking = (restakingMaster: string) => {
             // stakeTimeFmt: formatTime(v.stakeTime),
             unstakeTimeFmt: formatTime(v.unstakeTime),
             isLocked: getLocked(v.unstakeTime, v.unstakeThreshold),
-            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(precision))}`,
           };
         }),
         info.stakedJettons?.values().map((v) => {
@@ -36,14 +37,14 @@ export const useUserRestaking = (restakingMaster: string) => {
             ...v,
             createdTime: formatTime(v.stakeTime),
             isLocked: getLocked(v.stakeTime, v.unstakeThreshold),
-            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(precision))}`,
           };
         }),
         info.withdrawalJettons?.values().map((v) => {
           return {
             ...v,
             createdTime: formatTime(v.withdrawTime),
-            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(2))}`,
+            amount: `${formatNumber(Big(fromNano(v.jettonAmount)).toFixed(precision))}`,
           };
         }),
       ];

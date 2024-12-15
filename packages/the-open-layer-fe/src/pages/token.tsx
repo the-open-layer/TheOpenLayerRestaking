@@ -17,6 +17,7 @@ import {
 import { txStateEnum } from '@/types/action';
 import { useState } from 'react';
 import { useAccount } from '@/hooks/useAccount';
+import { precision } from '@/constant';
 
 export default function Token() {
   const { token } = useParams();
@@ -108,7 +109,7 @@ export default function Token() {
             {restakingInfoLoading ? (
               <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
             ) : (
-              (restakeAmount?.toFixed(2) ?? 0)
+              (restakeAmount?.toFixed(precision) ?? 0)
             )}
             <span>{token}</span>
           </div>
@@ -135,7 +136,7 @@ export default function Token() {
             {restakingInfoLoading ? (
               <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
             ) : (
-              (maxPendingAmount?.toFixed(2) ?? 0)
+              (maxPendingAmount?.toFixed(precision) ?? 0)
             )}{' '}
             {token}
           </div>
