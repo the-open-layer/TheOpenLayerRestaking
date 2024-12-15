@@ -135,7 +135,7 @@ export default function Restake() {
                   </TableCell>
                   <TableCell className="rounded-r-2xl">
                     <Link
-                      to={`/restake/deposit/${asset.symbol}`}
+                      to={`/restake/stake/${asset.symbol}`}
                       className="text-sm text-primary"
                     >
                       <Button

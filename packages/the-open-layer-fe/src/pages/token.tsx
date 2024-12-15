@@ -149,8 +149,15 @@ export default function Token() {
                   key={i}
                 >
                   <div className="flex justify-between items-center gap-2 lg:flex-row">
-                    <div className="text-base font-medium">
-                      Unstake {tx.amount} {token}
+                    <div className="flex gap-0.5 flex-col items-center">
+                      <div className="text-base font-medium">
+                        Unstake {tx.amount} {token}
+                      </div>
+                      {tx.isLocked && (
+                        <div className="text-xs text-[#999]">
+                          {tx.unstakeTimeFmt}
+                        </div>
+                      )}
                     </div>
 
                     <div className="text-xs">
