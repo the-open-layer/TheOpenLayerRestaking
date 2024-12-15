@@ -139,7 +139,7 @@ export default function Action() {
       <h1 className="mb-6 text-3xl font-bold text-center">
         {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
       </h1>
-      <Card className="mb-8">
+      <Card className="mb-8 border-none shadow-none">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
           <Link
             to={`/restake/${token}`}
@@ -231,7 +231,7 @@ export default function Action() {
       </Card>
 
       {DepositList.length > 0 && (
-        <Card className="bg-transparent shadow-none">
+        <Card className="bg-transparent shadow-none border-none">
           <CardContent className="flex flex-col gap-y-4">
             {DepositList.map(({ text, value }, idx) => {
               return (

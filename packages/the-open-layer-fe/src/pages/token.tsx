@@ -216,7 +216,7 @@ export default function Token() {
 
       {/* no data -> hidden card */}
       {connected && (restakingInfo?.withdrawalJettons?.length ?? 0) > 0 && (
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl shadow-none border-none">
           <CardHeader>
             <CardTitle>WITHDRAW RECORDS</CardTitle>
           </CardHeader>
