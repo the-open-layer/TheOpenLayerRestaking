@@ -81,7 +81,7 @@ export default function Token() {
     return <Navigate to="/404" />;
   }
   return (
-    <main className="container p-4 mx-auto space-y-6 lg:space-y-8">
+    <main className="container p-4 mx-auto space-y-4 lg:space-y-8">
       <Card className="text-center text-white bg-black rounded-2xl shadow-none border-none">
         <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
