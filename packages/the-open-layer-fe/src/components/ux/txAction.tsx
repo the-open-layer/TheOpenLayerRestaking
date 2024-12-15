@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { useAccount } from '@/hooks/useAccount';
 // import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
@@ -87,7 +86,7 @@ export default function TXAction({
   const handleClose = () => {
     settxState(txStateEnum.IDLE);
   };
-
+  console.log({ action });
   if (
     !SUPPORTED_ACTION_TYPES.includes(action as ACTION_TYPES) ||
     !stakeList.some((v) => v.symbol === token)
@@ -119,16 +118,17 @@ export default function TXAction({
       ) : (
         <div>0 {token}</div>
       ),
+      show: connected,
     },
     {
       text: 'Your balance',
       value: <div>20 OPEN XP / day</div>,
+      show: connected,
     },
   ];
-
   return (
     <div className="container max-w-3xl p-4 mx-auto">
-      <h1 className="mb-6 text-xs font-medium md:text-3xl md:font-bold text-[#999] text-left">
+      <h1 className="mb-6 text-xs font-medium md:text-3xl md:font-bold text-[#999] text-left uppercase">
         {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
       </h1>
       <div className="flex flex-col space-y-4">
@@ -196,18 +196,18 @@ export default function TXAction({
       </div>
 
       {DepositList.length > 0 && (
-        <Card className="bg-transparent shadow-none mt-4 border-none">
-          <CardContent className="flex flex-col gap-y-4">
-            {DepositList.map(({ text, value }, idx) => {
-              return (
-                <div className="flex justify-between text-sm" key={idx}>
-                  <span className="text-secondary-foreground">{text}</span>
-                  <span className="text-[#666666]">{value}</span>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+        <div className="px-0 pt-4 flex flex-col gap-y-2">
+          {DepositList.filter((v) => v.show).map(({ text, value }, idx) => {
+            return (
+              <div className="flex justify-between text-sm" key={idx}>
+                <span className="text-secondary-foreground font-medium">
+                  {text}
+                </span>
+                <span className="text-[#666666]">{value}</span>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       <TXModal

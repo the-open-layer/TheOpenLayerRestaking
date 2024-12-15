@@ -21,7 +21,7 @@ export default function TXModal({
   status,
   handleClose,
   handleTryAgain,
-  // handleBacktodashboard,
+  handleBacktodashboard,
 }: {
   title: ACTION_TYPES;
   amount: string | null;
@@ -29,7 +29,7 @@ export default function TXModal({
   status: txStateEnum;
   handleClose: () => void;
   handleTryAgain: () => void;
-  // handleBacktodashboard: () => void;
+  handleBacktodashboard?: () => void;
 }) {
   // console.log('status', status);
   const renderDialogContent = () => {
@@ -64,11 +64,13 @@ export default function TXModal({
             <DialogDescription className="text-center">
               {title} Successful
             </DialogDescription>
-            {/* <div className="text-center">
-              <Button className="mt-4" onClick={handleBacktodashboard}>
-                Go back to dashboard
-              </Button>
-            </div> */}
+            {handleBacktodashboard && (
+              <div className="text-center">
+                <Button className="mt-4" onClick={handleBacktodashboard}>
+                  Go back to dashboard
+                </Button>
+              </div>
+            )}
           </>
         );
       case txStateEnum.ERROR:

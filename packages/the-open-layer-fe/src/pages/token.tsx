@@ -42,10 +42,6 @@ export default function Token() {
   const handleClose = () => {
     settxState(txStateEnum.IDLE);
   };
-  // const handleBacktodashboard = () => {
-  //   handleClose();
-  //   navigate(`/restake/${token}`);
-  // };
 
   const handleSubmit = async (
     txAction = action,
@@ -85,20 +81,6 @@ export default function Token() {
   }
   return (
     <main className="container p-4 mx-auto space-y-6 lg:space-y-8">
-      {/* <div className="flex items-center gap-3 mb-7">
-        <img
-          src={restakeToken!.logo}
-          alt="Tonstakers TON"
-          width={48}
-          height={48}
-          className="rounded-full"
-        />
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">{restakeToken!.name}</h1>
-          <Badge variant="outline">{restakeToken!.symbol}</Badge>
-        </div>
-      </div> */}
-
       <Card className="text-center text-white bg-black rounded-2xl ">
         <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
@@ -112,74 +94,85 @@ export default function Token() {
           </div>
 
           <Card className="p-0 bg-white">
-            <TXAction action="deposit" token={token!} />
+            <TXAction action={ACTION_TYPES.STAKE} token={token!} />
           </Card>
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl">
+      <Card className="rounded-2xl bg-[#C9D4F2]">
         <CardHeader>
-          <CardTitle>BALANCES</CardTitle>
+          <CardTitle>RESTAKED BALANCES</CardTitle>
+          <div className="flex gap-2 text-2xl font-medium">
+            {restakingInfoLoading ? (
+              <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
+            ) : (
+              (restakeAmount?.toFixed(2) ?? 0)
+            )}
+            <span>{token}</span>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="p-4 rounded-2xl bg-[#C9D4F2]">
-            <div className="text-sm text-muted-foreground">
-              RESTAKED BALANCE
-            </div>
-            <div className="flex gap-2 mb-4 text-2xl font-semibold">
-              {restakingInfoLoading ? (
-                <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
-              ) : (
-                (restakeAmount?.toFixed(2) ?? 0)
-              )}
-              <span className="text-muted-foreground">{token}</span>
-            </div>
+        <CardContent className="space-y-4 pt-2">
+          {restakeAmount?.gt(0) && (
             <Link to={`/restake/unstake/${token}`}>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                className="bg-transparent border-black rounded-2xl"
+                size="sm"
+              >
                 Unstake
               </Button>
             </Link>
-          </div>
+          )}
+        </CardContent>
+      </Card>
 
-          <div className="p-4 rounded-2xl bg-[#C9D4F2]">
-            <div className="text-sm text-muted-foreground">
-              UNSTAKED BALANCE
-            </div>
-            <div className="flex gap-2 mb-4 text-2xl font-medium">
-              {restakingInfoLoading ? (
-                <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
-              ) : (
-                (maxPendingAmount?.toFixed(2) ?? 0)
-              )}{' '}
-              {token}
-            </div>
+      <Card className="rounded-2xl bg-[#C9D4F2]">
+        <CardHeader>
+          <CardTitle>UNSTAKED BALANCE</CardTitle>
+          <div className="flex gap-2 text-2xl font-medium">
+            {restakingInfoLoading ? (
+              <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
+            ) : (
+              (maxPendingAmount?.toFixed(2) ?? 0)
+            )}{' '}
+            {token}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-1 px-0 py-2">
+          <div className="px-4 rounded-2xl bg-[#C9D4F2]">
             <div className="space-y-3 lg:space-y-6">
               {restakingInfo?.pendingJettons.map((tx, i) => (
                 <div
-                  className="px-2 py-2 space-y-4 rounded-2xl lg:space-y-8 bg-white/50"
+                  className="px-3 py-4 space-y-4 rounded-2xl lg:space-y-8 bg-white/50"
                   key={i}
                 >
-                  <div className="flex justify-between gap-2 lg:flex-row">
-                    <div className="flex flex-col">
-                      <div className="text-lg font-medium">
-                        Unstake {tx.amount} {token}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {tx?.unstakeTimeFmt}
-                      </div>
+                  <div className="flex justify-between items-center gap-2 lg:flex-row">
+                    <div className="text-base font-medium">
+                      Unstake {tx.amount} {token}
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Badge variant={'secondary'} className="mt-1">
-                        {tx.isLocked
-                          ? WITHDRAWSTATUS.PENDING
-                          : WITHDRAWSTATUS.COMPLETED}
-                      </Badge>
+                    <div className="text-xs">
+                      {tx.isLocked ? (
+                        <Badge
+                          variant={'secondary'}
+                          className="text-[#92400E] h-5 px-2.5 py-0.5"
+                        >
+                          Cooldown Period
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant={'secondary'}
+                          className="text-[#065F46] h-5 px-2.5 py-0.5"
+                        >
+                          Completed
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-3 md:flex-row">
                     <Button
-                      className=""
+                      className="bg-white rounded-2xl"
+                      variant="secondary"
                       onClick={() => {
                         setAction(ACTION_TYPES.REDEPOSIT);
                         settxState(txStateEnum.CONFIRMING);
@@ -190,9 +183,9 @@ export default function Token() {
                       Redeposit
                     </Button>
                     <Button
-                      variant="outline"
-                      className=""
                       disabled={tx.isLocked}
+                      variant="outline"
+                      className="bg-transparent border-black rounded-2xl"
                       onClick={() => {
                         // withdraw(tx.pendingIndex);
                         setAction(ACTION_TYPES.WITHDRAW);
@@ -232,17 +225,22 @@ export default function Token() {
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div>
-                        <div className="font-medium">Withdraw {token}</div>
+                        <div className="text-base text-[#333]">
+                          Withdraw {token}
+                        </div>
                         <div className="text-sm text-muted-foreground">
-                          {tx.amount} {token}
+                          {tx?.createdTime}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-muted-foreground">
-                        {tx?.createdTime}
+                      <div className="text-sm text-[#333]">
+                        {tx.amount} {token}
                       </div>
-                      <Badge variant={'secondary'} className="mt-1">
+                      <Badge
+                        variant={'secondary'}
+                        className="mt-1 text-[#065F46] bg-white font-medium h-5 px-2.5 py-0.5"
+                      >
                         {WITHDRAWSTATUS.COMPLETED}
                       </Badge>
                     </div>
