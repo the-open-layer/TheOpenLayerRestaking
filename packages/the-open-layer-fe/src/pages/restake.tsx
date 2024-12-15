@@ -67,7 +67,7 @@ export default function Restake() {
                         <div>{asset.symbol} Restaking</div>
                       </div>
 
-                      <AccordionTrigger hideIcon>
+                      <AccordionTrigger className="py-0" hideIcon>
                         <Button className="rounded-2xl text-sm" asChild>
                           <span>Restake</span>
                         </Button>
