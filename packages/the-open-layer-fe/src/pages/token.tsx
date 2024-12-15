@@ -84,8 +84,8 @@ export default function Token() {
     return <Navigate to="/404" />;
   }
   return (
-    <main className="container mx-auto p-4 space-y-6 lg:space-y-8">
-      <div className="flex items-center gap-3 mb-7">
+    <main className="container p-4 mx-auto space-y-6 lg:space-y-8">
+      {/* <div className="flex items-center gap-3 mb-7">
         <img
           src={restakeToken!.logo}
           alt="Tonstakers TON"
@@ -97,83 +97,84 @@ export default function Token() {
           <h1 className="text-2xl font-bold">{restakeToken!.name}</h1>
           <Badge variant="outline">{restakeToken!.symbol}</Badge>
         </div>
-      </div>
+      </div> */}
 
-      <Card className="bg-black text-white rounded-2xl text-center ">
-        <CardContent className="p-6 md:max-w-md mx-auto space-y-7 md:space-y-14">
-          <div className="mb-4 md:pt-5 space-y-2">
-            <div className="text-xl md:text-3xl mb-4 md:pt-5">
-              Earn <span className="text-[#8BAFFF]">20 OPEN XP</span> every day
+      <Card className="text-center text-white bg-black rounded-2xl ">
+        <CardContent className="p-6 mx-auto md:max-w-md space-y-7 md:space-y-14">
+          <div className="mb-2 space-y-2 text-left md:pt-5">
+            <div className="mb-2 text-2xl md:text-3xl md:pt-5">
+              {/* Earn <span className="text-[#8BAFFF]">20 OPEN XP</span> every day */}
+              Current Restaking Reward Rate for {restakeToken?.symbol}
             </div>
-            <p className="text-sm md:text-2xl">
-              with every 1 {restakeToken!.symbol} restaked
+            <p className="text-lg md:text-2xl">
+              <span className="text-[#8BAFFF] mr-2">20 OPEN XP</span>
+              <span>per {restakeToken?.symbol} per day</span>
             </p>
           </div>
-          <Link to={`/restake/deposit/${token}`} className="block">
-            <Button
-              size="lg"
-              className="w-full bg-white text-black hover:bg-gray-100 rounded-3xl md:mb-5"
-            >
-              Restake
-            </Button>
-          </Link>
+
+          <Card className='p-4 text-left bg-white'>
+            <span className='p-4 px-0 text-sm text-left text-gray-500'>STAKE</span>
+            <div>TODO ACTION Card</div>
+            <div>TODO ACTION Card</div>
+            <div>TODO ACTION Card</div>
+            <div>TODO ACTION Card</div>
+          </Card>
         </CardContent>
       </Card>
 
       <Card className="rounded-2xl">
         <CardHeader>
-          <CardTitle>Your Restake</CardTitle>
+          <CardTitle>BALANCES</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="p-4 bg-slate-100 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-sm text-muted-foreground">
-                RESTAKED BALANCE
-              </div>
-              <Link to={`/restake/unstake/${token}`}>
-                <Button variant="outline" size="sm">
-                  Unstake
-                </Button>
-              </Link>
+          <div className="p-4 rounded-2xl bg-[#C9D4F2]">
+            <div className="text-sm text-muted-foreground">
+              RESTAKED BALANCE
             </div>
-            <div className="text-2xl font-semibold flex gap-2">
+            <div className="flex gap-2 mb-4 text-2xl font-semibold">
               {restakingInfoLoading ? (
-                <Skeleton className="w-24 h-8 bg-slate-300" />
+                <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
               ) : (
                 (restakeAmount?.toFixed(2) ?? 0)
               )}
               <span className="text-muted-foreground">{token}</span>
             </div>
+            <Link to={`/restake/unstake/${token}`}>
+              <Button variant="outline" size="sm">
+                Unstake
+              </Button>
+            </Link>
           </div>
 
-          <div className="p-4 bg-slate-100 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-sm text-muted-foreground">
-                AVAILABLE TO WITHDRAW
-              </div>
+          <div className="p-4 rounded-2xl bg-[#C9D4F2]">
+            <div className="text-sm text-muted-foreground">
+              UNSTAKED BALANCE
             </div>
-            <div className="text-2xl font-semibold mb-4 flex gap-2">
+            <div className="flex gap-2 mb-4 text-2xl font-medium">
               {restakingInfoLoading ? (
-                <Skeleton className="w-24 h-8 bg-slate-300" />
+                <Skeleton className="w-24 h-8 bg-[#C9D4F2]" />
               ) : (
                 (maxPendingAmount?.toFixed(2) ?? 0)
               )}{' '}
-              <span className="text-muted-foreground">{token}</span>
+              {token}
             </div>
             <div className="space-y-3 lg:space-y-6">
               {restakingInfo?.pendingJettons.map((tx, i) => (
                 <div
-                  className="space-y-4 lg:space-y-8 bg-slate-300 rounded-lg py-4 px-2"
+                  className="px-2 py-2 space-y-4 rounded-2xl lg:space-y-8 bg-white/50"
                   key={i}
                 >
-                  <div className="flex flex-col gap-2 lg:flex-row items-center">
-                    <div className="text-lg font-medium">
-                      unstake {tx.amount} {token}
-                    </div>
-                    <div className="flex gap-2 items-center">
+                  <div className="flex justify-between gap-2 lg:flex-row">
+                    <div className='flex flex-col'>
+                      <div className="text-lg font-medium">
+                        Unstake {tx.amount} {token}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {tx?.unstakeTimeFmt}
                       </div>
+                    </div>
+                
+                    <div className="flex items-center gap-2">
                       <Badge variant={'secondary'} className="mt-1">
                         {tx.isLocked
                           ? WITHDRAWSTATUS.PENDING
@@ -181,9 +182,9 @@ export default function Token() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-3 flex-col md:flex-row">
+                  <div className="flex gap-3 md:flex-row">
                     <Button
-                      className="flex-1"
+                      className=""
                       onClick={() => {
                         setAction(ACTION_TYPES.REDEPOSIT);
                         settxState(txStateEnum.CONFIRMING);
@@ -195,7 +196,7 @@ export default function Token() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="flex-1"
+                      className=""
                       disabled={tx.isLocked}
                       onClick={() => {
                         // withdraw(tx.pendingIndex);
@@ -215,51 +216,51 @@ export default function Token() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-2xl">
-        <CardHeader>
-          <CardTitle>Your Withdraw</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {restakingInfoLoading ? (
-            <div className="flex items-center justify-between gap-y-4">
-              <div className="space-y-3">
-                <Skeleton className="h-6 w-24" />
+      {/* no data -> hidden card */}
+      {connected && (restakingInfo?.withdrawalJettons?.length ?? 0) > 0 && (
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>WITHDRAW RECORDS</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {restakingInfoLoading ? (
+              <div className="flex items-center justify-between gap-y-4">
+                <div className="space-y-3">
+                  <Skeleton className="w-24 h-6" />
+                  <Skeleton className="h-5 w-14" />
+                </div>
                 <Skeleton className="h-5 w-14" />
               </div>
-              <Skeleton className="h-5 w-14" />
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {!connected || restakingInfo?.withdrawalJettons?.length === 0 ? (
-                <div className="text-sm text-muted-foreground text-center">
-                  no data
-                </div>
-              ) : (
-                restakingInfo?.withdrawalJettons.map((tx, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <div className="font-medium">Withdraw {token}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {tx.amount} {token}
+            ) : (
+              <div className="space-y-4">
+                {
+                  restakingInfo?.withdrawalJettons.map((tx, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="font-medium">Withdraw {token}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {tx.amount} {token}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-muted-foreground">
-                        {tx?.createdTime}
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">
+                          {tx?.createdTime}
+                        </div>
+                        <Badge variant={'secondary'} className="mt-1">
+                          {WITHDRAWSTATUS.COMPLETED}
+                        </Badge>
                       </div>
-                      <Badge variant={'secondary'} className="mt-1">
-                        {WITHDRAWSTATUS.COMPLETED}
-                      </Badge>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  ))
+                }
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <TXModal
         title={action as ACTION_TYPES}
         amount={null}

@@ -4,8 +4,8 @@ export enum REWARDTYPE {
 }
 
 export const navItems = [
-  { text: 'Dashboard', link: '/dashboard', isReady: false },
-  { text: 'Restake', link: '/restake', isReady: true },
+  // { text: 'Dashboard', link: '/dashboard', isReady: false },
+  { text: 'Dashboard', link: '/restake', isReady: true },
   { text: 'Validator', link: '/validator', isReady: false },
   { text: 'AVS', link: '/avs', isReady: false },
 ];
