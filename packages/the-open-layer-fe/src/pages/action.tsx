@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
+// import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 // import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
@@ -58,7 +58,7 @@ export default function Action() {
   }, [action, tokenAmount, restakingInfo]);
 
   const handleSubmit = async () => {
-    if (action === ACTION_TYPES.DEPOSIT) {
+    if (action === ACTION_TYPES.STAKE) {
       settxState(txStateEnum.CONFIRMING);
       try {
         const res = await stakeMutation(amount);
@@ -103,11 +103,11 @@ export default function Action() {
   const DepositList = [
     {
       text:
-        action === ACTION_TYPES.DEPOSIT
+        action === ACTION_TYPES.STAKE
           ? 'Available to stake'
           : 'Available to unstake',
       value: connected ? (
-        action === ACTION_TYPES.DEPOSIT ? (
+        action === ACTION_TYPES.STAKE ? (
           isAmountLoading ? (
             <Skeleton className="w-24 h-8 bg-slate-300" />
           ) : (
@@ -125,16 +125,22 @@ export default function Action() {
       ) : (
         <div>0 {token}</div>
       ),
+      show: connected,
+    },
+    {
+      text: 'You get',
+      value: <div>20 OPEN XP / day</div>,
+      show: connected,
     },
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+    <div className="container max-w-3xl px-4 py-8 mx-auto">
+      <h1 className="mb-6 text-3xl font-bold text-center">
         {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
       </h1>
       <Card className="mb-8">
-        <CardHeader className="flex flex-row justify-between items-center space-y-0 ">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
           <Link
             to={`/restake/${token}`}
             className="flex items-center gap-x-4 hover:-translate-y-0.5"
@@ -149,17 +155,17 @@ export default function Action() {
               <CardDescription>{restakeToken?.symbol}</CardDescription>
             </div>
           </Link>
-          <a
+          {/* <a
             href={`https://testnet.tonscan.org/address/${restakeToken?.jettonMaster}`}
             target="_blank"
           >
-            <TonscanIcon className="text-8 cursor-pointer" />
-          </a>
+            <TonscanIcon className="cursor-pointer text-8" />
+          </a> */}
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col space-y-4 pt-5">
+          <div className="flex flex-col pt-5 space-y-4">
             <div className="flex flex-col">
-              <div className="flex justify-between gap-x-2 items-center">
+              <div className="flex items-center justify-between gap-x-2">
                 <div className="flex items-end gap-x-2 max-w-80">
                   <Input
                     type="number"
@@ -169,7 +175,7 @@ export default function Action() {
                     }}
                     step={0.1}
                     placeholder="0.0000"
-                    className="text-6xl h-20"
+                    className="h-20 text-6xl"
                   />
                   <span className="text-base text-muted-foreground ">
                     {restakeToken?.symbol}
@@ -177,7 +183,7 @@ export default function Action() {
                 </div>
                 <Button
                   variant="secondary"
-                  className="px-3 py-1 leading-none rounded-2xl text-sm font-medium h-7"
+                  className="px-3 py-1 text-sm font-medium leading-none rounded-2xl h-7"
                   onClick={() => {
                     if (connected) {
                       setAmount(maxAmount!);
