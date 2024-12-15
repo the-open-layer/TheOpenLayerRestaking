@@ -21,7 +21,7 @@ export default function TXModal({
   status,
   handleClose,
   handleTryAgain,
-  handleBacktodashboard,
+  // handleBacktodashboard,
 }: {
   title: ACTION_TYPES;
   amount: string | null;
@@ -29,7 +29,7 @@ export default function TXModal({
   status: txStateEnum;
   handleClose: () => void;
   handleTryAgain: () => void;
-  handleBacktodashboard: () => void;
+  // handleBacktodashboard: () => void;
 }) {
   // console.log('status', status);
   const renderDialogContent = () => {
@@ -46,7 +46,7 @@ export default function TXModal({
                 <Spinner className="size-4 rounded-full" />
                 <div className="text-muted-foreground">
                   {ACTION_TYPES_NOW_MAP[title]}{' '}
-                  {[ACTION_TYPES.DEPOSIT, ACTION_TYPES.UNSTAKE].includes(title)
+                  {[ACTION_TYPES.STAKE, ACTION_TYPES.UNSTAKE].includes(title)
                     ? amount || '0.000'
                     : null}{' '}
                   {symol}
@@ -64,11 +64,11 @@ export default function TXModal({
             <DialogDescription className="text-center">
               {title} Successful
             </DialogDescription>
-            <div className="text-center">
+            {/* <div className="text-center">
               <Button className="mt-4" onClick={handleBacktodashboard}>
                 Go back to dashboard
               </Button>
-            </div>
+            </div> */}
           </>
         );
       case txStateEnum.ERROR:

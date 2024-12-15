@@ -12,6 +12,7 @@ export const navItems = [
 
 export enum ACTION_TYPES {
   DEPOSIT = 'deposit',
+  STAKE = 'stake',
   UNSTAKE = 'unstake',
   REDEPOSIT = 'redeposit',
   WITHDRAW = 'withdraw',
@@ -24,12 +25,14 @@ export const ACTION_TYPES_LIST = Object.values(ACTION_TYPES);
 
 export const ACTION_TYPES_TITLE_MAP = {
   [ACTION_TYPES.DEPOSIT]: 'Deposit',
+  [ACTION_TYPES.STAKE]: 'Stake',
   [ACTION_TYPES.UNSTAKE]: 'Unstake',
   [ACTION_TYPES.REDEPOSIT]: 'Redeposit',
   [ACTION_TYPES.WITHDRAW]: 'Withdraw',
 };
 export const ACTION_TYPES_NOW_MAP = {
   [ACTION_TYPES.DEPOSIT]: 'Depositing',
+  [ACTION_TYPES.STAKE]: 'Staking',
   [ACTION_TYPES.UNSTAKE]: 'Unstaking',
   [ACTION_TYPES.REDEPOSIT]: 'Redepositing',
   [ACTION_TYPES.WITHDRAW]: 'Withdrawing',

@@ -2,11 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
-import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useParams, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
 import TXModal from '@/components/ux/modals/tx';
+import TXAction from '@/components/ux/txAction';
 import { ACTION_TYPES } from '@/constant';
 // import { useTokenPrice } from '@/hooks/useTokenPrice';
 import {
@@ -22,7 +23,7 @@ export default function Token() {
   const { connected } = useAccount();
   const { data: stakeList = [] } = useStakeList();
   const restakeToken = stakeList.find((v) => v.symbol === token);
-  const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.DEPOSIT);
+  const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.STAKE);
   const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
   const [pendingIndex, setPendingIndex] = useState<bigint>(BigInt(0));
   // const { data: tokenPrice } = useTokenPrice(token!);
@@ -38,14 +39,13 @@ export default function Token() {
   const { mutateAsync: redeposit } = useRedepositMutation(
     restakeToken!.restakingMaster
   );
-  const navigate = useNavigate();
   const handleClose = () => {
     settxState(txStateEnum.IDLE);
   };
-  const handleBacktodashboard = () => {
-    handleClose();
-    navigate(`/restake/${token}`);
-  };
+  // const handleBacktodashboard = () => {
+  //   handleClose();
+  //   navigate(`/restake/${token}`);
+  // };
 
   const handleSubmit = async (
     txAction = action,
@@ -100,10 +100,9 @@ export default function Token() {
       </div> */}
 
       <Card className="text-center text-white bg-black rounded-2xl ">
-        <CardContent className="p-6 mx-auto md:max-w-md space-y-7 md:space-y-14">
+        <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
             <div className="mb-2 text-2xl md:text-3xl md:pt-5">
-              {/* Earn <span className="text-[#8BAFFF]">20 OPEN XP</span> every day */}
               Current Restaking Reward Rate for {restakeToken?.symbol}
             </div>
             <p className="text-lg md:text-2xl">
@@ -112,12 +111,8 @@ export default function Token() {
             </p>
           </div>
 
-          <Card className='p-4 text-left bg-white'>
-            <span className='p-4 px-0 text-sm text-left text-gray-500'>STAKE</span>
-            <div>TODO ACTION Card</div>
-            <div>TODO ACTION Card</div>
-            <div>TODO ACTION Card</div>
-            <div>TODO ACTION Card</div>
+          <Card className="p-0 bg-white">
+            <TXAction action="deposit" token={token!} />
           </Card>
         </CardContent>
       </Card>
@@ -165,7 +160,7 @@ export default function Token() {
                   key={i}
                 >
                   <div className="flex justify-between gap-2 lg:flex-row">
-                    <div className='flex flex-col'>
+                    <div className="flex flex-col">
                       <div className="text-lg font-medium">
                         Unstake {tx.amount} {token}
                       </div>
@@ -173,7 +168,7 @@ export default function Token() {
                         {tx?.unstakeTimeFmt}
                       </div>
                     </div>
-                
+
                     <div className="flex items-center gap-2">
                       <Badge variant={'secondary'} className="mt-1">
                         {tx.isLocked
@@ -233,28 +228,26 @@ export default function Token() {
               </div>
             ) : (
               <div className="space-y-4">
-                {
-                  restakingInfo?.withdrawalJettons.map((tx, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <div className="font-medium">Withdraw {token}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {tx.amount} {token}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
+                {restakingInfo?.withdrawalJettons.map((tx, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <div className="font-medium">Withdraw {token}</div>
                         <div className="text-sm text-muted-foreground">
-                          {tx?.createdTime}
+                          {tx.amount} {token}
                         </div>
-                        <Badge variant={'secondary'} className="mt-1">
-                          {WITHDRAWSTATUS.COMPLETED}
-                        </Badge>
                       </div>
                     </div>
-                  ))
-                }
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground">
+                        {tx?.createdTime}
+                      </div>
+                      <Badge variant={'secondary'} className="mt-1">
+                        {WITHDRAWSTATUS.COMPLETED}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
@@ -268,7 +261,7 @@ export default function Token() {
         status={txState}
         handleClose={handleClose}
         handleTryAgain={() => handleSubmit(action, pendingIndex)}
-        handleBacktodashboard={handleBacktodashboard}
+        // handleBacktodashboard={handleBacktodashboard}
       />
     </main>
   );
