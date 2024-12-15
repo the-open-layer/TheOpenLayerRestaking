@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
+// import TonscanIcon from '@/assets/images/icon/tonscan.svg?react';
 import { useAccount } from '@/hooks/useAccount';
 // import useTonPrice from '@/hooks/api/useTonPrice';
 import Big from 'big.js';
@@ -103,11 +103,11 @@ export default function Action() {
   const DepositList = [
     {
       text:
-        action === ACTION_TYPES.DEPOSIT
+        action === ACTION_TYPES.STAKE
           ? 'Available to stake'
           : 'Available to unstake',
       value: connected ? (
-        action === ACTION_TYPES.DEPOSIT ? (
+        action === ACTION_TYPES.STAKE ? (
           isAmountLoading ? (
             <Skeleton className="w-24 h-8 bg-slate-300" />
           ) : (
@@ -125,6 +125,12 @@ export default function Action() {
       ) : (
         <div>0 {token}</div>
       ),
+      show: connected,
+    },
+    {
+      text: 'You get',
+      value: <div>20 OPEN XP / day</div>,
+      show: connected,
     },
   ];
 
@@ -149,12 +155,12 @@ export default function Action() {
               <CardDescription>{restakeToken?.symbol}</CardDescription>
             </div>
           </Link>
-          <a
+          {/* <a
             href={`https://testnet.tonscan.org/address/${restakeToken?.jettonMaster}`}
             target="_blank"
           >
             <TonscanIcon className="cursor-pointer text-8" />
-          </a>
+          </a> */}
         </CardHeader>
         <CardContent>
           <div className="flex flex-col pt-5 space-y-4">

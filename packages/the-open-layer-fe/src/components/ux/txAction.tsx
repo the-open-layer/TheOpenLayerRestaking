@@ -120,7 +120,7 @@ export default function TXAction({
       show: connected,
     },
     {
-      text: 'Your balance',
+      text: 'You get',
       value: <div>20 OPEN XP / day</div>,
       show: connected,
     },
@@ -194,9 +194,9 @@ export default function TXAction({
         )}
       </div>
 
-      {DepositList.length > 0 && (
+      {DepositList.filter((v) => v.show).length > 0 && (
         <div className="px-0 pt-4 flex flex-col gap-y-2">
-          {DepositList.filter((v) => v.show).map(({ text, value }, idx) => {
+          {DepositList.map(({ text, value }, idx) => {
             return (
               <div className="flex justify-between text-sm" key={idx}>
                 <span className="text-secondary-foreground font-medium">
