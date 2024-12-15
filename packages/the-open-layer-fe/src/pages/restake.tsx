@@ -12,54 +12,84 @@ import { useStakeList } from '@/hooks/api/useStakeList';
 import { REWARDTYPE } from '@/constant';
 import { Link } from 'react-router-dom';
 import { Fragment } from 'react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import TXAction from '@/components/ux/txAction';
+import { ACTION_TYPES } from '@/constant';
+import { useNavigate } from 'react-router-dom';
 
 const tableColumns = 6;
 export default function Restake() {
   const { data: stakeList = [], isLoading } = useStakeList();
+  const navigate = useNavigate();
   return (
-    <main className="container mx-auto p-4">
-      <div className="space-y-2 mb-6">
-        <h2 className="text-xl md:text-4xl font-medium text-gray-400 tracking-wide">
-          CLAIM MORE SBT TO GAIN UP TO
-        </h2>
-        <div className="text-4xl md:text-7xl font-bold">130% OPEN XP</div>
-        <p className="text-sm md:text-xl text-gray-500">
-          Earn <span className="text-gray-900 font-medium">OPEN XP</span> based
-          on your CoinAge, and unlock more investment opportunity.
+    <main className="container p-4 mx-auto">
+      <div className="mb-4 space-y-2">
+        <div className="leading-snug text-[28px] font-bold">
+          Earn More With Restaking in TheOpenLayer
+        </div>
+        <p className="text-sm text-gray-500">
+          Restake stTON and tsTON to unlock higher yields, and strengthen TON
+          Network.
         </p>
       </div>
 
-      <div className="mb-4 md:hidden bg-transparent shadow-none">
-        <div className="p-4 px-0 text-sm text-gray-500 mb-">
-          Restake and earn
-        </div>
-        <div className='p-0'>
+      <div className="mb-4 bg-transparent shadow-none md:hidden">
+        <div className="p-4 px-0 text-sm text-gray-500 mb-">ASSETS</div>
+        <div className="p-0">
           {isLoading ? (
-            <Skeleton className='h-4 w-20 bg-slate-200'/>
+            <Skeleton className="w-20 h-4 bg-slate-200" />
           ) : stakeList.length > 0 ? (
-            <div className="space-y-1">
-              {stakeList.map((asset, index) => (
-                <Link
-                  key={index}
-                  to={`/restake/${asset.symbol}`}
-                  className="flex items-center justify-between p-4 bg-[#C9D4F2] rounded-2xl"
-                >
-                  <div className="flex items-center gap-x-4">
-                    <img
-                      src={asset.logo}
-                      alt={asset.symbol}
-                      className="size-10 rounded-full"
-                    />
-                    <div>
-                      <div>{asset.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {asset.symbol}
+            <Accordion type="single" collapsible className="space-y-1">
+              {stakeList.map((asset, index) => {
+                return (
+                  <AccordionItem
+                    value={index.toString()}
+                    key={index}
+                    // to={`/restake/${asset.symbol}`}
+                    className="mb-2 bg-[#C9D4F2] rounded-3xl"
+                  >
+                    <div className="flex p-4 items-center justify-between rounded-3xl gap-x-4">
+                      <div
+                        className="flex items-center gap-1"
+                        onClick={() => {
+                          navigate(`/restake/${asset.symbol}`);
+                        }}
+                      >
+                        <img
+                          src={asset.logo}
+                          alt={asset.symbol}
+                          className="rounded-full size-10"
+                        />
+                        <div className="flex-1">
+                          <div>{asset.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {asset.symbol}
+                          </div>
+                        </div>
                       </div>
+
+                      <AccordionTrigger hideIcon>
+                        <Button className="rounded-2xl text-sm" asChild>
+                          <span>Restake</span>
+                        </Button>
+                      </AccordionTrigger>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+
+                    <AccordionContent className="bg-white rounded-3xl">
+                      <TXAction
+                        action={ACTION_TYPES.STAKE}
+                        token={asset.symbol}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
           ) : (
             <div> No Data.</div>
           )}
@@ -101,7 +131,7 @@ export default function Restake() {
                       <img
                         src={asset.logo}
                         alt={asset.symbol}
-                        className="size-10 rounded-full"
+                        className="rounded-full size-10"
                       />
                       <div>
                         <div>{asset.name}</div>
@@ -117,11 +147,11 @@ export default function Restake() {
                   <TableCell className="rounded-r-2xl">
                     <Link
                       to={`/restake/deposit/${asset.symbol}`}
-                      className="text-primary text-sm"
+                      className="text-sm text-primary"
                     >
                       <Button
                         variant="link"
-                        className="text-blue-500 hover:text-blue-600 p-0"
+                        className="p-0 text-blue-500 hover:text-blue-600"
                       >
                         Restake
                       </Button>
