@@ -54,7 +54,7 @@ export default function Restake() {
                   >
                     <div className="flex p-4 items-center justify-between rounded-3xl gap-x-4">
                       <div
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 cursor-pointer"
                         onClick={() => {
                           navigate(`/restake/${asset.symbol}`);
                         }}
