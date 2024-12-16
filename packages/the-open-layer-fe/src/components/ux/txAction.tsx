@@ -9,7 +9,6 @@ import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, SUPPORTED_ACTION_TYPES } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { useBalance } from '@/hooks/useBalance';
-import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -128,8 +127,8 @@ export default function TXAction({
   ];
   return (
     <div className="container max-w-3xl p-4 mx-auto">
-      <h1 className="mb-6 text-xs font-medium md:text-3xl md:font-bold text-[#999] text-left uppercase">
-        {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
+      <h1 className="mb-6 capitalize text-xs font-medium md:text-3xl md:font-bold text-[#999] text-left">
+        {action}
       </h1>
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col space-y-4">
@@ -211,12 +210,13 @@ export default function TXAction({
       )}
 
       <TXModal
-        title={action as ACTION_TYPES}
+        action={action as ACTION_TYPES}
         amount={amount}
         symol={token!}
         status={txState}
         handleClose={handleClose}
         handleTryAgain={handleSubmit}
+        handleMore={handleClose}
       />
     </div>
   );
