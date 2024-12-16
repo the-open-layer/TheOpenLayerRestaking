@@ -19,7 +19,6 @@ import { Navigate } from 'react-router-dom';
 import { ACTION_TYPES, SUPPORTED_ACTION_TYPES } from '@/constant';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { useBalance } from '@/hooks/useBalance';
-import { ACTION_TYPES_TITLE_MAP } from '@/constant';
 import { fromNano } from '@ton/ton';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,7 +48,7 @@ export default function Action() {
   );
 
   const maxAmount = useMemo(() => {
-    if (action === ACTION_TYPES.DEPOSIT) {
+    if (action === ACTION_TYPES.STAKE) {
       return Big(fromNano(tokenAmount ?? 0).toString()).toFixed(2);
     } else {
       // action === ACTION_TYPES.UNSTAKE
@@ -136,10 +135,10 @@ export default function Action() {
 
   return (
     <div className="container max-w-3xl px-4 py-8 mx-auto">
-      <h1 className="mb-6 text-3xl font-bold text-center">
-        {ACTION_TYPES_TITLE_MAP[action as ACTION_TYPES]}
+      <h1 className="mb-6 text-3xl font-bold text-center capitalize">
+        {action}
       </h1>
-      <Card className="mb-8">
+      <Card className="mb-8 border-none shadow-none">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
           <Link
             to={`/restake/${token}`}
@@ -231,7 +230,7 @@ export default function Action() {
       </Card>
 
       {DepositList.length > 0 && (
-        <Card className="bg-transparent shadow-none">
+        <Card className="bg-transparent shadow-none border-none">
           <CardContent className="flex flex-col gap-y-4">
             {DepositList.map(({ text, value }, idx) => {
               return (
@@ -246,13 +245,13 @@ export default function Action() {
       )}
 
       <TXModal
-        title={action as ACTION_TYPES}
+        action={action as ACTION_TYPES}
         amount={amount}
         symol={token!}
         status={txState}
         handleClose={handleClose}
         handleTryAgain={handleSubmit}
-        handleBacktodashboard={handleBacktodashboard}
+        handleMore={handleBacktodashboard}
       />
     </div>
   );
