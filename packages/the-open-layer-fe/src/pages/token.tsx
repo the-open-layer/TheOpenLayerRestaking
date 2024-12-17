@@ -26,6 +26,7 @@ export default function Token() {
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.STAKE);
   const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
+  const [reActionAmount, setReActionAmount] = useState('');
   const [pendingIndex, setPendingIndex] = useState<bigint>(BigInt(0));
   // const { data: tokenPrice } = useTokenPrice(token!);
   // console.log({ restakingInfo, tokenPrice });
@@ -81,7 +82,7 @@ export default function Token() {
     return <Navigate to="/404" />;
   }
   return (
-    <main className="container p-4 mx-auto space-y-6 lg:space-y-8">
+    <main className="container p-4 mx-auto space-y-4 lg:space-y-8">
       <Card className="text-center text-white bg-black rounded-2xl shadow-none border-none">
         <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
@@ -184,13 +185,14 @@ export default function Token() {
                       className="bg-white rounded-2xl"
                       variant="secondary"
                       onClick={() => {
-                        setAction(ACTION_TYPES.REDEPOSIT);
+                        setReActionAmount(tx.amount);
+                        setAction(ACTION_TYPES.RESTAKE);
                         settxState(txStateEnum.CONFIRMING);
                         setPendingIndex(tx.pendingIndex);
-                        handleSubmit(ACTION_TYPES.REDEPOSIT, tx.pendingIndex);
+                        handleSubmit(ACTION_TYPES.RESTAKE, tx.pendingIndex);
                       }}
                     >
-                      Redeposit
+                      Restake
                     </Button>
                     <Button
                       disabled={tx.isLocked}
@@ -198,6 +200,7 @@ export default function Token() {
                       className="bg-transparent border-black rounded-2xl"
                       onClick={() => {
                         // withdraw(tx.pendingIndex);
+                        setReActionAmount(tx.amount);
                         setAction(ACTION_TYPES.WITHDRAW);
                         settxState(txStateEnum.CONFIRMING);
                         setPendingIndex(tx.pendingIndex);
@@ -214,9 +217,8 @@ export default function Token() {
         </CardContent>
       </Card>
 
-      {/* no data -> hidden card */}
       {connected && (restakingInfo?.withdrawalJettons?.length ?? 0) > 0 && (
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl shadow-none border-none">
           <CardHeader>
             <CardTitle>WITHDRAW RECORDS</CardTitle>
           </CardHeader>
@@ -263,13 +265,13 @@ export default function Token() {
       )}
 
       <TXModal
-        title={action as ACTION_TYPES}
-        amount={null}
+        action={action as ACTION_TYPES}
+        amount={reActionAmount}
         symol={token!}
         status={txState}
         handleClose={handleClose}
         handleTryAgain={() => handleSubmit(action, pendingIndex)}
-        // handleBacktodashboard={handleBacktodashboard}
+        handleMore={handleClose}
       />
     </main>
   );
