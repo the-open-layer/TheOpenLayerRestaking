@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useStakeList } from '@/hooks/api/useStakeList';
 import { WITHDRAWSTATUS } from '@/constant';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,14 +15,16 @@ import {
   useRedepositMutation,
 } from '@/hooks/useStakeMutation';
 import { txStateEnum } from '@/types/action';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAccount } from '@/hooks/useAccount';
 import { precision } from '@/constant';
+import { ButtonBack } from '@/components/ux/backButton';
 
 export default function Token() {
   const { token } = useParams();
   const { connected } = useAccount();
   const { data: stakeList = [] } = useStakeList();
+  const navigate = useNavigate();
   const restakeToken = stakeList.find((v) => v.symbol === token);
   const [action, setAction] = useState<ACTION_TYPES>(ACTION_TYPES.STAKE);
   const [txState, settxState] = useState<txStateEnum>(txStateEnum.IDLE);
@@ -44,7 +46,9 @@ export default function Token() {
   const handleClose = () => {
     settxState(txStateEnum.IDLE);
   };
-
+  const handleBack = useCallback(() => {
+    navigate(`/restake`);
+  }, [navigate]);
   const handleSubmit = async (
     txAction = action,
     txPendingIndex = pendingIndex
@@ -83,6 +87,7 @@ export default function Token() {
   }
   return (
     <main className="container p-4 mx-auto space-y-4 lg:space-y-8">
+      <ButtonBack onClick={handleBack} />
       <Card className="text-center text-white bg-black rounded-2xl shadow-none border-none">
         <CardContent className="p-4 mx-auto md:max-w-md space-y-7 md:space-y-14">
           <div className="mb-2 space-y-2 text-left md:pt-5">
