@@ -14,6 +14,7 @@ export const ButtonBack = memo(({ onClick }: { onClick: () => void }) => {
   }, []);
 
   useEffect(() => {
+    if (Number(WebApp.version) <= 6) return;
     const handleBackButtonClick = () => {
       onClickRef.current();
     };
