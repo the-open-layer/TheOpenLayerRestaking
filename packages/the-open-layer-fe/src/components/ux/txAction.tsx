@@ -122,9 +122,9 @@ export default function TXAction({
     {
       text: 'You get',
       value: <div>20 OPEN XP / day</div>,
-      show: connected,
+      show: connected && action !== ACTION_TYPES.UNSTAKE,
     },
-  ];
+  ].filter((v) => v.show);
   return (
     <div className="container max-w-3xl p-4 mx-auto">
       <h1 className="mb-6 capitalize text-xs font-medium md:text-3xl md:font-bold text-[#999] text-left">
@@ -194,7 +194,7 @@ export default function TXAction({
         )}
       </div>
 
-      {DepositList.filter((v) => v.show).length > 0 && (
+      {DepositList.length > 0 && (
         <div className="px-0 pt-4 flex flex-col gap-y-2">
           {DepositList.map(({ text, value }, idx) => {
             return (
