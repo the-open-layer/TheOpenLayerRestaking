@@ -129,9 +129,9 @@ export default function Action() {
     {
       text: 'You get',
       value: <div>20 OPEN XP / day</div>,
-      show: connected,
+      show: connected && action !== ACTION_TYPES.UNSTAKE,
     },
-  ];
+  ].filter((v) => v.show);
 
   return (
     <div className="container max-w-3xl px-4 py-8 mx-auto">
