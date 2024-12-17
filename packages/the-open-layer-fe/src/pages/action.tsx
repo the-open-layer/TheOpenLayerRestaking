@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,6 +23,7 @@ import { fromNano } from '@ton/ton';
 import { useUserRestaking } from '@/hooks/useUserRestaking';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStakeMutation, useUnstakeMutation } from '@/hooks/useStakeMutation';
+import { ButtonBack } from '@/components/ux/backButton';
 
 export default function Action() {
   const { action, token } = useParams();
@@ -93,6 +94,10 @@ export default function Action() {
     handleClose();
     navigate(`/restake/${token}`);
   };
+
+  const handleBack = useCallback(() => {
+    navigate(`/restake/${token}`);
+  }, [token, navigate]);
   if (
     !SUPPORTED_ACTION_TYPES.includes(action as ACTION_TYPES) ||
     !stakeList.some((v) => v.symbol === token)
@@ -135,6 +140,7 @@ export default function Action() {
 
   return (
     <div className="container max-w-3xl px-4 py-8 mx-auto">
+      <ButtonBack onClick={handleBack} />
       <h1 className="mb-6 text-3xl font-bold text-center capitalize">
         {action}
       </h1>
