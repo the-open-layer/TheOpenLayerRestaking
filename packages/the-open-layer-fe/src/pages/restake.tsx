@@ -159,6 +159,43 @@ export default function Restake() {
           )}
         </TableBody>
       </Table>
+
+      <div
+        id="advice-card"
+        className="fixed bottom-4 left-4 right-4 p-4 bg-white shadow-md rounded-lg flex flex-col items-center transition-all duration-500 ease-in-out"
+        style={{ transform: 'translateX(0)', opacity: 1 }}
+      >
+        <p className="text-sm text-gray-700 mb-4 text-center">
+          Our product is currently undergoing auditing, and there may be risks
+          associated with interactions. If you'd like to become an early
+          adopter, please{' '}
+          <a
+            href="https://t.me/the_open_layer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            subscribe to our channel
+          </a>
+          .
+        </p>
+        <button
+          onClick={() => {
+            const adviceCard = document.getElementById('advice-card');
+            if (adviceCard) {
+              // Apply slide animation
+              adviceCard.style.transform = 'translateX(100%)'; // Moves the card right
+              adviceCard.style.opacity = '0'; // Fades out the card
+              setTimeout(() => {
+                adviceCard.style.display = 'none'; // Completely hides the card after animation
+              }, 500); // Matches the duration of the transition
+            }
+          }}
+          className="px-4 py-2 text-white bg-black rounded-lg hover:bg-gray-800"
+        >
+          I Understand
+        </button>
+      </div>
     </main>
   );
 }
