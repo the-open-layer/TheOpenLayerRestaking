@@ -6,6 +6,7 @@ import { store } from '@/store';
 import { THEME, TonConnectUIProvider } from '@tonconnect/ui-react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from '@/query-client';
+import { AuditNotification } from '@/components/ux/auditNotification.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
           uiPreferences={{ theme: THEME.LIGHT }}
         >
           <App />
+          <AuditNotification />
         </TonConnectUIProvider>
       </QueryClientProvider>
     </Provider>
