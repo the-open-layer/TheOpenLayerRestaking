@@ -1,8 +1,10 @@
-import { useLocalStorage } from 'react-use';
+// import { useLocalStorage } from 'react-use';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export const AuditNotification = () => {
-  const [showAdvice, setShowAdvice] = useLocalStorage('audit-showAdvice', true);
+  // const [showAdvice, setShowAdvice] = useLocalStorage('audit-showAdvice', true);
+  const [showAdvice, setShowAdvice] = useState(true);
   return (
     <div
       className={cn(
