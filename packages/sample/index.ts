@@ -1,6 +1,6 @@
 import { TonConnectUI } from '@tonconnect/ui';
 import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { TonClient, Address, beginCell, toNano, fromNano, storeMessage, Transaction, Cell } from "@ton/ton";
+import { TonClient, Address, beginCell, toNano, fromNano, storeMessage, Transaction, Cell, Dictionary } from "@ton/ton";
 import { TonApiClient } from '@ton-api/client';
 import TonWeb from 'tonweb';
 import { 
@@ -11,7 +11,9 @@ import {
     storeJettonTransfer,
     storeUnStake,
     storeRedeposit,
-    storeWithdraw
+    storeWithdraw,
+    StakedJettonInfo,
+    UnStakedCoinAge
 } from '../the-open-layer-contract/build/ReStaking/tact_StakingMasterTemplate';
 import {
     StakingWalletTemplate,
@@ -34,6 +36,7 @@ const jettonBalanceSpan = document.getElementById('jettonBalance') as HTMLSpanEl
 const currentStakeSpan = document.getElementById('currentStake') as HTMLSpanElement;
 const pendingUnstakeSpan = document.getElementById('pendingUnstake') as HTMLSpanElement;
 const completedWithdrawalsSpan = document.getElementById('completedWithdrawals') as HTMLSpanElement;
+const rewardPointsSpan = document.getElementById('rewardPoints') as HTMLSpanElement;
 const txHistoryDiv = document.getElementById('txHistory') as HTMLDivElement;
 
 // Initialize TonConnect
@@ -48,7 +51,7 @@ const ta = new TonApiClient({
 });
 
 // Contract addresses from environment variables
-const STAKING_MASTER_ADDRESS = "EQCpc-r4-L9xRRlJUrY8pfpVnyrrXd4Nu3PtiMIEf3faW7du";
+const STAKING_MASTER_ADDRESS = "EQAN9-nG84ci3up1cooAsJ4Z-gNzatYoliXN3XzlgqdCC1ov";
 //const JETTON_MASTER_ADDRESS = "kQAqymw5ia-MrqO2pV2EXSYufylqtirvFbPR65ipNO1WwJuS";
 const JETTON_MASTER_ADDRESS = "kQAzft3exsq946eO92eOF0QkQqNFOLaPHak18Xdy4OYG9WjN";
 
@@ -79,6 +82,46 @@ async function getJettonWalletAddress(ownerAddress: string, jettonMasterAddress:
     const jettonWalletAddress = await jettonMasterContract.getJettonWalletAddress(
         new TonWeb.utils.Address(ownerAddress));
     return jettonWalletAddress.toString();
+}
+
+// Helper function to calculate coin age based on stake time and amount
+function calculateCoinAge(amount: bigint, stakeTime: number, endTime: number): number {
+    const durationInHours = (endTime - stakeTime) / (60 * 60);
+    // Skip first 24 hours
+    let rewardableDuration = Math.max(0, durationInHours - 24);
+    // truncate duration to days
+    rewardableDuration = Math.floor(rewardableDuration / 24);
+    return Number(amount) * rewardableDuration; 
+}
+
+// Calculate total reward points
+async function calculateRewardPoints(
+    stakedJettons: Dictionary<bigint, StakedJettonInfo>,
+    unStakedRecords: Dictionary<bigint, UnStakedCoinAge>
+): Promise<number> {
+    const now = Math.floor(Date.now() / 1000);
+    const multiplier = 1;
+    
+    // Calculate rewards for currently staked amount
+    let totalPoints = 0;
+    for (const [_, info] of stakedJettons) {
+        totalPoints += calculateCoinAge(
+            info.jettonAmount,
+            Number(info.stakeTime),
+            now
+        ) * multiplier;
+    }
+    
+    // Add rewards from unstaked records
+    for (const [_, record] of unStakedRecords) {
+        totalPoints += calculateCoinAge(
+            record.amount,
+            Number(record.stakeTime),
+            Number(record.unStakeTime)
+        ) * multiplier;
+    }
+    
+    return totalPoints;
 }
 
 // Initialize on load
@@ -129,6 +172,7 @@ tonConnectUI.onStatusChange(async (wallet) => {
         currentStakeSpan.textContent = '0';
         pendingUnstakeSpan.textContent = '0';
         completedWithdrawalsSpan.textContent = '0';
+        rewardPointsSpan.textContent = '0';
         
         // Disable buttons
         stakeButton.disabled = true;
@@ -140,10 +184,27 @@ tonConnectUI.onStatusChange(async (wallet) => {
 
 async function updateBalances() {
     try {
-        // Get wallet balance
-        const balance = await client.getBalance(Address.parse(userAddress));
-        walletBalanceSpan.textContent = fromNano(balance);
+        if (!userAddress) return;
 
+        // Get wallet and jetton balances
+        const balance = await client.getBalance(userWalletAddress);
+        walletBalanceSpan.textContent = fromNano(balance).toString();
+
+        // Get staking wallet contract
+        const stakingWallet = client.open(await StakingWalletTemplate.fromInit(
+            Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
+            userWalletAddress
+        ));
+        
+        const stakingData = await stakingWallet.getStakedInfo();
+        
+        // Calculate and display reward points
+        const rewardPoints = await calculateRewardPoints(
+            stakingData.stakedJettons,
+            stakingData.unStakedRecords
+        );
+        rewardPointsSpan.textContent = rewardPoints.toFixed(2);
+        
         // Get user's jetton wallet address
         const userJettonWalletAddress = await getJettonWalletAddress(
             userAddress,
@@ -205,7 +266,7 @@ async function stake() {
         // Prepare stake message
         const stakeMsg: StakeJetton = {
             $$type: 'StakeJetton',
-            tonAmount: toNano('0.1'),
+            tonAmount: toNano('0.01'),
             responseDestination: userWalletAddress,
             forwardAmount: 0n,
             forwardPayload: beginCell().endCell(),
@@ -218,7 +279,7 @@ async function stake() {
             destination: Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
             response_destination: userWalletAddress,
             custom_payload: null,
-            forward_ton_amount: toNano('0.3'),
+            forward_ton_amount: toNano('0.05'),
             forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell()
         };
 
@@ -228,7 +289,7 @@ async function stake() {
             messages: [
                 {
                     address: userJettonWalletAddress,
-                    amount: toNano('0.5').toString(),
+                    amount: toNano('0.2').toString(),
                     payload: beginCell()
                         .store(storeJettonTransfer(jettonTransfer))
                         .endCell()
@@ -276,7 +337,7 @@ async function unstake() {
             messages: [
                 {
                     address: stakingWalletAddress.toString(),
-                    amount: toNano('0.1').toString(),
+                    amount: toNano('0.03').toString(),
                     payload: beginCell()
                         .store(storeUnStake(unstakeMsg))
                         .endCell()
@@ -306,13 +367,13 @@ async function redeposit() {
             messages: [
                 {
                     address: stakingWalletAddress.toString(),
-                    amount: toNano('0.1').toString(),
+                    amount: toNano('0.03').toString(),
                     payload: beginCell()
                         .store(storeRedeposit({
                             $$type: 'Redeposit' as const,
                             queryId: BigInt(Math.ceil(Math.random() * 1000000)),
                             pendingIndex: pendingIndex,
-                            forwardAmount: toNano('0.05'),
+                            forwardAmount: toNano('0.01'),
                             forwardPayload: beginCell().endCell()
                         }))
                         .endCell()

@@ -52,6 +52,8 @@ PROGRAM{
   DECLPROC $PendingToStaked$_store_cell
   DECLPROC $WithdrawalJettonInfo$_store
   DECLPROC $WithdrawalJettonInfo$_store_cell
+  DECLPROC $UnStakedCoinAge$_store
+  DECLPROC $UnStakedCoinAge$_store_cell
   DECLPROC $SetStaticTaxFee$_load
   DECLPROC $StakingWalletTemplate$_store
   DECLPROC $StakingWalletTemplate$_load
@@ -74,7 +76,7 @@ PROGRAM{
   DECLPROC $StakingWalletTemplate$_fun_forward
   DECLPROC $StakingWalletTemplate$_fun_reply
   DECLPROC $StakingWalletTemplate$_fun_notify
-  DECLPROC $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons
+  DECLPROC $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons_unStakedRecords
   DECLPROC $StakingWalletTemplate$_fun_getStakedInfo
   DECLPROC $StakingWalletTemplate$_fun_stakedInfo
   DECLPROC $StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold
@@ -83,13 +85,14 @@ PROGRAM{
   DECLPROC $JettonExcesses$_constructor_query_id
   DECLPROC $StakingWalletTemplate$_fun_receiveStakeInternal
   DECLPROC $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold
+  DECLPROC $UnStakedCoinAge$_constructor_amount_stakeTime_unStakeTime
   DECLPROC $StakedToPending$_constructor_jettonAmount_pendingIndex
+  DECLPROC $SendParameters$_constructor_to_bounce_value_mode_body
   DECLPROC $StakingWalletTemplate$_fun_receiveUnstake
   DECLPROC $PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex
   DECLPROC $StakingWalletTemplate$_fun_receiveReDeposit
   DECLPROC $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination
   DECLPROC $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime
-  DECLPROC $SendParameters$_constructor_to_bounce_value_mode_body
   DECLPROC $StakingWalletTemplate$_fun_receiveWithdraw
   DECLPROC $StakingWalletTemplate$_fun_receiveExcesses
   DECLPROC $StakingWalletTemplate$_fun_staticTaxFee
@@ -735,6 +738,19 @@ PROGRAM{
     $WithdrawalJettonInfo$_store INLINECALLDICT
     ENDC
   }>
+  $UnStakedCoinAge$_store PROCINLINE:<{
+    2SWAP
+    STVARUINT16
+    s1 s2 XCHG
+    32 STU
+    32 STU
+  }>
+  $UnStakedCoinAge$_store_cell PROCINLINE:<{
+    NEWC
+    3 -ROLL
+    $UnStakedCoinAge$_store INLINECALLDICT
+    ENDC
+  }>
   $SetStaticTaxFee$_load PROCINLINE:<{
     32 LDU
     SWAP
@@ -745,13 +761,13 @@ PROGRAM{
     SWAP
   }>
   $StakingWalletTemplate$_store PROCINLINE:<{
-    s9 s8 XCHG2
+    s10 s9 XCHG2
     __tact_store_address INLINECALLDICT
-    s0 s6 XCHG2
+    s0 s7 XCHG2
     __tact_store_address INLINECALLDICT
-    s0 s4 XCHG2
+    s0 s5 XCHG2
     STVARUINT16
-    ROT
+    s0 s3 XCHG2
     STVARUINT16
     SWAP
     NEWC
@@ -760,6 +776,8 @@ PROGRAM{
     s1 s2 XCHG
     257 PUSHINT
     STIX
+    s1 s2 XCHG
+    STDICT
     s1 s2 XCHG
     STDICT
     s1 s3 XCHG
@@ -786,11 +804,12 @@ PROGRAM{
     LDDICT
     LDDICT
     LDDICT
+    LDDICT
     DROP
-    s5 s9 XCHG
-    s5 s8 XCHG
-    s5 s7 XCHG
-    s5 s6 XCHG
+    s6 s10 XCHG
+    s6 s9 XCHG
+    s6 s8 XCHG
+    s6 s7 XCHG
   }>
   $StateInit$_not_null PROCINLINE:<{
     DUP
@@ -840,6 +859,7 @@ PROGRAM{
     PUSHNULL
     PUSHNULL
     PUSHNULL
+    PUSHNULL
   }>
   $StakingWalletTemplate$_contract_load PROCREF:<{
     c4 PUSH
@@ -851,7 +871,7 @@ PROGRAM{
     SWAP
     IFJMP:<{
       $StakingWalletTemplate$_load INLINECALLDICT
-      1 9 BLKDROP2
+      1 10 BLKDROP2
     }>
     MYADDR
     11 PLDU
@@ -872,7 +892,7 @@ PROGRAM{
     TRUE
     SWAP
     1 STI
-    9 -ROLL
+    10 -ROLL
     $StakingWalletTemplate$_store INLINECALLDICT
     ENDC
     c4 POP
@@ -1034,11 +1054,12 @@ PROGRAM{
     PUSHNULL
     $StakingWalletTemplate$_fun_forward INLINECALLDICT
   }>
-  $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons PROCINLINE:<{
+  $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons_unStakedRecords PROCINLINE:<{
   }>
   $StakingWalletTemplate$_fun_getStakedInfo PROCINLINE:<{
-    s2 s1 s0 PUSH3
-    $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons INLINECALLDICT
+    s3 s2 s1 PUSH3
+    s3 PUSH
+    $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons_unStakedRecords INLINECALLDICT
   }>
   $StakingWalletTemplate$_fun_stakedInfo PROCINLINE:<{
     $StakingWalletTemplate$_fun_getStakedInfo INLINECALLDICT
@@ -1060,23 +1081,24 @@ PROGRAM{
     __tact_context_get INLINECALLDICT
     DROP
     s2 POP
-    16 s() PUSH
+    17 s() PUSH
     SWAP
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
     257 PUSHINT
         NOW
     s7 PUSH
-    s15 s(-1) s2 PUXC2
-    s0 s5 XCHG
+    s0 s2 XCHG
+    16 s() PUSH
+    s0 s0 s5 XCHG3
     $StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold INLINECALLDICT
     $StakedJettonInfo$_store_cell INLINECALLDICT
-    s11 s11 s0 XCHG3
-    s13 s(-1) PUXC
+    s12 s12 s0 XCHG3
+    s14 s(-1) PUXC
     __tact_dict_set_int_cell INLINECALLDICT
-    s0 s11 XCHG
+    s0 s12 XCHG
     INC
-    s13 PUSH
+    s14 PUSH
     10000000 PUSHINT
     ADD
     10000000 PUSHINT
@@ -1090,8 +1112,9 @@ PROGRAM{
       s8 s4 XCHG2
       $StakeNotification$_constructor_queryId_jettonAmount_jettonWallet_forwardPayload INLINECALLDICT
       $StakeNotification$_store_cell INLINECALLDICT
-      s15 s5 s(-1) PUXC2
-      s3 s6 PUXC
+      16 s() PUSH
+      s6 s3 s2 XCPUXC
+      s0 s7 XCHG
       $SendParameters$_constructor_to_bounce_value_body INLINECALLDICT
       $global_send INLINECALLDICT
       DROP
@@ -1105,40 +1128,46 @@ PROGRAM{
       s5 POP
       2DROP
     }>
-    s0 s6 XCHG
+    s0 s7 XCHG
     FALSE
     s0 s2 XCHG
     SUB
     s0 s3 XCHG
     $JettonExcesses$_constructor_query_id INLINECALLDICT
     $JettonExcesses$_store_cell INLINECALLDICT
-    s3 s6 XCHG
-    s1 s6 s0 XCHG3
+    s3 s7 XCHG
+    s1 s7 s0 XCHG3
     $SendParameters$_constructor_to_bounce_value_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
-    s2 s4 XCHG
+    s3 s5 XCHG
   }>
   $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold PROCINLINE:<{
   }>
+  $UnStakedCoinAge$_constructor_amount_stakeTime_unStakeTime PROCINLINE:<{
+  }>
   $StakedToPending$_constructor_jettonAmount_pendingIndex PROCINLINE:<{
   }>
+  $SendParameters$_constructor_to_bounce_value_mode_body PROCINLINE:<{
+    s3 s4 XCHG
+    PUSHNULL
+    PUSHNULL
+  }>
   $StakingWalletTemplate$_fun_receiveUnstake PROCINLINE:<{
-    s2 s3 XCHG
-    3 BLKDROP
+    2DROP
     __tact_context_get INLINECALLDICT
     s2 s3 XCHG
     3 BLKDROP
-    s10 s(-1) PUXC
+    s12 s0 PUSH2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
-    DUP
+    OVER
     0 PUSHINT
     DUP
         NOW
-    s8 s1 s(-1) PU2XC
+    s11 s1 s(-1) PU2XC
     $PendingJettonInfo$_constructor_jettonAmount_pendingIndex_unstakeTime_unstakeThreshold INLINECALLDICT
-    s9 s9 PUSH2
+    s12 s12 PUSH2
     257 PUSHINT
     __tact_dict_min_int_cell INLINECALLDICT
     WHILE:<{
@@ -1157,32 +1186,52 @@ PROGRAM{
         s12 s4 PUSH2
         EQUAL
         IF:<{
-          2 2 BLKDROP2
-          s2 POP
-          s2 s13 PUXC
+          s3 POP
+          s4 s(-1) PUXC
+          s0 19 s() XCHG
           257 PUSHINT
               DICTIDEL
           DROP
+          257 PUSHINT
+              NOW
+          s5 s3 s0 XCHG3
+          $UnStakedCoinAge$_constructor_amount_stakeTime_unStakeTime INLINECALLDICT
+          $UnStakedCoinAge$_store_cell INLINECALLDICT
+          s2 s15 XCHG
+          s4 s(-1) PUXC
+          __tact_dict_set_int_cell INLINECALLDICT
         }>ELSE<{
           257 PUSHINT
           s5 s13 XCPU
           SUB
-          s0 s4 s3 XCHG3
+          s0 s4 s3 XC2PU
           s3 PUSH
           $StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold INLINECALLDICT
           $StakedJettonInfo$_store_cell INLINECALLDICT
-          s15 s3 s0 XCHG3
+          s2 19 s() XCHG
+          s4 s5 s(-1) XCPUXC
+          __tact_dict_set_int_cell INLINECALLDICT
+          257 PUSHINT
+              NOW
+          s12 PUSH
+          s0 s2 XCHG
+          s0 20 s() XCHG
+          SWAP
+          $UnStakedCoinAge$_constructor_amount_stakeTime_unStakeTime INLINECALLDICT
+          $UnStakedCoinAge$_store_cell INLINECALLDICT
+          s2 s15 XCHG
+          s1 18 s() XCHG
           s4 s(-1) PUXC
           __tact_dict_set_int_cell INLINECALLDICT
-          s1 s13 XCHG
+          s1 16 s() XCHG
         }>
         s7 s9 XCHG2
         ADD
-        s3 s12 XCHG2
+        s3 s15 XCHG2
             MAX
+        s5 s14 XCHG
         s7 s11 XCHG
         s6 s7 XCHG
-        s5 s6 XCHG
         s0 s2 XCHG
       }>ELSE<{
         4 BLKDROP
@@ -1196,47 +1245,59 @@ PROGRAM{
     s5 POP
     s0 s3 XCHG
     50308 PUSHINT
-    s0 s6 XCHG
+    s0 s7 XCHG
     GEQ
-    s1 s5 XCHG
+    s1 s6 XCHG
     THROWANYIFNOT
     DUP
     0 GTINT
     IF:<{
       s0 s1 PUXC
-      s1 s4 XCHG
+      s1 s5 XCHG
       257 PUSHINT
       s0 s4 XCHG
       $PendingJettonInfo$_store_cell INLINECALLDICT
-      s6 PUSH
-      s3 s5 XCHG
+      s9 PUSH
+      s3 s8 XCHG
       SWAP
       __tact_dict_set_int_cell INLINECALLDICT
-      s2 s4 XCPU
+      s1 s7 XCPU
       $StakedToPending$_constructor_jettonAmount_pendingIndex INLINECALLDICT
       $StakedToPending$_store_cell INLINECALLDICT
       $global_emit INLINECALLDICT
-      s0 s3 XCHG
+      s0 s6 XCHG
       INC
-      s0 s3 XCHG
+      s0 s6 XCHG
+      s0 s4 XCHG
     }>ELSE<{
+      s3 s4 XCHG
       4 BLKDROP
     }>
+    FALSE
+    0 PUSHINT
+    64 PUSHINT
+    s0 s4 XCHG
+    $JettonExcesses$_constructor_query_id INLINECALLDICT
+    $JettonExcesses$_store_cell INLINECALLDICT
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
   }>
   $PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex PROCINLINE:<{
   }>
   $StakingWalletTemplate$_fun_receiveReDeposit PROCINLINE:<{
-    s2 s3 XCHG
-    3 BLKDROP
+    2DROP
     __tact_context_get INLINECALLDICT
     s2 s3 XCHG
     3 BLKDROP
-    s10 s(-1) PUXC
+    s12 s0 PUSH2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
-    s2 PUSH
+    s5 PUSH
     257 PUSHINT
-    s2 PUSH
+    s3 PUSH
     __tact_dict_get_int_cell INLINECALLDICT
     $PendingJettonInfo$_load_opt INLINECALLDICT
     50306 PUSHINT
@@ -1244,57 +1305,63 @@ PROGRAM{
     ISNULL
     NOT
     THROWANYIFNOT
-    s1 s3 PUXC
+    s2 s6 PUXC
     257 PUSHINT
         DICTIDEL
     DROP
-    s3 PUSH
+    s6 PUSH
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_jettonAmount INLINECALLDICT
         NOW
-    s0 s5 XCHG
+    s0 s8 XCHG
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_unstakeThreshold INLINECALLDICT
-    s8 s0 s2 PUXC2
-    s6 s6 XCHG2
+    s11 s0 s2 PUXC2
+    s9 s9 XCHG2
     $StakedJettonInfo$_constructor_jettonAmount_stakeIndex_stakeTime_unstakeThreshold INLINECALLDICT
     257 PUSHINT
     s4 PUSH
     s4 s2 s3 PUXC2
     SWAP
     $StakedJettonInfo$_store_cell INLINECALLDICT
-    s9 PUSH
-    s3 s8 XCHG
+    s12 PUSH
+    s3 s11 XCHG
     SWAP
     __tact_dict_set_int_cell INLINECALLDICT
-    s0 s7 XCHG
+    s0 s10 XCHG
     INC
-    s2 s5 XCHG2
+    s1 s3 s8 XCHG3
     $PendingToStaked$_constructor_jettonAmount_pendingIndex_stakedIndex INLINECALLDICT
     $PendingToStaked$_store_cell INLINECALLDICT
     $global_emit INLINECALLDICT
-    s2 s4 XCHG
+    FALSE
+    0 PUSHINT
+    64 PUSHINT
+    s0 s4 XCHG
+    $JettonExcesses$_constructor_query_id INLINECALLDICT
+    $JettonExcesses$_store_cell INLINECALLDICT
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
+    s3 s5 XCHG
   }>
   $WithdrawInternal$_constructor_queryId_jettonAmount_forwardAmount_tonAmount_forwardPayload_destination_stakeIndex_responseDestination PROCINLINE:<{
     s0 s3 XCHG2
   }>
   $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime PROCINLINE:<{
   }>
-  $SendParameters$_constructor_to_bounce_value_mode_body PROCINLINE:<{
-    s3 s4 XCHG
-    PUSHNULL
-    PUSHNULL
-  }>
   $StakingWalletTemplate$_fun_receiveWithdraw PROCINLINE:<{
     __tact_context_get INLINECALLDICT
     DROP
     s2 POP
-    16 s() PUSH
+    17 s() PUSH
     OVER
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
     257 PUSHINT
-    s10 s0 s7 PUXC2
+    s11 s0 s7 PUXC2
     __tact_dict_get_int_cell INLINECALLDICT
     $PendingJettonInfo$_load_opt INLINECALLDICT
     50306 PUSHINT
@@ -1317,7 +1384,7 @@ PROGRAM{
     s5 s6 PUSH2
     GREATER
     THROWANYIFNOT
-    s4 s14 PUSH2
+    s4 s15 PUSH2
     ADD
     s1 s2 XCHG
     GEQ
@@ -1336,7 +1403,7 @@ PROGRAM{
     s9 PUSH
     $PendingJettonInfo$_not_null INLINECALLDICT
     $PendingJettonInfo$_get_pendingIndex INLINECALLDICT
-    s0 s12 s12 XCHG3
+    s0 s13 s13 XCHG3
         DICTIDEL
     DROP
     257 PUSHINT
@@ -1349,7 +1416,7 @@ PROGRAM{
         NOW
     $WithdrawalJettonInfo$_constructor_jettonAmount_withdrawTime INLINECALLDICT
     $WithdrawalJettonInfo$_store_cell INLINECALLDICT
-    s3 s11 XCHG
+    s3 s12 XCHG
     s1 s10 s0 XCHG3
     __tact_dict_set_int_cell INLINECALLDICT
     s4 s6 XCHG
@@ -1357,13 +1424,13 @@ PROGRAM{
     s6 s5 s6 XCHG3
     TRUE
     0 PUSHINT
-    s7 s10 XCHG2
+    s7 s11 XCHG2
     64 PUSHINT
-    s0 s12 XCHG
+    s0 s13 XCHG
     $WithdrawInternal$_store_cell INLINECALLDICT
-    s11 PUSH
+    s12 PUSH
     s3 s1 s4 XCHG3
-    s5 s6 s6 XCHG3
+    s6 s7 s7 XCHG3
     $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
@@ -1374,28 +1441,28 @@ PROGRAM{
     64 PUSHINT
     s0 s3 XCHG
     $JettonExcesses$_store_cell INLINECALLDICT
-    s12 PUSH
+    s13 PUSH
     s4 s4 XCHG2
     $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
     $global_send INLINECALLDICT
     DROP
   }>
   $StakingWalletTemplate$_fun_staticTaxFee PROCINLINE:<{
-    s6 PUSH
+    s7 PUSH
   }>
   $StakingWalletTemplate$_fun_receiveSetStaticTaxFee PROCINLINE:<{
-    s7 POP
+    s8 POP
     __tact_context_get_sender INLINECALLDICT
-    s9 s(-1) PUXC
+    s10 s(-1) PUXC
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
-    s6 PUSH
+    s7 PUSH
     __tact_string_builder_start_string INLINECALLDICT
         B{b5ee9c7241010101001800002c73657420737461746963207461782066656520746f200e99bcb1} B>boc <s PUSHSLICE
     __tact_string_builder_append_not_mut INLINECALLDICT
-    s0 s8 XCHG
+    s0 s9 XCHG
     __tact_int_to_string INLINECALLDICT
-    s1 s8 XCHG
+    s1 s9 XCHG
     __tact_string_builder_append_not_mut INLINECALLDICT
     __tact_string_builder_end_slice INLINECALLDICT
     $String$_fun_asComment INLINECALLDICT
@@ -1403,12 +1470,12 @@ PROGRAM{
   }>
   $StakingWalletTemplate$_fun_requireOwner PROCINLINE:<{
     __tact_context_get_sender INLINECALLDICT
-    s9 s(-1) PUXC
+    s10 s(-1) PUXC
     __tact_slice_eq_bits INLINECALLDICT
     132 THROWIFNOT
   }>
   $StakingWalletTemplate$_fun_owner PROCINLINE:<{
-    s8 PUSH
+    s9 PUSH
   }>
   $ChangeOwnerOk$_constructor_queryId_newOwner PROCINLINE:<{
   }>
@@ -1441,22 +1508,20 @@ PROGRAM{
     $StakingWalletTemplate$_fun_receiveSetStaticTaxFee INLINECALLDICT
   }>
   $StakingWalletTemplate$_internal_binary_ChangeOwner PROCINLINE:<{
-    s8 s10 XCHG
-    5 6 REVERSE
-    s5 s9 XCHG
-    s4 s10 XCHG
-    s3 s9 XCHG
-    s10 s9 s10 XCHG3
+    10 2 BLKSWAP
     $StakingWalletTemplate$_fun_requireOwner INLINECALLDICT
-    s8 POP
-    s8 s9 XCPU
+    s9 POP
+    s10 s9 XCPU
     $ChangeOwnerOk$_constructor_queryId_newOwner INLINECALLDICT
     $ChangeOwnerOk$_store_cell INLINECALLDICT
+    s9 s10 XCHG
+    s7 s9 XCHG
     s6 s8 XCHG
     s5 s7 XCHG
     s4 s6 XCHG
     s3 s5 XCHG
     s4 s3 s0 XCHG3
+    s1 s2 XCHG
     $StakingWalletTemplate$_fun_reply INLINECALLDICT
   }>
   $StakingWalletTemplate$_internal_binary_Deploy PROCINLINE:<{
@@ -1467,18 +1532,18 @@ PROGRAM{
   %stakedInfo PROC:<{
     $StakingWalletTemplate$_contract_load INLINECALLDICT
     $StakingWalletTemplate$_fun_stakedInfo INLINECALLDICT
-    9 3 BLKDROP2
+    10 4 BLKDROP2
     $StakedInfo$_to_external INLINECALLDICT
   }>
   %staticTaxFee PROC:<{
     $StakingWalletTemplate$_contract_load INLINECALLDICT
     $StakingWalletTemplate$_fun_staticTaxFee INLINECALLDICT
-    9 1 BLKDROP2
+    10 1 BLKDROP2
   }>
   %owner PROC:<{
     $StakingWalletTemplate$_contract_load INLINECALLDICT
     $StakingWalletTemplate$_fun_owner INLINECALLDICT
-    9 1 BLKDROP2
+    10 1 BLKDROP2
   }>
   lazy_deployment_completed PROC:<{
     c4 PUSH
@@ -1617,7 +1682,7 @@ PROGRAM{
     s0 s2 XCHG
     __tact_context_sender SETGLOB
     $StakingWalletTemplate$_contract_load INLINECALLDICT
-    2 9 BLKSWAP
+    2 10 BLKSWAP
     $StakingWalletTemplate$_contract_router_internal INLINECALLDICT
     130 THROWIFNOT
     $StakingWalletTemplate$_contract_store INLINECALLDICT

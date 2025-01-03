@@ -22,6 +22,7 @@ contract StakingWalletTemplate with StakingWallet {
     stakedJettons: map<Int, StakedJettonInfo> = emptyMap();
     pendingJettons: map<Int, PendingJettonInfo> = emptyMap();
     withdrawalJettons: map<Int, WithdrawalJettonInfo> = emptyMap();
+    unStakedRecords: map<Int, UnStakedCoinAge> = emptyMap();
 
     init(master: Address, owner: Address) {
         self.owner = owner;
@@ -73,6 +74,15 @@ trait StakingMaster with Common, OwnableTransferable {
         // Only owner can modify the threshold
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
         self.unstakeThreshold = msg.threshold;
+        send(SendParameters{
+            to: ctx.sender,
+            bounce: false,
+            value: 0,
+            mode: SendRemainingValue,
+            body: JettonExcesses{
+                query_id: msg.queryId,
+            }.toCell(),
+        });
     }
 
     receive(msg: SetContractJettonWallet) {
@@ -80,6 +90,15 @@ trait StakingMaster with Common, OwnableTransferable {
         // Only owner can modify the threshold
         nativeThrowUnless(codeUnauthorized, ctx.sender == self.owner);
         self.thisContractJettonWallet = msg.thisContractJettonWallet;
+        send(SendParameters{
+            to: ctx.sender,
+            bounce: false,
+            value: 0,
+            mode: SendRemainingValue,
+            body: JettonExcesses{
+                query_id: msg.queryId,
+            }.toCell(),
+        });
     }
 
     // user transfer jetton to staking master address,
@@ -165,5 +184,9 @@ trait StakingMaster with Common, OwnableTransferable {
 
     get fun thisJettonWallet(): Address? {
         return self.thisContractJettonWallet;
+    }
+
+    get fun jettonMaster(): Address {
+        return self.jettonMaster;
     }
 }

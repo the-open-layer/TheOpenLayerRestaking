@@ -300,8 +300,8 @@ cell $String$_fun_asComment(slice $self) impure inline {
     return __tact_string_builder_end($b);
 }
 
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_forward((slice, slice, int, int, int, int, cell, cell, cell) $self, slice $to, cell $body, int $bounce, tuple $init) impure inline {
-    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
+((slice, slice, int, int, int, int, cell, cell, cell, cell), ()) $StakingWalletTemplate$_fun_forward((slice, slice, int, int, int, int, cell, cell, cell, cell) $self, slice $to, cell $body, int $bounce, tuple $init) impure inline {
+    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords)) = $self;
     var ($init) = $init;
     cell $code = null();
     cell $data = null();
@@ -317,21 +317,21 @@ cell $String$_fun_asComment(slice $self) impure inline {
         if (($balanceBeforeMessage < 0)) {
             $global_nativeReserve(0, 0);
             $global_send($SendParameters$_constructor_bounce_to_value_mode_body_code_data($bounce, $to, 0, 130, $body, $code, $data));
-            return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
+            return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords), ());
         }
     }
     $global_send($SendParameters$_constructor_bounce_to_value_mode_body_code_data($bounce, $to, 0, 66, $body, $code, $data));
-    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
+    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords), ());
 }
 
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_reply((slice, slice, int, int, int, int, cell, cell, cell) $self, cell $body) impure inline {
-    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_forward(__tact_context_get_sender(), $body, true, null());
-    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
+((slice, slice, int, int, int, int, cell, cell, cell, cell), ()) $StakingWalletTemplate$_fun_reply((slice, slice, int, int, int, int, cell, cell, cell, cell) $self, cell $body) impure inline {
+    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords)) = $self;
+    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords)~$StakingWalletTemplate$_fun_forward(__tact_context_get_sender(), $body, true, null());
+    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords), ());
 }
 
-((slice, slice, int, int, int, int, cell, cell, cell), ()) $StakingWalletTemplate$_fun_notify((slice, slice, int, int, int, int, cell, cell, cell) $self, cell $body) impure inline {
-    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)) = $self;
-    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons)~$StakingWalletTemplate$_fun_forward(__tact_context_get_sender(), $body, false, null());
-    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons), ());
+((slice, slice, int, int, int, int, cell, cell, cell, cell), ()) $StakingWalletTemplate$_fun_notify((slice, slice, int, int, int, int, cell, cell, cell, cell) $self, cell $body) impure inline {
+    var (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords)) = $self;
+    ($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords)~$StakingWalletTemplate$_fun_forward(__tact_context_get_sender(), $body, false, null());
+    return (($self'owner, $self'master, $self'staticTax, $self'lockedValue, $self'stakeIndex, $self'pendingIndex, $self'stakedJettons, $self'pendingJettons, $self'withdrawalJettons, $self'unStakedRecords), ());
 }

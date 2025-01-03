@@ -174,6 +174,9 @@ cell $String$_fun_asComment(slice $self) impure inline;
 ;; $JettonExcesses$_constructor_query_id
 ((int)) $JettonExcesses$_constructor_query_id(int $query_id) inline;
 
+;; $SendParameters$_constructor_to_bounce_value_mode_body
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_bounce_value_mode_body(slice $to, int $bounce, int $value, int $mode, cell $body) inline;
+
 ;; $StakingMasterTemplate$_fun_getUserWallet
 ((slice, slice, slice, int, int, int), (cell, cell)) $StakingMasterTemplate$_fun_getUserWallet((slice, slice, slice, int, int, int) $self, slice $owner) impure inline;
 
@@ -209,6 +212,9 @@ cell $String$_fun_asComment(slice $self) impure inline;
 
 ;; $StakingMasterTemplate$_fun_thisJettonWallet
 ((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_thisJettonWallet((slice, slice, slice, int, int, int) $self) impure inline;
+
+;; $StakingMasterTemplate$_fun_jettonMaster
+((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_jettonMaster((slice, slice, slice, int, int, int) $self) impure inline;
 
 ;; $StakingMasterTemplate$_fun_staticTaxFee
 ((slice, slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_staticTaxFee((slice, slice, slice, int, int, int) $self) impure inline;

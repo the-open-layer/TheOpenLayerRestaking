@@ -20,8 +20,8 @@
 
 ((slice, slice, slice, int, int, int), (cell, cell)) $StakingMasterTemplate$_fun_getUserWallet((slice, slice, slice, int, int, int) $self, slice $owner) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_16 = $StakingWalletTemplate$_init_child(__tact_context_sys, $global_myAddress(), $owner);
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_16);
+    var $fresh$ret_17 = $StakingWalletTemplate$_init_child(__tact_context_sys, $global_myAddress(), $owner);
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_17);
 }
 
 ((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveTransferNotification((slice, slice, slice, int, int, int) $self, (int, int, slice, cell) $msg) impure inline {
@@ -52,26 +52,32 @@
 
 ((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_userWallet((slice, slice, slice, int, int, int) $self, slice $owner) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_17 = $global_contractAddress(($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)~$StakingMasterTemplate$_fun_getUserWallet($owner));
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_17);
+    var $fresh$ret_18 = $global_contractAddress(($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)~$StakingMasterTemplate$_fun_getUserWallet($owner));
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_18);
 }
 
 ((slice, slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_unstakeThreshold((slice, slice, slice, int, int, int) $self) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_18 = $self'unstakeThreshold;
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_18);
+    var $fresh$ret_19 = $self'unstakeThreshold;
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_19);
 }
 
 ((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_thisJettonWallet((slice, slice, slice, int, int, int) $self) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_19 = $self'thisContractJettonWallet;
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_19);
+    var $fresh$ret_20 = $self'thisContractJettonWallet;
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_20);
+}
+
+((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_jettonMaster((slice, slice, slice, int, int, int) $self) impure inline {
+    var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
+    var $fresh$ret_21 = $self'jettonMaster;
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_21);
 }
 
 ((slice, slice, slice, int, int, int), int) $StakingMasterTemplate$_fun_staticTaxFee((slice, slice, slice, int, int, int) $self) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_20 = $self'staticTax;
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_20);
+    var $fresh$ret_22 = $self'staticTax;
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_22);
 }
 
 ((slice, slice, slice, int, int, int), ()) $StakingMasterTemplate$_fun_receiveSetStaticTaxFee((slice, slice, slice, int, int, int) $self, (int) $msg) impure inline {
@@ -92,8 +98,8 @@
 
 ((slice, slice, slice, int, int, int), slice) $StakingMasterTemplate$_fun_owner((slice, slice, slice, int, int, int) $self) impure inline {
     var (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold)) = $self;
-    var $fresh$ret_21 = $self'owner;
-    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_21);
+    var $fresh$ret_23 = $self'owner;
+    return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), $fresh$ret_23);
 }
 
 ;;
@@ -120,6 +126,7 @@
     var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
     throw_unless(1003, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
     $self'unstakeThreshold = $msg'threshold;
+    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($ctx'sender, false, 0, 64, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
     return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), ());
 }
 
@@ -129,6 +136,7 @@
     var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
     throw_unless(1003, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
     $self'thisContractJettonWallet = $msg'thisContractJettonWallet;
+    $global_send($SendParameters$_constructor_to_bounce_value_mode_body($ctx'sender, false, 0, 64, $JettonExcesses$_store_cell($JettonExcesses$_constructor_query_id($msg'queryId))));
     return (($self'owner, $self'jettonMaster, $self'thisContractJettonWallet, $self'staticTax, $self'lockedValue, $self'unstakeThreshold), ());
 }
 
@@ -180,6 +188,12 @@ _ %unstakeThreshold() method_id(70164) {
 _ %thisJettonWallet() method_id(98266) {
     var self = $StakingMasterTemplate$_contract_load();
     var res = self~$StakingMasterTemplate$_fun_thisJettonWallet();
+    return res;
+}
+
+_ %jettonMaster() method_id(113118) {
+    var self = $StakingMasterTemplate$_contract_load();
+    var res = self~$StakingMasterTemplate$_fun_jettonMaster();
     return res;
 }
 

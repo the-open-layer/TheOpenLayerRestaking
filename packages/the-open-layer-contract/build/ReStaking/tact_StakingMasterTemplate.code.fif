@@ -56,6 +56,7 @@ PROGRAM{
   DECLPROC $SendParameters$_constructor_bounce_to_value_mode_body_code_data
   DECLPROC $SendParameters$_constructor_to_bounce_value_body
   DECLPROC $JettonExcesses$_constructor_query_id
+  DECLPROC $SendParameters$_constructor_to_bounce_value_mode_body
   DECLPROC $StakingMasterTemplate$_fun_getUserWallet
   DECLPROC $StakingMasterTemplate$_fun_forward
   DECLPROC $StakingMasterTemplate$_fun_reply
@@ -68,6 +69,7 @@ PROGRAM{
   DECLPROC $StakingMasterTemplate$_fun_userWallet
   DECLPROC $StakingMasterTemplate$_fun_unstakeThreshold
   DECLPROC $StakingMasterTemplate$_fun_thisJettonWallet
+  DECLPROC $StakingMasterTemplate$_fun_jettonMaster
   DECLPROC $StakingMasterTemplate$_fun_staticTaxFee
   DECLPROC $StakingMasterTemplate$_fun_receiveSetStaticTaxFee
   DECLPROC $StakingMasterTemplate$_fun_requireOwner
@@ -85,6 +87,7 @@ PROGRAM{
   99220 DECLMETHOD %userWallet
   70164 DECLMETHOD %unstakeThreshold
   98266 DECLMETHOD %thisJettonWallet
+  113118 DECLMETHOD %jettonMaster
   107114 DECLMETHOD %staticTaxFee
   83229 DECLMETHOD %owner
   115390 DECLMETHOD lazy_deployment_completed
@@ -889,6 +892,11 @@ PROGRAM{
   }>
   $JettonExcesses$_constructor_query_id PROCINLINE:<{
   }>
+  $SendParameters$_constructor_to_bounce_value_mode_body PROCINLINE:<{
+    s3 s4 XCHG
+    PUSHNULL
+    PUSHNULL
+  }>
   $StakingMasterTemplate$_fun_getUserWallet PROCINLINE:<{
     __tact_context_sys GETGLOB
         MYADDR
@@ -1066,6 +1074,9 @@ PROGRAM{
   $StakingMasterTemplate$_fun_thisJettonWallet PROCINLINE:<{
     s3 PUSH
   }>
+  $StakingMasterTemplate$_fun_jettonMaster PROCINLINE:<{
+    s4 PUSH
+  }>
   $StakingMasterTemplate$_fun_staticTaxFee PROCINLINE:<{
     s2 PUSH
   }>
@@ -1109,23 +1120,44 @@ PROGRAM{
     $StakingMasterTemplate$_fun_receiveTransferNotification INLINECALLDICT
   }>
   $StakingMasterTemplate$_internal_binary_SetUnstakeThreshold PROCINLINE:<{
-    2 1 BLKDROP2
+    s2 POP
     __tact_context_get INLINECALLDICT
     s2 s3 XCHG
     3 BLKDROP
-    s6 s(-1) PUXC
+    s7 s0 PUSH2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
+    FALSE
+    0 PUSHINT
+    64 PUSHINT
+    s0 s4 XCHG
+    $JettonExcesses$_constructor_query_id INLINECALLDICT
+    $JettonExcesses$_store_cell INLINECALLDICT
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
   }>
   $StakingMasterTemplate$_internal_binary_SetContractJettonWallet PROCINLINE:<{
-    NIP
-    s4 POP
+    s5 POP
     __tact_context_get INLINECALLDICT
     s2 s3 XCHG
     3 BLKDROP
-    s6 s(-1) PUXC
+    s7 s0 PUSH2
     __tact_slice_eq_bits INLINECALLDICT
     1003 THROWIFNOT
+    FALSE
+    0 PUSHINT
+    64 PUSHINT
+    s0 s4 XCHG
+    $JettonExcesses$_constructor_query_id INLINECALLDICT
+    $JettonExcesses$_store_cell INLINECALLDICT
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_bounce_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    DROP
   }>
   $StakingMasterTemplate$_internal_text_095190194aee611ce895c5503adf85fd864de7905746142f608d3eb2faad14e4 PROCINLINE:<{
   }>
@@ -1166,6 +1198,11 @@ PROGRAM{
   %thisJettonWallet PROC:<{
     $StakingMasterTemplate$_contract_load INLINECALLDICT
     $StakingMasterTemplate$_fun_thisJettonWallet INLINECALLDICT
+    6 1 BLKDROP2
+  }>
+  %jettonMaster PROC:<{
+    $StakingMasterTemplate$_contract_load INLINECALLDICT
+    $StakingMasterTemplate$_fun_jettonMaster INLINECALLDICT
     6 1 BLKDROP2
   }>
   %staticTaxFee PROC:<{

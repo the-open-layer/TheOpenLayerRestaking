@@ -1,9 +1,9 @@
 # TACT Compilation Report
 Contract: StakingMasterTemplate
-BOC Size: 3183 bytes
+BOC Size: 3263 bytes
 
 # Types
-Total Types: 53
+Total Types: 54
 
 ## StateInit
 TLB: `_ code:^cell data:^cell = StateInit`
@@ -150,8 +150,8 @@ TLB: `_ jettonAmount:coins pendingIndex:uint32 stakedIndex:uint32 = PendingToSta
 Signature: `PendingToStaked{jettonAmount:coins,pendingIndex:uint32,stakedIndex:uint32}`
 
 ## StakedInfo
-TLB: `_ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> = StakedInfo`
-Signature: `StakedInfo{stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}>,pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}>,withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}>}`
+TLB: `_ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> unStakedRecords:dict<int, ^UnStakedCoinAge{amount:coins,stakeTime:uint32,unStakeTime:uint32}> = StakedInfo`
+Signature: `StakedInfo{stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}>,pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}>,withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}>,unStakedRecords:dict<int, ^UnStakedCoinAge{amount:coins,stakeTime:uint32,unStakeTime:uint32}>}`
 
 ## WithdrawalJettonInfo
 TLB: `_ jettonAmount:coins withdrawTime:uint32 = WithdrawalJettonInfo`
@@ -201,6 +201,10 @@ Signature: `UnStakedNotification{from:address,masterAddress:address,amount:coins
 TLB: `set_unstake_threshold#921ec03e queryId:uint64 threshold:uint32 = SetUnstakeThreshold`
 Signature: `SetUnstakeThreshold{queryId:uint64,threshold:uint32}`
 
+## UnStakedCoinAge
+TLB: `_ amount:coins stakeTime:uint32 unStakeTime:uint32 = UnStakedCoinAge`
+Signature: `UnStakedCoinAge{amount:coins,stakeTime:uint32,unStakeTime:uint32}`
+
 ## SetStaticTaxFee
 TLB: `set_static_tax_fee#1509a420 staticTaxFee:coins = SetStaticTaxFee`
 Signature: `SetStaticTaxFee{staticTaxFee:coins}`
@@ -218,7 +222,7 @@ TLB: `null`
 Signature: `null`
 
 # Get Methods
-Total Get Methods: 5
+Total Get Methods: 6
 
 ## userWallet
 Argument: owner
@@ -226,6 +230,8 @@ Argument: owner
 ## unstakeThreshold
 
 ## thisJettonWallet
+
+## jettonMaster
 
 ## staticTaxFee
 

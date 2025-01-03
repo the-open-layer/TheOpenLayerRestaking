@@ -91,7 +91,7 @@ describe('ReStaking', () => {
             )
         );
 
-        await stakingMaster.send(
+        const setContractResult = await stakingMaster.send(
             deployer.getSender(),
             { value: toNano('1') },
             {
@@ -100,6 +100,18 @@ describe('ReStaking', () => {
                 thisContractJettonWallet: masterJettonWallet.address,
             }
         );
+
+        expect(setContractResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: stakingMaster.address,
+            success: true,
+        });
+
+        expect(setContractResult.transactions).toHaveTransaction({
+            from: stakingMaster.address,
+            to: deployer.address,
+            success: true,
+        });
 
         console.log('Deployer Jetton Wallet', deployerJettonWallet.address);
         console.log('Staking Master Jetton Wallet', masterJettonWallet.address);
@@ -408,6 +420,19 @@ describe('ReStaking', () => {
                 threshold: newThreshold
             }
         );
+            // Verify transaction success
+        expect(result.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: stakingMaster.address,
+            success: true,
+        });
+
+        // Verify JettonExcesses message
+        expect(result.transactions).toHaveTransaction({
+            from: stakingMaster.address,
+            to: deployer.address,
+            success: true,
+        });
 
         const threshold = await stakingMaster.getUnstakeThreshold();
         expect(threshold).toEqual(newThreshold);
@@ -743,5 +768,17 @@ describe('ReStaking', () => {
         expect(pendingJetton?.jettonAmount).toEqual(unstakeAmount);
         const afterBalance = await getMasterBalance();
         expect(afterBalance).toBeGreaterThanOrEqual(beforeBalance);
+
+        // Should the unstake records be correct
+        const unstakeRecords = stakedInfo.unStakedRecords;
+        expect(unstakeRecords.size).toEqual(2);
+        const firstUnstakeRecord = unstakeRecords.get(0n);
+        const secondUnstakeRecord = unstakeRecords.get(1n);
+        // the unstake time should be in one minutes
+        const threshold = (Date.now() - 60000) / 1000;
+        expect(firstUnstakeRecord?.unStakeTime).toBeGreaterThanOrEqual(threshold);
+        expect(secondUnstakeRecord?.unStakeTime).toBeGreaterThanOrEqual(threshold);
+        expect(firstUnstakeRecord?.amount).toEqual(toNano('10'));
+        expect(secondUnstakeRecord?.amount).toEqual(toNano('5'));
     });
 });

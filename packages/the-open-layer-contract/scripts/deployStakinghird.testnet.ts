@@ -36,7 +36,7 @@ async function deployOfJettonMaster(jettonMasterAddress: string, provider: Netwo
     await stakingMasterContract.send(
         provider.sender(),
         {
-            value: toNano('0.1'),
+            value: toNano('0.01'),
         },
         {
             $$type: 'Deploy',
@@ -51,7 +51,7 @@ async function deployOfJettonMaster(jettonMasterAddress: string, provider: Netwo
     await stakingMasterContract.send(
         provider.sender(),
         {
-            value: toNano('0.1'),
+            value: toNano('0.01'),
         },
         {
             $$type: 'SetContractJettonWallet',
@@ -65,7 +65,7 @@ async function deployOfJettonMaster(jettonMasterAddress: string, provider: Netwo
     await stakingMasterContract.send(
         provider.sender(),
         {
-            value: toNano('0.1'),
+            value: toNano('0.01'),
         },
         {
             $$type: 'SetUnstakeThreshold',
@@ -75,6 +75,6 @@ async function deployOfJettonMaster(jettonMasterAddress: string, provider: Netwo
 }
 
 export async function run(provider: NetworkProvider) {
-    // await deployOfJettonMaster(opttJettonMasterAddress, provider);
+    await deployOfJettonMaster(opttJettonMasterAddress, provider);
     await deployOfJettonMaster(tyTestJettonMasterAddress, provider);
 }

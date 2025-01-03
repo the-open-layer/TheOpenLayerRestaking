@@ -176,6 +176,7 @@ struct StakedInfo {
     stakedJettons: map<Int, StakedJettonInfo>;
     pendingJettons: map<Int, PendingJettonInfo>;
     withdrawalJettons: map<Int, WithdrawalJettonInfo>;
+    unStakedRecords: map<Int, UnStakedCoinAge>;
 }
 
 struct WithdrawalJettonInfo {
@@ -237,4 +238,10 @@ message UnStakedNotification {
 message SetUnstakeThreshold {
     queryId: Int as uint64;
     threshold: Int as uint32;
+}
+
+struct UnStakedCoinAge {
+    amount: Int as coins;
+    stakeTime: Int as uint32;
+    unStakeTime: Int as uint32;
 }

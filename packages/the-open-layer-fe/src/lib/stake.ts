@@ -34,7 +34,7 @@ export const getStakeTx = async (
   // Prepare stake message using the generated type
   const stakeMsg: StakeJetton = {
     $$type: 'StakeJetton',
-    tonAmount: toNano('0.1'),
+    tonAmount: toNano('0.01'),
     responseDestination: Address.parse(userAddress),
     forwardAmount: 0n,
     forwardPayload: beginCell().endCell(),
@@ -47,7 +47,7 @@ export const getStakeTx = async (
     destination: Address.parseFriendly(STAKING_MASTER_ADDRESS).address,
     response_destination: Address.parse(userAddress),
     custom_payload: null,
-    forward_ton_amount: toNano('0.3'),
+    forward_ton_amount: toNano('0.05'),
     forward_payload: beginCell().store(storeStakeJetton(stakeMsg)).endCell(),
   };
   // Create transaction
@@ -60,7 +60,7 @@ export const getStakeTx = async (
     messages: [
       {
         address: userJettonWallet.toString(),
-        amount: toNano('0.5').toString(),
+        amount: toNano('0.2').toString(),
         payload: beginCell()
           .store(storeJettonTransfer(jettonTransfer))
           .endCell()
@@ -95,7 +95,7 @@ export const getUnstakeTx = async (
     messages: [
       {
         address: stakingWalletAddress.toString(),
-        amount: toNano('0.2').toString(),
+        amount: toNano('0.03').toString(),
         payload: beginCell()
           .store(storeUnStake(unstakeMsg))
           .endCell()
@@ -121,7 +121,7 @@ export const getRedepositTx = async (
     messages: [
       {
         address: stakingWalletAddress.toString(),
-        amount: toNano('0.1').toString(),
+        amount: toNano('0.03').toString(),
         payload: beginCell()
           .store(
             storeRedeposit({

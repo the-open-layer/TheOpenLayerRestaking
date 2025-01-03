@@ -421,16 +421,16 @@ cell $PendingToStaked$_store_cell((int, int, int) v) inline {
 
 ;;
 ;; Type: StakedInfo
-;; TLB: _ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> = StakedInfo
+;; TLB: _ stakedJettons:dict<int, ^StakedJettonInfo{jettonAmount:coins,stakeIndex:uint32,stakeTime:uint32,unstakeThreshold:uint32}> pendingJettons:dict<int, ^PendingJettonInfo{jettonAmount:coins,pendingIndex:uint32,unstakeTime:uint32,unstakeThreshold:uint32}> withdrawalJettons:dict<int, ^WithdrawalJettonInfo{jettonAmount:coins,withdrawTime:uint32}> unStakedRecords:dict<int, ^UnStakedCoinAge{amount:coins,stakeTime:uint32,unStakeTime:uint32}> = StakedInfo
 ;;
 
-(cell, cell, cell) $StakedInfo$_to_external(((cell, cell, cell)) v) inline {
-    var (v'stakedJettons, v'pendingJettons, v'withdrawalJettons) = v; 
-    return (v'stakedJettons, v'pendingJettons, v'withdrawalJettons);
+(cell, cell, cell, cell) $StakedInfo$_to_external(((cell, cell, cell, cell)) v) inline {
+    var (v'stakedJettons, v'pendingJettons, v'withdrawalJettons, v'unStakedRecords) = v; 
+    return (v'stakedJettons, v'pendingJettons, v'withdrawalJettons, v'unStakedRecords);
 }
 
-((cell, cell, cell)) $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons(cell $stakedJettons, cell $pendingJettons, cell $withdrawalJettons) inline {
-    return ($stakedJettons, $pendingJettons, $withdrawalJettons);
+((cell, cell, cell, cell)) $StakedInfo$_constructor_stakedJettons_pendingJettons_withdrawalJettons_unStakedRecords(cell $stakedJettons, cell $pendingJettons, cell $withdrawalJettons, cell $unStakedRecords) inline {
+    return ($stakedJettons, $pendingJettons, $withdrawalJettons, $unStakedRecords);
 }
 
 ;;
@@ -454,6 +454,27 @@ cell $WithdrawalJettonInfo$_store_cell((int, int) v) inline {
 }
 
 ;;
+;; Type: UnStakedCoinAge
+;; TLB: _ amount:coins stakeTime:uint32 unStakeTime:uint32 = UnStakedCoinAge
+;;
+
+builder $UnStakedCoinAge$_store(builder build_0, (int, int, int) v) inline {
+    var (v'amount, v'stakeTime, v'unStakeTime) = v;
+    build_0 = build_0.store_coins(v'amount);
+    build_0 = build_0.store_uint(v'stakeTime, 32);
+    build_0 = build_0.store_uint(v'unStakeTime, 32);
+    return build_0;
+}
+
+cell $UnStakedCoinAge$_store_cell((int, int, int) v) inline {
+    return $UnStakedCoinAge$_store(begin_cell(), v).end_cell();
+}
+
+((int, int, int)) $UnStakedCoinAge$_constructor_amount_stakeTime_unStakeTime(int $amount, int $stakeTime, int $unStakeTime) inline {
+    return ($amount, $stakeTime, $unStakeTime);
+}
+
+;;
 ;; Type: SetStaticTaxFee
 ;; Header: 0x1509a420
 ;; TLB: set_static_tax_fee#1509a420 staticTaxFee:coins = SetStaticTaxFee
@@ -473,8 +494,8 @@ cell $WithdrawalJettonInfo$_store_cell((int, int) v) inline {
 ;; Type: StakingWalletTemplate
 ;;
 
-builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, int, int, cell, cell, cell) v) inline {
-    var (v'owner, v'master, v'staticTax, v'lockedValue, v'stakeIndex, v'pendingIndex, v'stakedJettons, v'pendingJettons, v'withdrawalJettons) = v;
+builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, int, int, cell, cell, cell, cell) v) inline {
+    var (v'owner, v'master, v'staticTax, v'lockedValue, v'stakeIndex, v'pendingIndex, v'stakedJettons, v'pendingJettons, v'withdrawalJettons, v'unStakedRecords) = v;
     build_0 = __tact_store_address(build_0, v'owner);
     build_0 = __tact_store_address(build_0, v'master);
     build_0 = build_0.store_coins(v'staticTax);
@@ -485,11 +506,12 @@ builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, 
     build_1 = build_1.store_dict(v'stakedJettons);
     build_1 = build_1.store_dict(v'pendingJettons);
     build_1 = build_1.store_dict(v'withdrawalJettons);
+    build_1 = build_1.store_dict(v'unStakedRecords);
     build_0 = store_ref(build_0, build_1.end_cell());
     return build_0;
 }
 
-(slice, ((slice, slice, int, int, int, int, cell, cell, cell))) $StakingWalletTemplate$_load(slice sc_0) inline {
+(slice, ((slice, slice, int, int, int, int, cell, cell, cell, cell))) $StakingWalletTemplate$_load(slice sc_0) inline {
     var v'owner = sc_0~__tact_load_address();
     var v'master = sc_0~__tact_load_address();
     var v'staticTax = sc_0~load_coins();
@@ -500,7 +522,8 @@ builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, 
     var v'stakedJettons = sc_1~load_dict();
     var v'pendingJettons = sc_1~load_dict();
     var v'withdrawalJettons = sc_1~load_dict();
-    return (sc_0, (v'owner, v'master, v'staticTax, v'lockedValue, v'stakeIndex, v'pendingIndex, v'stakedJettons, v'pendingJettons, v'withdrawalJettons));
+    var v'unStakedRecords = sc_1~load_dict();
+    return (sc_0, (v'owner, v'master, v'staticTax, v'lockedValue, v'stakeIndex, v'pendingIndex, v'stakedJettons, v'pendingJettons, v'withdrawalJettons, v'unStakedRecords));
 }
 
 (slice, ((slice, slice))) $StakingWalletTemplate$init$_load(slice sc_0) inline {
@@ -509,7 +532,7 @@ builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, 
     return (sc_0, (v'master, v'owner));
 }
 
-(slice, slice, int, int, int, int, cell, cell, cell) $StakingWalletTemplate$_contract_load() impure inline_ref {
+(slice, slice, int, int, int, int, cell, cell, cell, cell) $StakingWalletTemplate$_contract_load() impure inline_ref {
     slice $sc = get_data().begin_parse();
     __tact_context_sys = $sc~load_ref();
     int $loaded = $sc~load_int(1);
@@ -524,7 +547,7 @@ builder $StakingWalletTemplate$_store(builder build_0, (slice, slice, int, int, 
     }
 }
 
-() $StakingWalletTemplate$_contract_store((slice, slice, int, int, int, int, cell, cell, cell) v) impure inline {
+() $StakingWalletTemplate$_contract_store((slice, slice, int, int, int, int, cell, cell, cell, cell) v) impure inline {
     builder b = begin_cell();
     b = b.store_ref(__tact_context_sys);
     b = b.store_int(true, 1);

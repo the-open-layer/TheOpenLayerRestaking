@@ -21,6 +21,7 @@ trait StakingWallet with Common, Ownable {
     stakedJettons: map<Int, StakedJettonInfo>;
     pendingJettons: map<Int, PendingJettonInfo>;
     withdrawalJettons: map<Int, WithdrawalJettonInfo>;
+    unStakedRecords: map<Int, UnStakedCoinAge>;
 
     get fun stakedInfo(): StakedInfo {
         return self.getStakedInfo();
@@ -113,6 +114,11 @@ trait StakingWallet with Common, Ownable {
                 // If we're using the entire staked amount
                 if (amountFromStake == staked.jettonAmount) {
                     self.stakedJettons.del(i);
+                    self.unStakedRecords.set(i, UnStakedCoinAge{
+                        amount: staked.jettonAmount,
+                        stakeTime: staked.stakeTime,
+                        unStakeTime: now()
+                    });
                 } else {
                     // Update the staked record with remaining amount
                     self.stakedJettons.set(i, StakedJettonInfo{
@@ -120,6 +126,11 @@ trait StakingWallet with Common, Ownable {
                         stakeIndex: staked.stakeIndex,
                         stakeTime: staked.stakeTime,
                         unstakeThreshold: staked.unstakeThreshold
+                    });
+                    self.unStakedRecords.set(i, UnStakedCoinAge{
+                        amount: amountFromStake,
+                        stakeTime: staked.stakeTime,
+                        unStakeTime: now()
                     });
                 }
                 
@@ -141,6 +152,17 @@ trait StakingWallet with Common, Ownable {
             }.toCell());
             self.pendingIndex += 1;
         }
+
+        // refund
+        send(SendParameters{
+            to: ctx.sender,
+            bounce: false,
+            value: 0,
+            mode: SendRemainingValue,
+            body: JettonExcesses{
+                query_id: msg.queryId,
+            }.toCell(),
+        });
     }
 
     virtual fun receiveReDeposit(msg: Redeposit) {
@@ -165,6 +187,17 @@ trait StakingWallet with Common, Ownable {
             pendingIndex: index,
             stakedIndex: newStaked.stakeIndex
         }.toCell());
+
+        // refund
+        send(SendParameters{
+            to: ctx.sender,
+            bounce: false,
+            value: 0,
+            mode: SendRemainingValue,
+            body: JettonExcesses{
+                query_id: msg.queryId,
+            }.toCell(),
+        });
     }
 
     virtual fun receiveWithdraw(msg: Withdraw) {
@@ -221,7 +254,8 @@ trait StakingWallet with Common, Ownable {
         return StakedInfo{
             stakedJettons: self.stakedJettons,
             pendingJettons: self.pendingJettons,
-            withdrawalJettons: self.withdrawalJettons
+            withdrawalJettons: self.withdrawalJettons,
+            unStakedRecords: self.unStakedRecords,
         }
     }
 }
